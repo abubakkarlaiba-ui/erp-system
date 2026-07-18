@@ -2,21 +2,15 @@ import os
 
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-change-me-in-production")
 
 ALLOWED_HOSTS = ["*"]
 
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") if os.environ.get("CORS_ALLOWED_ORIGINS") else [
-    "https://erp-system-frontend-azure.vercel.app",
-    "https://erp-system-frontend-2pv7urxk6-abubakkarlaiba-9098s-projects.vercel.app",
-]
+CORS_ALLOWED_ORIGINS = ["*"]
 
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if os.environ.get("CSRF_TRUSTED_ORIGINS") else [
-    "https://erp-system-frontend-azure.vercel.app",
-    "https://erp-system-frontend-2pv7urxk6-abubakkarlaiba-9098s-projects.vercel.app",
-]
+CSRF_TRUSTED_ORIGINS = ["*"]
 
 DATABASES = {
     "default": {
@@ -42,7 +36,3 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = "DENY"
