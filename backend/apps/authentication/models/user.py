@@ -7,6 +7,7 @@ from apps.authentication.managers import UserManager
 
 
 class User(AbstractUser):
+class User(AbstractUser):
     class Role(models.TextChoices):
         SUPER_ADMIN = "super_admin", "Super Admin"
         COMPANY_OWNER = "company_owner", "Company Owner"
