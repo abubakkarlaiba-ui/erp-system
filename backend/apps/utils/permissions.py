@@ -47,6 +47,16 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return obj.created_by == request.user
 
 
+class IsCompanyOwnerOrEmployee(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return (
+            request.user
+            and request.user.is_authenticated
+            and hasattr(request.user, "role")
+            and request.user.role in ("company_owner", "employee")
+        )
+
+
 class IsSameCompany(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user.is_superuser:
