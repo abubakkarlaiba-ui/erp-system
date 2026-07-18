@@ -1,14 +1,5 @@
-import os
-import sys
-from pathlib import Path
+import json
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-
-import django
-django.setup()
-
-from django.core.wsgi import get_wsgi_application
-
-application = get_wsgi_application()
+def application(environ, start_response):
+    start_response("200 OK", [("Content-Type", "application/json")])
+    return [json.dumps({"status": "ok"}).encode()]
