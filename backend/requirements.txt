@@ -14,4 +14,3 @@ pyotp>=2.9,<3.0
 qrcode>=7.4,<8.0
 python-barcode>=0.15,<1.0
 whitenoise>=6.6,<7.0
-mangum>=0.17,<1.0
