@@ -20,14 +20,11 @@ class DebugWSGIHandler(WSGIHandler):
                 body = json.dumps({"get_response_failed": str(exc), "tb": traceback.format_exc()}).encode()
                 start_response("500 Internal Server Error", [("Content-Type", "application/json")])
                 return [body]
-            response = self.apply_response_fixes(request, response)
             status = "%d %s" % (response.status_code, response.reason_phrase)
             headers = [(k, v) for k, v in response.items()]
             start_response(status, headers)
             content = response.content
-            if not content:
-                content = b"[]"
-            return [content]
+            return [content] if content else [b'[]']
         except Exception as e:
             body = json.dumps({"outer_failed": str(e), "tb": traceback.format_exc()}).encode()
             start_response("500 Internal Server Error", [("Content-Type", "application/json")])
