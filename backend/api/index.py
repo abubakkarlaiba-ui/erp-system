@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 from pathlib import Path
 
 # Add the backend directory to Python path
@@ -15,6 +16,20 @@ if not os.environ.get("SECRET_KEY"):
 # Initialize Django
 import django
 django.setup()
+
+logger = logging.getLogger(__name__)
+
+# Run migrations on cold start
+def run_migrations():
+    try:
+        from django.core.management import call_command
+        logger.info("Running migrations...")
+        call_command("migrate", "--no-input", verbosity=0)
+        logger.info("Migrations complete.")
+    except Exception as e:
+        logger.error(f"Migration error: {e}")
+
+run_migrations()
 
 # Create the ASGI application
 from django.core.asgi import get_asgi_application
