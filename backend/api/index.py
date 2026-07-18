@@ -10,16 +10,34 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings"
 import django
 django.setup()
 
-from django.core.handlers.wsgi import WSGIHandler
+from django.conf import settings
+from django.http import JsonResponse
 
-class ErrorCatchingHandler(WSGIHandler):
-    def __call__(self, environ, start_response):
-        try:
-            return super().__call__(environ, start_response)
-        except Exception as e:
-            tb = traceback.format_exc()
-            body = json.dumps({"error": str(e), "traceback": tb}).encode()
-            start_response("500 Internal Server Error", [("Content-Type", "application/json")])
-            return [body]
+# Force DEBUG off so we can see our custom error handler
+settings.DEBUG = False
 
-application = ErrorCatchingHandler()
+# Monkey-patch Django's exception handler
+from django.core.handlers import base as handlers_base
+
+original_handle_uncaught = handlers_base.BaseHandler.handle_uncaught_exception
+
+def json_error_handler(self, request, exc):
+    tb = traceback.format_exc()
+    return JsonResponse({"error": str(exc), "traceback": tb}, status=500)
+
+handlers_base.BaseHandler.handle_uncaught_exception = json_error_handler
+
+# Also override process_exception_by_middleware to catch middleware-processed exceptions
+original_process_exception = handlers_base.BaseHandler.process_exception_by_middleware
+
+def debug_process_exception(self, request, exception):
+    response = original_process_exception(self, request, exception)
+    if response is None:
+        return None
+    return response
+
+handlers_base.BaseHandler.process_exception_by_middleware = debug_process_exception
+
+from django.core.wsgi import get_wsgi_application
+
+application = get_wsgi_application()
