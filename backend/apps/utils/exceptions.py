@@ -49,7 +49,7 @@ class ConflictException(ERPException):
     default_code = "conflict"
 
 
-class custom_exception_handler(exc, context):
+def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
     if response is not None:
