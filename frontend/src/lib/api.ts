@@ -5,6 +5,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 15000,
 })
 
 let isRefreshing = false
@@ -61,12 +62,16 @@ api.interceptors.response.use(
       originalRequest._retry = true
       isRefreshing = true
 
-      const refreshToken = localStorage.getItem("refresh_token")
+      const refreshToken = typeof window !== "undefined"
+        ? localStorage.getItem("refresh_token")
+        : null
 
       if (!refreshToken) {
-        localStorage.removeItem("access_token")
-        localStorage.removeItem("refresh_token")
-        window.location.href = "/auth/login"
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("access_token")
+          localStorage.removeItem("refresh_token")
+          window.location.href = "/login"
+        }
         isRefreshing = false
         return Promise.reject(error)
       }
@@ -89,7 +94,7 @@ api.interceptors.response.use(
         processQueue(refreshError, null)
         localStorage.removeItem("access_token")
         localStorage.removeItem("refresh_token")
-        window.location.href = "/auth/login"
+        window.location.href = "/login"
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false
@@ -101,12 +106,16 @@ api.interceptors.response.use(
 )
 
 export function setAuthToken(token: string): void {
-  localStorage.setItem("access_token", token)
+  if (typeof window !== "undefined") {
+    localStorage.setItem("access_token", token)
+  }
 }
 
 export function clearAuthToken(): void {
-  localStorage.removeItem("access_token")
-  localStorage.removeItem("refresh_token")
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
+  }
 }
 
 export async function get<T>(url: string, params?: Record<string, unknown>): Promise<T> {
