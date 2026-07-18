@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.text import slugify
 from apps.utils.enums import Currency
 from apps.utils.models.base import UUIDModel
