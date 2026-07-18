@@ -11,6 +11,8 @@ from rest_framework.exceptions import (
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
+from django.conf import settings
+
 logger = logging.getLogger("apps")
 
 
@@ -64,17 +66,18 @@ def custom_exception_handler(exc, context):
         return Response(error_data, status=response.status_code)
 
     logger.exception("Unhandled exception: %s", exc)
-    return Response(
-        {
-            "success": False,
-            "error": {
-                "status_code": 500,
-                "message": "Internal server error.",
-                "details": {},
-            },
-        },
-        status=500,
-    )
+
+    error = {
+        "status_code": 500,
+        "message": "Internal server error.",
+        "details": {},
+    }
+    if settings.DEBUG:
+        import traceback
+        error["message"] = str(exc)
+        error["details"] = {"traceback": traceback.format_exc()}
+
+    return Response({"success": False, "error": error}, status=500)
 
 
 def _get_error_message(data):
