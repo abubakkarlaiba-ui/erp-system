@@ -24,10 +24,12 @@ def run_migrations():
     try:
         from django.core.management import call_command
         logger.info("Running migrations...")
-        call_command("migrate", "--no-input", verbosity=0)
+        call_command("migrate", "--no-input", verbosity=1)
         logger.info("Migrations complete.")
     except Exception as e:
         logger.error(f"Migration error: {e}")
+        import traceback
+        traceback.print_exc()
 
 run_migrations()
 
