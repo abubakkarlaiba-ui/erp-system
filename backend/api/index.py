@@ -7,12 +7,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings"
 
-# Minimal init: just import django
 django_ok = False
 django_error = None
 
 try:
     import django
+    django.setup()
     django_ok = True
 except Exception as e:
     django_error = traceback.format_exc()
