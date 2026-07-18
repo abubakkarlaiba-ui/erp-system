@@ -6,10 +6,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 import django
 django.setup()
 
+from django.core.handlers.wsgi import WSGIHandler
+
 from io import StringIO
-from django.core.wsgi import get_wsgi_application
 from django.core.management import call_command
-from django.http import JsonResponse
 
 MIGRATION_OUTPUT = None
 try:
@@ -20,15 +20,12 @@ except Exception as e:
     import traceback
     MIGRATION_OUTPUT = f"FAILED: {e}\n{traceback.format_exc()}"
 
-from django.core.handlers.wsgi import WSGIHandler
-from django.conf import settings
-
-class MigrationAwareHandler(WSGIHandler):
+class MigrateAwareHandler(WSGIHandler):
     def __call__(self, environ, start_response):
         if environ.get("PATH_INFO") == "/api/migrate-status/":
-            body = json.dumps({"migration_output": MIGRATION_OUTPUT, "debug": settings.DEBUG}).encode()
+            body = json.dumps({"migration_output": MIGRATION_OUTPUT}).encode()
             start_response("200 OK", [("Content-Type", "application/json")])
             return [body]
         return super().__call__(environ, start_response)
 
-application = MigrationAwareHandler()
+application = MigrateAwareHandler()

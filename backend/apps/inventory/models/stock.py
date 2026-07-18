@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from apps.utils.enums import StockMovementType
@@ -83,7 +84,7 @@ class StockMovement(CompanyScopedModel):
     reference_model = models.CharField(max_length=255, null=True, blank=True)
     notes = models.CharField(max_length=500, null=True, blank=True)
     created_by = models.ForeignKey(
-        "auth.User",
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         related_name="stock_movements",

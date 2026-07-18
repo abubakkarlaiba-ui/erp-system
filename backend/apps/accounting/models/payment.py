@@ -29,7 +29,7 @@ class Payment(CompanyScopedModel):
     )
     reference = models.CharField(max_length=255, null=True, blank=True)
     bank_account = models.ForeignKey(
-        "bank.BankAccount",
+        "accounting.BankAccount",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

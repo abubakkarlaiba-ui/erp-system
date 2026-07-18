@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from apps.utils.models.base import CompanyScopedModel
 from apps.utils.enums import LeaveStatus
@@ -39,7 +40,7 @@ class LeaveRequest(CompanyScopedModel):
         default=LeaveStatus.PENDING,
     )
     approved_by = models.ForeignKey(
-        "auth.User",
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

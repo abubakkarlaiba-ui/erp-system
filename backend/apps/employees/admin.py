@@ -31,7 +31,7 @@ class EmployeeDocumentAdmin(admin.ModelAdmin):
     list_display = ("title", "employee", "document_type", "is_verified", "expiry_date")
     list_filter = ("document_type", "is_verified")
     search_fields = ("title", "employee__employee_id", "employee__first_name", "employee__last_name")
-    readonly_fields = ("id", "created_at")
+    readonly_fields = ("id",)
     raw_id_fields = ("employee",)
 
 
@@ -61,7 +61,7 @@ class ExperienceAdmin(admin.ModelAdmin):
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
     list_display = ("employee", "name", "proficiency", "years_of_experience")
-    list_filter = ("proficiency")
+    list_filter = ("proficiency",)
     search_fields = ("name", "employee__employee_id")
     raw_id_fields = ("employee",)
 
@@ -73,7 +73,7 @@ class PromotionAdmin(admin.ModelAdmin):
         "promotion_date", "salary_before", "salary_after",
     )
     search_fields = ("employee__employee_id", "employee__first_name", "employee__last_name")
-    readonly_fields = ("id", "created_at")
+    readonly_fields = ("id",)
     raw_id_fields = ("employee",)
 
 
@@ -81,23 +81,23 @@ class PromotionAdmin(admin.ModelAdmin):
 class TransferAdmin(admin.ModelAdmin):
     list_display = ("employee", "from_branch", "to_branch", "from_department", "to_department", "transfer_date")
     search_fields = ("employee__employee_id", "employee__first_name", "employee__last_name")
-    readonly_fields = ("id", "created_at")
+    readonly_fields = ("id",)
     raw_id_fields = ("employee", "from_branch", "to_branch", "from_department", "to_department")
 
 
 @admin.register(Resignation)
 class ResignationAdmin(admin.ModelAdmin):
     list_display = ("employee", "notice_date", "last_working_date", "status", "approved_by")
-    list_filter = ("status")
+    list_filter = ("status",)
     search_fields = ("employee__employee_id", "employee__first_name", "employee__last_name")
-    readonly_fields = ("id", "created_at")
+    readonly_fields = ("id",)
     raw_id_fields = ("employee", "approved_by")
 
 
 @admin.register(Termination)
 class TerminationAdmin(admin.ModelAdmin):
     list_display = ("employee", "termination_date", "termination_type", "approved_by")
-    list_filter = ("termination_type")
+    list_filter = ("termination_type",)
     search_fields = ("employee__employee_id", "employee__first_name", "employee__last_name")
-    readonly_fields = ("id", "created_at")
+    readonly_fields = ("id",)
     raw_id_fields = ("employee", "approved_by")

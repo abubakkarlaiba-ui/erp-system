@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from apps.utils.models.base import CompanyScopedModel
 
@@ -19,7 +20,7 @@ class PayrollPeriod(CompanyScopedModel):
         default="draft",
     )
     processed_by = models.ForeignKey(
-        "auth.User",
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -120,7 +121,7 @@ class Bonus(CompanyScopedModel):
     date = models.DateField()
     reason = models.TextField(null=True, blank=True)
     approved_by = models.ForeignKey(
-        "auth.User",
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

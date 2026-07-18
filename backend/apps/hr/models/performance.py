@@ -1,4 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.conf import settings
 from django.db import models
 from apps.utils.models.base import CompanyScopedModel
 
@@ -16,7 +17,7 @@ class PerformanceReview(CompanyScopedModel):
         related_name="performance_reviews",
     )
     reviewer = models.ForeignKey(
-        "auth.User",
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="conducted_reviews",
     )
