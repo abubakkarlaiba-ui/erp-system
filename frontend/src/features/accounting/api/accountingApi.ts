@@ -140,98 +140,98 @@ export interface PaginationParams {
 
 export const accountingApi = {
   getAccounts: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<Account>>("/accounting/accounts", { params }),
+    api.get<PaginatedResponse<Account>>("/accounting/accounts/", { params }),
 
   createAccount: (data: Omit<Account, "id" | "balance" | "children">) =>
-    api.post<Account>("/accounting/accounts", data),
+    api.post<Account>("/accounting/accounts/", data),
 
   updateAccount: (id: string, data: Partial<Account>) =>
-    api.put<Account>(`/accounting/accounts/${id}`, data),
+    api.put<Account>(`/accounting/accounts/${id}/`, data),
 
   deleteAccount: (id: string) =>
-    api.delete(`/accounting/accounts/${id}`),
+    api.delete(`/accounting/accounts/${id}/`),
 
   getJournalEntries: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<JournalEntry>>("/accounting/journal-entries", { params }),
+    api.get<PaginatedResponse<JournalEntry>>("/accounting/journal-entries/", { params }),
 
   createJournalEntry: (data: { date: string; reference: string; description: string; lines: JournalLine[] }) =>
-    api.post<JournalEntry>("/accounting/journal-entries", data),
+    api.post<JournalEntry>("/accounting/journal-entries/", data),
 
   postJournalEntry: (id: string) =>
-    api.post<JournalEntry>(`/accounting/journal-entries/${id}/post`),
+    api.post<JournalEntry>(`/accounting/journal-entries/${id}/post/`),
 
   cancelJournalEntry: (id: string) =>
-    api.post<JournalEntry>(`/accounting/journal-entries/${id}/cancel`),
+    api.post<JournalEntry>(`/accounting/journal-entries/${id}/cancel/`),
 
   getInvoices: (params?: PaginationParams & { type?: "sales" | "purchase" }) =>
-    api.get<PaginatedResponse<Invoice>>("/accounting/invoices", { params }),
+    api.get<PaginatedResponse<Invoice>>("/accounting/invoices/", { params }),
 
   getInvoice: (id: string) =>
-    api.get<Invoice>(`/accounting/invoices/${id}`),
+    api.get<Invoice>(`/accounting/invoices/${id}/`),
 
   createInvoice: (data: Omit<Invoice, "id" | "invoiceNumber" | "status">) =>
-    api.post<Invoice>("/accounting/invoices", data),
+    api.post<Invoice>("/accounting/invoices/", data),
 
   updateInvoice: (id: string, data: Partial<Invoice>) =>
-    api.put<Invoice>(`/accounting/invoices/${id}`, data),
+    api.put<Invoice>(`/accounting/invoices/${id}/`, data),
 
   sendInvoice: (id: string) =>
-    api.post<Invoice>(`/accounting/invoices/${id}/send`),
+    api.post<Invoice>(`/accounting/invoices/${id}/send/`),
 
   markInvoicePaid: (id: string) =>
-    api.post<Invoice>(`/accounting/invoices/${id}/pay`),
+    api.post<Invoice>(`/accounting/invoices/${id}/pay/`),
 
   getPayments: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<Payment>>("/accounting/payments", { params }),
+    api.get<PaginatedResponse<Payment>>("/accounting/payments/", { params }),
 
   createPayment: (data: Omit<Payment, "id" | "paymentNumber" | "status">) =>
-    api.post<Payment>("/accounting/payments", data),
+    api.post<Payment>("/accounting/payments/", data),
 
   getPayment: (id: string) =>
-    api.get<Payment>(`/accounting/payments/${id}`),
+    api.get<Payment>(`/accounting/payments/${id}/`),
 
   getExpenses: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<Expense>>("/accounting/expenses", { params }),
+    api.get<PaginatedResponse<Expense>>("/accounting/expenses/", { params }),
 
   createExpense: (data: Omit<Expense, "id" | "expenseNumber" | "status">) =>
-    api.post<Expense>("/accounting/expenses", data),
+    api.post<Expense>("/accounting/expenses/", data),
 
   approveExpense: (id: string) =>
-    api.post<Expense>(`/accounting/expenses/${id}/approve`),
+    api.post<Expense>(`/accounting/expenses/${id}/approve/`),
 
   getBankAccounts: () =>
-    api.get<BankAccount[]>("/accounting/bank-accounts"),
+    api.get<BankAccount[]>("/accounting/bank-accounts/"),
 
   createBankAccount: (data: Omit<BankAccount, "id" | "balance">) =>
-    api.post<BankAccount>("/accounting/bank-accounts", data),
+    api.post<BankAccount>("/accounting/bank-accounts/", data),
 
   getBankTransactions: (id: string, params?: PaginationParams) =>
-    api.get<PaginatedResponse<BankTransaction>>(`/accounting/bank-accounts/${id}/transactions`, { params }),
+    api.get<PaginatedResponse<BankTransaction>>(`/accounting/bank-accounts/${id}/transactions/`, { params }),
 
   reconcileBank: (id: string, data: { transactionIds: string[] }) =>
-    api.post(`/accounting/bank-accounts/${id}/reconcile`, data),
+    api.post(`/accounting/bank-accounts/${id}/reconcile/`, data),
 
   getBudgets: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<Budget>>("/accounting/budgets", { params }),
+    api.get<PaginatedResponse<Budget>>("/accounting/budgets/", { params }),
 
   createBudget: (data: Omit<Budget, "id" | "spent">) =>
-    api.post<Budget>("/accounting/budgets", data),
+    api.post<Budget>("/accounting/budgets/", data),
 
   getFixedAssets: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<FixedAsset>>("/accounting/fixed-assets", { params }),
+    api.get<PaginatedResponse<FixedAsset>>("/accounting/fixed-assets/", { params }),
 
   createFixedAsset: (data: Omit<FixedAsset, "id" | "currentValue">) =>
-    api.post<FixedAsset>("/accounting/fixed-assets", data),
+    api.post<FixedAsset>("/accounting/fixed-assets/", data),
 
   getTrialBalance: (params?: { startDate?: string; endDate?: string }) =>
-    api.get<{ accounts: { accountId: string; accountName: string; debit: number; credit: number }[]; totalDebit: number; totalCredit: number }>("/accounting/reports/trial-balance", { params }),
+    api.get<{ accounts: { accountId: string; accountName: string; debit: number; credit: number }[]; totalDebit: number; totalCredit: number }>("/accounting/reports/trial-balance/", { params }),
 
   getBalanceSheet: (params?: { asOfDate?: string }) =>
-    api.get<{ assets: number; liabilities: number; equity: number }>("/accounting/reports/balance-sheet", { params }),
+    api.get<{ assets: number; liabilities: number; equity: number }>("/accounting/reports/balance-sheet/", { params }),
 
   getIncomeStatement: (params?: { startDate?: string; endDate?: string }) =>
-    api.get<{ revenue: number; expenses: number; netIncome: number }>("/accounting/reports/income-statement", { params }),
+    api.get<{ revenue: number; expenses: number; netIncome: number }>("/accounting/reports/income-statement/", { params }),
 
   getCashFlow: (params?: { startDate?: string; endDate?: string }) =>
-    api.get<{ operating: number; investing: number; financing: number; netChange: number }>("/accounting/reports/cash-flow", { params }),
+    api.get<{ operating: number; investing: number; financing: number; netChange: number }>("/accounting/reports/cash-flow/", { params }),
 };

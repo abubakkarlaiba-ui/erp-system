@@ -12,20 +12,20 @@ import type {
 
 export const companyApi = {
   getCompanies: async (params?: Record<string, unknown>) => {
-    const { data } = await api.get<PaginatedResponse<Company>>("/companies", {
+    const { data } = await api.get<PaginatedResponse<Company>>("/companies/companies/", {
       params,
     });
     return data;
   },
 
   getCompany: async (id: string) => {
-    const { data } = await api.get<ApiResponse<Company>>(`/companies/${id}`);
+    const { data } = await api.get<ApiResponse<Company>>(`/companies/companies/${id}/`);
     return data;
   },
 
   createCompany: async (companyData: Partial<Company>) => {
     const { data } = await api.post<ApiResponse<Company>>(
-      "/companies",
+      "/companies/companies/",
       companyData
     );
     return data;
@@ -33,27 +33,27 @@ export const companyApi = {
 
   updateCompany: async (id: string, companyData: Partial<Company>) => {
     const { data } = await api.put<ApiResponse<Company>>(
-      `/companies/${id}`,
+      `/companies/companies/${id}/`,
       companyData
     );
     return data;
   },
 
   deleteCompany: async (id: string) => {
-    const { data } = await api.delete<ApiResponse<null>>(`/companies/${id}`);
+    const { data } = await api.delete<ApiResponse<null>>(`/companies/companies/${id}/`);
     return data;
   },
 
   getBranches: async (companyId: string) => {
     const { data } = await api.get<PaginatedResponse<Branch>>(
-      `/companies/${companyId}/branches`
+      `/companies/companies/${companyId}/branches/`
     );
     return data;
   },
 
   createBranch: async (companyId: string, branchData: Partial<Branch>) => {
     const { data } = await api.post<ApiResponse<Branch>>(
-      `/companies/${companyId}/branches`,
+      `/companies/companies/${companyId}/branches/`,
       branchData
     );
     return data;
@@ -65,7 +65,7 @@ export const companyApi = {
     branchData: Partial<Branch>
   ) => {
     const { data } = await api.put<ApiResponse<Branch>>(
-      `/companies/${companyId}/branches/${id}`,
+      `/companies/companies/${companyId}/branches/${id}/`,
       branchData
     );
     return data;
@@ -73,14 +73,14 @@ export const companyApi = {
 
   deleteBranch: async (companyId: string, id: string) => {
     const { data } = await api.delete<ApiResponse<null>>(
-      `/companies/${companyId}/branches/${id}`
+      `/companies/companies/${companyId}/branches/${id}/`
     );
     return data;
   },
 
   getDepartments: async (companyId: string) => {
     const { data } = await api.get<PaginatedResponse<Department>>(
-      `/companies/${companyId}/departments`
+      `/companies/companies/${companyId}/departments/`
     );
     return data;
   },
@@ -90,7 +90,7 @@ export const companyApi = {
     departmentData: Partial<Department>
   ) => {
     const { data } = await api.post<ApiResponse<Department>>(
-      `/companies/${companyId}/departments`,
+      `/companies/companies/${companyId}/departments/`,
       departmentData
     );
     return data;
@@ -102,7 +102,7 @@ export const companyApi = {
     departmentData: Partial<Department>
   ) => {
     const { data } = await api.put<ApiResponse<Department>>(
-      `/companies/${companyId}/departments/${id}`,
+      `/companies/companies/${companyId}/departments/${id}/`,
       departmentData
     );
     return data;
@@ -110,14 +110,14 @@ export const companyApi = {
 
   deleteDepartment: async (companyId: string, id: string) => {
     const { data } = await api.delete<ApiResponse<null>>(
-      `/companies/${companyId}/departments/${id}`
+      `/companies/companies/${companyId}/departments/${id}/`
     );
     return data;
   },
 
   getDesignations: async (companyId: string) => {
     const { data } = await api.get<PaginatedResponse<Designation>>(
-      `/companies/${companyId}/designations`
+      `/companies/companies/${companyId}/designations/`
     );
     return data;
   },
@@ -127,7 +127,7 @@ export const companyApi = {
     designationData: Partial<Designation>
   ) => {
     const { data } = await api.post<ApiResponse<Designation>>(
-      `/companies/${companyId}/designations`,
+      `/companies/companies/${companyId}/designations/`,
       designationData
     );
     return data;
@@ -139,7 +139,7 @@ export const companyApi = {
     designationData: Partial<Designation>
   ) => {
     const { data } = await api.put<ApiResponse<Designation>>(
-      `/companies/${companyId}/designations/${id}`,
+      `/companies/companies/${companyId}/designations/${id}/`,
       designationData
     );
     return data;
@@ -147,21 +147,21 @@ export const companyApi = {
 
   deleteDesignation: async (companyId: string, id: string) => {
     const { data } = await api.delete<ApiResponse<null>>(
-      `/companies/${companyId}/designations/${id}`
+      `/companies/companies/${companyId}/designations/${id}/`
     );
     return data;
   },
 
   getFiscalYears: async (companyId: string) => {
     const { data } = await api.get<PaginatedResponse<FiscalYear>>(
-      `/companies/${companyId}/fiscal-years`
+      `/companies/companies/${companyId}/fiscal-years/`
     );
     return data;
   },
 
   getHolidays: async (companyId: string) => {
     const { data } = await api.get<PaginatedResponse<Holiday>>(
-      `/companies/${companyId}/holidays`
+      `/companies/companies/${companyId}/holidays/`
     );
     return data;
   },

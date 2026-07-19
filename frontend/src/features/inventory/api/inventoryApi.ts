@@ -114,65 +114,65 @@ export interface PaginationParams {
 
 export const inventoryApi = {
   getProducts: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<Product>>("/inventory/products", { params }),
+    api.get<PaginatedResponse<Product>>("/inventory/products/", { params }),
 
   getProduct: (id: string) =>
-    api.get<Product>(`/inventory/products/${id}`),
+    api.get<Product>(`/inventory/products/${id}/`),
 
   createProduct: (data: Omit<Product, "id" | "stock">) =>
-    api.post<Product>("/inventory/products", data),
+    api.post<Product>("/inventory/products/", data),
 
   updateProduct: (id: string, data: Partial<Product>) =>
-    api.put<Product>(`/inventory/products/${id}`, data),
+    api.put<Product>(`/inventory/products/${id}/`, data),
 
   deleteProduct: (id: string) =>
-    api.delete(`/inventory/products/${id}`),
+    api.delete(`/inventory/products/${id}/`),
 
   getCategories: () =>
-    api.get<Category[]>("/inventory/categories"),
+    api.get<Category[]>("/inventory/categories/"),
 
   createCategory: (data: Omit<Category, "id" | "productCount" | "children">) =>
-    api.post<Category>("/inventory/categories", data),
+    api.post<Category>("/inventory/categories/", data),
 
   updateCategory: (id: string, data: Partial<Category>) =>
-    api.put<Category>(`/inventory/categories/${id}`, data),
+    api.put<Category>(`/inventory/categories/${id}/`, data),
 
   deleteCategory: (id: string) =>
-    api.delete(`/inventory/categories/${id}`),
+    api.delete(`/inventory/categories/${id}/`),
 
   getBrands: () =>
-    api.get<Brand[]>("/inventory/brands"),
+    api.get<Brand[]>("/inventory/brands/"),
 
   createBrand: (data: Omit<Brand, "id">) =>
-    api.post<Brand>("/inventory/brands", data),
+    api.post<Brand>("/inventory/brands/", data),
 
   getWarehouses: () =>
-    api.get<Warehouse[]>("/inventory/warehouses"),
+    api.get<Warehouse[]>("/inventory/warehouses/"),
 
   createWarehouse: (data: Omit<Warehouse, "id" | "totalStock">) =>
-    api.post<Warehouse>("/inventory/warehouses", data),
+    api.post<Warehouse>("/inventory/warehouses/", data),
 
   updateWarehouse: (id: string, data: Partial<Warehouse>) =>
-    api.put<Warehouse>(`/inventory/warehouses/${id}`, data),
+    api.put<Warehouse>(`/inventory/warehouses/${id}/`, data),
 
   getStock: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<StockItem>>("/inventory/stock", { params }),
+    api.get<PaginatedResponse<StockItem>>("/inventory/stocks/", { params }),
 
   getStockMovements: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<StockMovement>>("/inventory/stock-movements", { params }),
+    api.get<PaginatedResponse<StockMovement>>("/inventory/stock-movements/", { params }),
 
   createStockTransfer: (data: { productId: string; fromWarehouseId: string; toWarehouseId: string; quantity: number; notes: string }) =>
-    api.post<StockMovement>("/inventory/stock-transfers", data),
+    api.post<StockMovement>("/inventory/stock-movements/", data),
 
   getAdjustments: (params?: PaginationParams) =>
-    api.get<PaginatedResponse<Adjustment>>("/inventory/adjustments", { params }),
+    api.get<PaginatedResponse<Adjustment>>("/inventory/adjustments/", { params }),
 
   createAdjustment: (data: { warehouseId: string; reason: string; items: { productId: string; quantityAfter: number }[] }) =>
-    api.post<Adjustment>("/inventory/adjustments", data),
+    api.post<Adjustment>("/inventory/adjustments/", data),
 
   approveAdjustment: (id: string) =>
-    api.post<Adjustment>(`/inventory/adjustments/${id}/approve`),
+    api.post<Adjustment>(`/inventory/adjustments/${id}/approve/`),
 
   getLowStockProducts: () =>
-    api.get<Product[]>("/inventory/products/low-stock"),
+    api.get<Product[]>("/inventory/products/"),
 };

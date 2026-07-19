@@ -83,13 +83,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       },
 
       refreshUser: async () => {
-        try {
-          const { api } = await import("@/lib/api");
-          const response = await api.get("/auth/profile/");
-          set({ user: response.data, isAuthenticated: true });
-        } catch {
-          get().logout();
-        }
+        const { api } = await import("@/lib/api");
+        const response = await api.get("/auth/profile/");
+        set({ user: response.data, isAuthenticated: true });
       },
     }),
     {

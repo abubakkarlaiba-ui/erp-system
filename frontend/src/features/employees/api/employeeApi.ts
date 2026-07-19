@@ -12,20 +12,20 @@ import type {
 
 export const employeeApi = {
   getEmployees: async (params?: Record<string, unknown>) => {
-    const { data } = await api.get<PaginatedResponse<Employee>>("/employees", {
+    const { data } = await api.get<PaginatedResponse<Employee>>("/employees/employees/", {
       params,
     });
     return data;
   },
 
   getEmployee: async (id: string) => {
-    const { data } = await api.get<ApiResponse<Employee>>(`/employees/${id}`);
+    const { data } = await api.get<ApiResponse<Employee>>(`/employees/employees/${id}/`);
     return data;
   },
 
   createEmployee: async (employeeData: Partial<Employee>) => {
     const { data } = await api.post<ApiResponse<Employee>>(
-      "/employees",
+      "/employees/employees/",
       employeeData
     );
     return data;
@@ -33,27 +33,27 @@ export const employeeApi = {
 
   updateEmployee: async (id: string, employeeData: Partial<Employee>) => {
     const { data } = await api.put<ApiResponse<Employee>>(
-      `/employees/${id}`,
+      `/employees/employees/${id}/`,
       employeeData
     );
     return data;
   },
 
   deleteEmployee: async (id: string) => {
-    const { data } = await api.delete<ApiResponse<null>>(`/employees/${id}`);
+    const { data } = await api.delete<ApiResponse<null>>(`/employees/employees/${id}/`);
     return data;
   },
 
   getEmployeeDocuments: async (id: string) => {
     const { data } = await api.get<PaginatedResponse<EmployeeDocument>>(
-      `/employees/${id}/documents`
+      `/employees/employees/${id}/documents/`
     );
     return data;
   },
 
   uploadDocument: async (id: string, documentData: FormData) => {
     const { data } = await api.post<ApiResponse<EmployeeDocument>>(
-      `/employees/${id}/documents`,
+      `/employees/employees/${id}/documents/`,
       documentData,
       {
         headers: {
@@ -66,28 +66,28 @@ export const employeeApi = {
 
   getEmployeeContracts: async (id: string) => {
     const { data } = await api.get<PaginatedResponse<EmployeeContract>>(
-      `/employees/${id}/contracts`
+      `/employees/employees/${id}/contracts/`
     );
     return data;
   },
 
   getEmployeeEducation: async (id: string) => {
     const { data } = await api.get<PaginatedResponse<EmployeeEducation>>(
-      `/employees/${id}/education`
+      `/employees/employees/${id}/education/`
     );
     return data;
   },
 
   getEmployeeSkills: async (id: string) => {
     const { data } = await api.get<PaginatedResponse<EmployeeSkill>>(
-      `/employees/${id}/skills`
+      `/employees/employees/${id}/skills/`
     );
     return data;
   },
 
   getEmployeeTimeline: async (id: string) => {
     const { data } = await api.get<PaginatedResponse<EmployeeTimeline>>(
-      `/employees/${id}/timeline`
+      `/employees/employees/${id}/timeline/`
     );
     return data;
   },

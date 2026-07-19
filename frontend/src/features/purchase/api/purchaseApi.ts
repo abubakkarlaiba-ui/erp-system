@@ -4,57 +4,57 @@ import { PaginatedResponse, PaginationParams, Supplier, PurchaseRequest, Purchas
 export const purchaseApi = {
   suppliers: {
     get: (params?: PaginationParams) =>
-      api.get<PaginatedResponse<Supplier>>('/purchase/suppliers', { params }),
+      api.get<PaginatedResponse<Supplier>>('/purchase/suppliers/', { params }),
     getById: (id: string) =>
-      api.get<Supplier>(`/purchase/suppliers/${id}`),
+      api.get<Supplier>(`/purchase/suppliers/${id}/`),
     create: (data: Partial<Supplier>) =>
-      api.post<Supplier>('/purchase/suppliers', data),
+      api.post<Supplier>('/purchase/suppliers/', data),
     update: (id: string, data: Partial<Supplier>) =>
-      api.put<Supplier>(`/purchase/suppliers/${id}`, data),
+      api.put<Supplier>(`/purchase/suppliers/${id}/`, data),
     delete: (id: string) =>
-      api.delete(`/purchase/suppliers/${id}`),
+      api.delete(`/purchase/suppliers/${id}/`),
   },
 
   requests: {
     get: (params?: PaginationParams) =>
-      api.get<PaginatedResponse<PurchaseRequest>>('/purchase/requests', { params }),
+      api.get<PaginatedResponse<PurchaseRequest>>('/purchase/purchase-requests/', { params }),
     create: (data: Partial<PurchaseRequest>) =>
-      api.post<PurchaseRequest>('/purchase/requests', data),
+      api.post<PurchaseRequest>('/purchase/purchase-requests/', data),
     approve: (id: string) =>
-      api.post<PurchaseRequest>(`/purchase/requests/${id}/approve`),
+      api.post<PurchaseRequest>(`/purchase/purchase-requests/${id}/approve/`),
   },
 
   orders: {
     get: (params?: PaginationParams) =>
-      api.get<PaginatedResponse<PurchaseOrder>>('/purchase/orders', { params }),
+      api.get<PaginatedResponse<PurchaseOrder>>('/purchase/purchase-orders/', { params }),
     getById: (id: string) =>
-      api.get<PurchaseOrder>(`/purchase/orders/${id}`),
+      api.get<PurchaseOrder>(`/purchase/purchase-orders/${id}/`),
     create: (data: Partial<PurchaseOrder>) =>
-      api.post<PurchaseOrder>('/purchase/orders', data),
+      api.post<PurchaseOrder>('/purchase/purchase-orders/', data),
     update: (id: string, data: Partial<PurchaseOrder>) =>
-      api.put<PurchaseOrder>(`/purchase/orders/${id}`, data),
+      api.put<PurchaseOrder>(`/purchase/purchase-orders/${id}/`, data),
     cancel: (id: string) =>
-      api.post<PurchaseOrder>(`/purchase/orders/${id}/cancel`),
+      api.post<PurchaseOrder>(`/purchase/purchase-orders/${id}/cancel/`),
   },
 
   receipts: {
     get: (params?: PaginationParams) =>
-      api.get<PaginatedResponse<GoodsReceipt>>('/purchase/receipts', { params }),
+      api.get<PaginatedResponse<GoodsReceipt>>('/purchase/goods-receipts/', { params }),
     create: (data: Partial<GoodsReceipt>) =>
-      api.post<GoodsReceipt>('/purchase/receipts', data),
+      api.post<GoodsReceipt>('/purchase/goods-receipts/', data),
   },
 
   bills: {
     get: (params?: PaginationParams) =>
-      api.get<PaginatedResponse<VendorBill>>('/purchase/bills', { params }),
+      api.get<PaginatedResponse<VendorBill>>('/purchase/vendor-bills/', { params }),
     create: (data: Partial<VendorBill>) =>
-      api.post<VendorBill>('/purchase/bills', data),
+      api.post<VendorBill>('/purchase/vendor-bills/', data),
   },
 
   returns: {
     get: (params?: PaginationParams) =>
-      api.get<PaginatedResponse<PurchaseReturn>>('/purchase/returns', { params }),
+      api.get<PaginatedResponse<PurchaseReturn>>('/purchase/purchase-returns/', { params }),
     create: (data: Partial<PurchaseReturn>) =>
-      api.post<PurchaseReturn>('/purchase/returns', data),
+      api.post<PurchaseReturn>('/purchase/purchase-returns/', data),
   },
 };
