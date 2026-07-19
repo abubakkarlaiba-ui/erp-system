@@ -88,6 +88,7 @@ const navSections: NavItem[] = [
       { label: "Customers", href: "/customers" },
       { label: "Leads", href: "/leads" },
       { label: "Quotations", href: "/quotations" },
+      { label: "New Order", href: "/sales-orders/new" },
       { label: "Sales Orders", href: "/sales-orders" },
     ],
   },

@@ -152,7 +152,7 @@ const attendanceData = [
 ];
 
 const quickActions = [
-  { label: "New Order", icon: ShoppingCart, href: "/sales-orders" },
+  { label: "New Order", icon: ShoppingCart, href: "/sales-orders/new" },
   { label: "Add Employee", icon: UserPlus, href: "/employees" },
   { label: "Create Invoice", icon: FilePlus, href: "/invoices" },
   { label: "View Reports", icon: BarChart3, href: "/reports" },
