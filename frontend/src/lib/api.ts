@@ -67,12 +67,15 @@ api.interceptors.response.use(
         : null
 
       if (!refreshToken) {
+        isRefreshing = false
         if (typeof window !== "undefined") {
           localStorage.removeItem("access_token")
           localStorage.removeItem("refresh_token")
-          window.location.href = "/login"
+          try {
+            const { useAuthStore } = await import("@/stores/authStore")
+            useAuthStore.getState().logout()
+          } catch {}
         }
-        isRefreshing = false
         return Promise.reject(error)
       }
 
@@ -82,8 +85,11 @@ api.interceptors.response.use(
           { refresh: refreshToken }
         )
 
-        const { access } = response.data
+        const { access, refresh } = response.data
         localStorage.setItem("access_token", access)
+        if (refresh) {
+          localStorage.setItem("refresh_token", refresh)
+        }
         processQueue(null, access)
 
         if (originalRequest.headers) {
@@ -92,9 +98,14 @@ api.interceptors.response.use(
         return api(originalRequest)
       } catch (refreshError) {
         processQueue(refreshError, null)
-        localStorage.removeItem("access_token")
-        localStorage.removeItem("refresh_token")
-        window.location.href = "/login"
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("access_token")
+          localStorage.removeItem("refresh_token")
+          try {
+            const { useAuthStore } = await import("@/stores/authStore")
+            useAuthStore.getState().logout()
+          } catch {}
+        }
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false
