@@ -736,3 +736,248 @@ export interface FilterParams {
   end_date?: string
   [key: string]: unknown
 }
+
+export interface PaginationParams {
+  page?: number
+  page_size?: number
+  search?: string
+  ordering?: string
+  [key: string]: unknown
+}
+
+export interface EmployeeDocument {
+  id: number
+  employee: number
+  employee_name?: string
+  title: string
+  document_type: string
+  file?: string
+  description?: string
+  issue_date?: string
+  expiry_date?: string
+  is_verified: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface EmployeeContract {
+  id: number
+  employee: number
+  employee_name?: string
+  contract_type: string
+  start_date: string
+  end_date?: string
+  salary: number
+  designation?: number
+  designation_name?: string
+  department?: number
+  department_name?: string
+  terms?: string
+  document?: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface EmployeeEducation {
+  id: number
+  employee: number
+  employee_name?: string
+  institution: string
+  degree: string
+  field_of_study?: string
+  start_date: string
+  end_date?: string
+  grade?: string
+  description?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface EmployeeSkill {
+  id: number
+  employee: number
+  employee_name?: string
+  skill: string
+  proficiency: string
+  years_of_experience?: number
+  created_at: string
+  updated_at: string
+}
+
+export interface EmployeeTimeline {
+  id: number
+  employee: number
+  event_type: string
+  title: string
+  description?: string
+  date: string
+  created_at: string
+  updated_at: string
+}
+
+export interface FiscalYear {
+  id: number
+  name: string
+  start_date: string
+  end_date: string
+  is_current: boolean
+  is_closed: boolean
+  company?: number
+  company_name?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Holiday {
+  id: number
+  name: string
+  date: string
+  description?: string
+  is_recurring: boolean
+  company?: number
+  company_name?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface SalesReturn {
+  id: number
+  sales_order: number
+  sales_order_reference?: string
+  customer: number
+  customer_name?: string
+  date: string
+  reason: string
+  total: number
+  status: string
+  items: SalesReturnItem[]
+  notes?: string
+  created_by?: number
+  created_by_name?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface SalesReturnItem {
+  id: number
+  sales_return: number
+  product: number
+  product_name?: string
+  quantity: number
+  unit_price: number
+  total: number
+  reason?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface PurchaseRequest {
+  id: number
+  reference?: string
+  department?: number
+  department_name?: string
+  requested_by?: number
+  requested_by_name?: string
+  date: string
+  status: string
+  notes?: string
+  items: PurchaseRequestItem[]
+  created_at: string
+  updated_at: string
+}
+
+export interface PurchaseRequestItem {
+  id: number
+  purchase_request: number
+  product: number
+  product_name?: string
+  description?: string
+  quantity: number
+  estimated_price: number
+  total: number
+  created_at: string
+  updated_at: string
+}
+
+export interface GoodsReceipt {
+  id: number
+  purchase_order: number
+  purchase_order_reference?: string
+  supplier: number
+  supplier_name?: string
+  reference?: string
+  date: string
+  received_by?: number
+  received_by_name?: string
+  status: string
+  notes?: string
+  items: GoodsReceiptItem[]
+  created_at: string
+  updated_at: string
+}
+
+export interface GoodsReceiptItem {
+  id: number
+  goods_receipt: number
+  product: number
+  product_name?: string
+  quantity_received: number
+  quantity_expected: number
+  condition?: string
+  notes?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface VendorBill {
+  id: number
+  supplier: number
+  supplier_name?: string
+  purchase_order?: number
+  reference?: string
+  date: string
+  due_date: string
+  subtotal: number
+  tax_total: number
+  total: number
+  amount_paid: number
+  balance_due?: number
+  status: string
+  notes?: string
+  created_by?: number
+  created_by_name?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface PurchaseReturn {
+  id: number
+  purchase_order: number
+  purchase_order_reference?: string
+  supplier: number
+  supplier_name?: string
+  date: string
+  reason: string
+  total: number
+  status: string
+  items: PurchaseReturnItem[]
+  notes?: string
+  created_by?: number
+  created_by_name?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface PurchaseReturnItem {
+  id: number
+  purchase_return: number
+  product: number
+  product_name?: string
+  quantity: number
+  unit_price: number
+  total: number
+  reason?: string
+  created_at: string
+  updated_at: string
+}
