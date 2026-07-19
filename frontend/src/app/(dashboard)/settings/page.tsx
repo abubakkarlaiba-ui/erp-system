@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Building2, Monitor, Shield, Save, Upload, Eye, EyeOff, Check, X, Globe, Clock, Palette, Key, Smartphone, History } from 'lucide-react';
+import { User, Building2, Monitor, Shield, Save, Eye, EyeOff, Check, X, Globe, Clock, Palette, Key, Smartphone, History } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import PageHeader from '@/components/layout/PageHeader';
+import { FileUpload } from '@/components/ui/file-upload';
+import { useAuthStore } from '@/stores/authStore';
+import api from '@/lib/api';
 import { cn } from '@/lib/utils';
 
 const profileSchema = z.object({
@@ -69,10 +72,16 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [showPassword, setShowPassword] = useState(false);
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const { user, setUser } = useAuthStore();
 
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { name: 'John Doe', email: 'john@example.com', phone: '+1 234 567 890', avatar: '' },
+    defaultValues: {
+      name: user ? `${user.first_name} ${user.last_name}` : '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      avatar: user?.avatar || '',
+    },
   });
 
   const companyForm = useForm<CompanyFormData>({
@@ -91,8 +100,41 @@ export default function SettingsPage() {
   });
 
   const saveProfileMutation = useMutation({
-    mutationFn: (data: ProfileFormData) => new Promise((resolve) => setTimeout(resolve, 500)),
-    onSuccess: () => toast.success('Profile updated'),
+    mutationFn: async (data: ProfileFormData) => {
+      const [firstName, ...lastParts] = data.name.split(' ');
+      const res = await api.patch('/auth/profile/', {
+        first_name: firstName,
+        last_name: lastParts.join(' '),
+        phone: data.phone,
+      });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      const updated = data.data || data;
+      if (updated) setUser(updated);
+      toast.success('Profile updated');
+    },
+    onError: () => toast.error('Failed to update profile'),
+  });
+
+  const uploadAvatarMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      const res = await api.patch('/auth/profile/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      const updated = data.data || data;
+      if (updated) {
+        setUser(updated);
+        profileForm.setValue('avatar', updated.avatar || '');
+      }
+      toast.success('Avatar uploaded');
+    },
+    onError: () => toast.error('Failed to upload avatar'),
   });
 
   const saveCompanyMutation = useMutation({
@@ -109,6 +151,12 @@ export default function SettingsPage() {
     mutationFn: (data: PasswordFormData) => new Promise((resolve) => setTimeout(resolve, 500)),
     onSuccess: () => { toast.success('Password changed'); passwordForm.reset(); },
   });
+
+  const handleAvatarUpload = useCallback(async (file: File): Promise<string> => {
+    const result = await uploadAvatarMutation.mutateAsync(file);
+    const updated = result.data || result;
+    return updated?.avatar || '';
+  }, [uploadAvatarMutation]);
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
@@ -139,14 +187,12 @@ export default function SettingsPage() {
               <motion.div key="profile" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="rounded-lg border bg-card p-6">
                 <h3 className="text-lg font-semibold mb-4">Profile Settings</h3>
                 <form onSubmit={profileForm.handleSubmit((d) => saveProfileMutation.mutate(d))} className="space-y-4">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center">
-                      <User className="h-10 w-10 text-muted-foreground" />
-                    </div>
-                    <button type="button" className="rounded-md border px-3 py-2 text-sm hover:bg-muted flex items-center gap-2">
-                      <Upload className="h-4 w-4" /> Upload Photo
-                    </button>
-                  </div>
+                  <FileUpload
+                    currentImage={user?.avatar || profileForm.watch('avatar')}
+                    onUpload={handleAvatarUpload}
+                    shape="circle"
+                    size="lg"
+                  />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium">Full Name</label>
