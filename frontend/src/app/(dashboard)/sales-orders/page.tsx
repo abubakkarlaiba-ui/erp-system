@@ -82,9 +82,9 @@ export default function SalesOrdersPage() {
 
   const orders = ordersData?.data?.results ?? [];
   const total = ordersData?.data?.count ?? 0;
-  const pendingCount = orders.filter((o) => o.status === 'pending').length;
-  const processingCount = orders.filter((o) => o.status === 'processing').length;
-  const completedCount = orders.filter((o) => o.status === 'completed').length;
+  const pendingCount = orders.filter((o: any) => o.status === 'pending').length;
+  const processingCount = orders.filter((o: any) => o.status === 'processing').length;
+  const completedCount = orders.filter((o: any) => o.status === 'completed').length;
 
   const openCreate = () => {
     setEditingOrder(null);
@@ -183,20 +183,54 @@ export default function SalesOrdersPage() {
         </div>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={orders}
-        isLoading={isLoading}
-        searchValue={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Search orders..."
-        filters={
+      <div className="rounded-xl border bg-card">
+        <div className="flex items-center gap-2 p-4 border-b">
+          <div className="flex items-center gap-2 flex-1">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search orders..." className="flex-1 bg-transparent text-sm outline-none" />
+          </div>
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
             <option value="all">All Status</option>
             {STATUS_PIPELINE.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
           </select>
-        }
-      />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-muted-foreground">
+                <th className="p-4 font-medium">Order #</th>
+                <th className="p-4 font-medium">Customer</th>
+                <th className="p-4 font-medium">Date</th>
+                <th className="p-4 font-medium text-right">Amount</th>
+                <th className="p-4 font-medium">Status</th>
+                <th className="p-4 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order: any) => (
+                <tr key={order.id} className="border-b last:border-0 hover:bg-muted/50">
+                  <td className="p-4 font-medium">{order.reference ?? String(order.id).slice(0, 8)}</td>
+                  <td className="p-4">{order.customer_name ?? order.customer ?? '-'}</td>
+                  <td className="p-4 text-muted-foreground">{formatDate(order.date ?? order.created_at ?? new Date())}</td>
+                  <td className="p-4 text-right">{formatCurrency(order.total ?? 0)}</td>
+                  <td className="p-4">{statusBadge(order.status)}</td>
+                  <td className="p-4 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      {order.status === 'pending' && <button onClick={() => openEdit(order)} className="rounded-md p-1.5 hover:bg-muted"><Pencil className="h-4 w-4" /></button>}
+                      {(order.status === 'pending' || order.status === 'processing') && (
+                        <button onClick={() => cancelMutation.mutate(order.id)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><XCircle className="h-4 w-4" /></button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {orders.length === 0 && (
+                <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No orders found</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <AnimatePresence>
         {dialogOpen && (
