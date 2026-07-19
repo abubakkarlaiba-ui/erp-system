@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, X, ShoppingCart, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, X, ShoppingCart, Loader2, AlertCircle } from 'lucide-react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,13 +11,14 @@ import { toast } from 'sonner';
 import PageHeader from '@/components/layout/PageHeader';
 import { salesApi } from '@/features/sales/api/salesApi';
 import { formatCurrency } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 import Link from 'next/link';
 
 const lineItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
-  quantity: z.number().min(1, 'Quantity must be at least 1'),
-  unitPrice: z.number().min(0, 'Price must be positive'),
-  tax: z.number().min(0).default(0),
+  quantity: z.coerce.number().min(1, 'Quantity must be at least 1'),
+  unitPrice: z.coerce.number().min(0, 'Price must be positive'),
+  tax: z.coerce.number().min(0).default(0),
 });
 
 const orderSchema = z.object({
@@ -28,7 +28,7 @@ const orderSchema = z.object({
   expectedDelivery: z.string().optional(),
   notes: z.string().optional(),
   items: z.array(lineItemSchema).min(1, 'At least one item is required'),
-  discount: z.number().min(0).default(0),
+  discount: z.coerce.number().min(0).default(0),
 });
 
 type OrderFormData = z.infer<typeof orderSchema>;
@@ -36,7 +36,7 @@ type OrderFormData = z.infer<typeof orderSchema>;
 export default function NewSalesOrderPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [submitted, setSubmitted] = useState(false);
+  const user = useAuthStore((s) => s.user);
 
   const form = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
@@ -54,18 +54,49 @@ export default function NewSalesOrderPage() {
   const { fields, append, remove } = useFieldArray({ control: form.control, name: 'items' });
 
   const createMutation = useMutation({
-    mutationFn: (data: OrderFormData) => salesApi.orders.create(data),
+    mutationFn: (data: Record<string, any>) => salesApi.orders.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sales-orders'] });
       toast.success('Order created successfully');
       router.push('/sales-orders');
     },
-    onError: () => toast.error('Failed to create order'),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.detail || err?.response?.data?.message || 'Failed to create order';
+      toast.error(msg);
+    },
   });
 
   const onSubmit = (data: OrderFormData) => {
-    setSubmitted(true);
-    createMutation.mutate(data);
+    const items = data.items.map((item) => ({
+      description: item.description,
+      quantity: item.quantity,
+      unit_price: item.unitPrice,
+      tax_rate: item.tax,
+      total: +(item.quantity * item.unitPrice + item.quantity * item.unitPrice * (item.tax / 100)).toFixed(2),
+    }));
+
+    const subtotal = items.reduce((s, i) => s + i.quantity * i.unit_price, 0);
+    const taxAmount = items.reduce((s, i) => s + i.quantity * i.unit_price * (i.tax_rate / 100), 0);
+
+    const companyId = user?.company && typeof user.company === 'object' ? (user.company as any).id : null;
+
+    const payload: Record<string, any> = {
+      customer: data.customerId,
+      created_by: user?.id,
+      ...(companyId ? { company: companyId } : {}),
+      date: data.orderDate,
+      required_date: data.expectedDelivery || null,
+      shipping_address: null,
+      notes: data.notes || null,
+      status: 'draft',
+      subtotal: +subtotal.toFixed(2),
+      tax_amount: +taxAmount.toFixed(2),
+      discount_amount: data.discount,
+      total: +(subtotal + taxAmount - data.discount).toFixed(2),
+      items,
+    };
+
+    createMutation.mutate(payload);
   };
 
   const watchedItems = form.watch('items');
@@ -73,6 +104,8 @@ export default function NewSalesOrderPage() {
   const taxTotal = watchedItems?.reduce((sum, item) => sum + (item.quantity * item.unitPrice * (item.tax / 100)), 0) ?? 0;
   const discount = form.watch('discount') ?? 0;
   const grandTotal = subtotal + taxTotal - discount;
+
+  const hasErrors = Object.keys(form.formState.errors).length > 0;
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
@@ -88,8 +121,16 @@ export default function NewSalesOrderPage() {
 
       <PageHeader title="New Sales Order" />
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Customer & Order Info */}
+      {hasErrors && (
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 mb-6">
+          <div className="flex items-center gap-2 text-sm text-destructive font-medium">
+            <AlertCircle className="h-4 w-4" />
+            Please fix the validation errors below before submitting.
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={form.handleSubmit(onSubmit, () => toast.error('Please fill in all required fields'))} className="space-y-6">
         <div className="rounded-xl border bg-card p-6">
           <h2 className="text-base font-semibold mb-4">Order Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -134,7 +175,6 @@ export default function NewSalesOrderPage() {
           </div>
         </div>
 
-        {/* Line Items */}
         <div className="rounded-xl border bg-card p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold">Line Items</h2>
@@ -148,7 +188,7 @@ export default function NewSalesOrderPage() {
             </button>
           </div>
 
-          {form.formState.errors.items && (
+          {form.formState.errors.items?.message && (
             <p className="text-xs text-destructive mb-3">{form.formState.errors.items.message}</p>
           )}
 
@@ -156,7 +196,7 @@ export default function NewSalesOrderPage() {
             {fields.map((field, index) => (
               <div key={field.id} className="grid grid-cols-12 gap-2 items-end">
                 <div className="col-span-5">
-                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Description</label>}
+                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Description *</label>}
                   <input
                     {...form.register(`items.${index}.description`)}
                     placeholder="Item description"
@@ -164,24 +204,24 @@ export default function NewSalesOrderPage() {
                   />
                   {form.formState.errors.items?.[index]?.description && (
                     <p className="text-xs text-destructive mt-1">
-                      {form.formState.errors.items[index]?.description?.message}
+                      {form.formState.errors.items?.[index]?.description?.message}
                     </p>
                   )}
                 </div>
                 <div className="col-span-2">
-                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Quantity</label>}
+                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Qty *</label>}
                   <input
-                    {...form.register(`items.${index}.quantity`, { valueAsNumber: true })}
+                    {...form.register(`items.${index}.quantity`)}
                     type="number"
                     min="1"
-                    placeholder="Qty"
+                    placeholder="1"
                     className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                   />
                 </div>
                 <div className="col-span-2">
-                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Unit Price</label>}
+                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Price *</label>}
                   <input
-                    {...form.register(`items.${index}.unitPrice`, { valueAsNumber: true })}
+                    {...form.register(`items.${index}.unitPrice`)}
                     type="number"
                     min="0"
                     step="0.01"
@@ -192,7 +232,7 @@ export default function NewSalesOrderPage() {
                 <div className="col-span-2">
                   {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Tax %</label>}
                   <input
-                    {...form.register(`items.${index}.tax`, { valueAsNumber: true })}
+                    {...form.register(`items.${index}.tax`)}
                     type="number"
                     min="0"
                     step="0.01"
@@ -217,14 +257,13 @@ export default function NewSalesOrderPage() {
           </div>
         </div>
 
-        {/* Totals */}
         <div className="rounded-xl border bg-card p-6">
           <h2 className="text-base font-semibold mb-4">Order Summary</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="text-sm font-medium">Discount</label>
               <input
-                {...form.register('discount', { valueAsNumber: true })}
+                {...form.register('discount')}
                 type="number"
                 min="0"
                 step="0.01"
@@ -253,7 +292,6 @@ export default function NewSalesOrderPage() {
           </div>
         </div>
 
-        {/* Notes */}
         <div className="rounded-xl border bg-card p-6">
           <h2 className="text-base font-semibold mb-4">Notes</h2>
           <textarea
@@ -264,7 +302,6 @@ export default function NewSalesOrderPage() {
           />
         </div>
 
-        {/* Actions */}
         <div className="flex justify-end gap-3 pb-8">
           <Link
             href="/sales-orders"
