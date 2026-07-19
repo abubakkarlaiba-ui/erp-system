@@ -3,23 +3,21 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, X, Eye, Package, Clock, CheckCircle2, AlertCircle, Warehouse } from 'lucide-react';
+import { Plus, Search, X, Eye, Package, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import PageHeader from '@/components/layout/PageHeader';
-import DataTable from '@/components/layout/DataTable';
 import StatsCard from '@/components/shared/StatsCard';
 import { purchaseApi } from '@/features/purchase/api/purchaseApi';
-import { formatDate, formatCurrency } from '@/lib/utils';
-import type { GoodsReceipt } from '@/types';
+import { formatDate } from '@/lib/utils';
 
 const receiptItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
-  orderedQuantity: z.number().min(0),
-  receivedQuantity: z.number().min(0, 'Received quantity must be at least 0'),
-  unitPrice: z.number().min(0),
+  orderedQuantity: z.coerce.number().min(0),
+  receivedQuantity: z.coerce.number().min(0, 'Received quantity must be at least 0'),
+  unitPrice: z.coerce.number().min(0),
   batchNumber: z.string().optional(),
   expiryDate: z.string().optional(),
 });
@@ -41,9 +39,9 @@ export default function GoodsReceiptPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [viewingReceipt, setViewingReceipt] = useState<GoodsReceipt | null>(null);
+  const [viewingReceipt, setViewingReceipt] = useState<any>(null);
 
-  const { data: receiptsData, isLoading } = useQuery({
+  const { data: receiptsData } = useQuery({
     queryKey: ['goods-receipts', search, statusFilter],
     queryFn: () => purchaseApi.receipts.get({ search, status: statusFilter !== 'all' ? statusFilter : undefined, limit: 50 }),
   });
@@ -64,20 +62,15 @@ export default function GoodsReceiptPage() {
 
   const createMutation = useMutation({
     mutationFn: (data: ReceiptFormData) => purchaseApi.receipts.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['goods-receipts'] });
-      toast.success('Goods receipt created');
-      setDialogOpen(false);
-      form.reset();
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['goods-receipts'] }); toast.success('Goods receipt created'); setDialogOpen(false); form.reset(); },
     onError: () => toast.error('Failed to create goods receipt'),
   });
 
   const receipts = receiptsData?.data?.results ?? [];
   const total = receiptsData?.data?.count ?? 0;
-  const pendingCount = receipts.filter((r) => r.status === 'pending').length;
-  const completedCount = receipts.filter((r) => r.status === 'completed').length;
-  const partialCount = receipts.filter((r) => r.status === 'partial').length;
+  const pendingCount = receipts.filter((r: any) => r.status === 'pending').length;
+  const completedCount = receipts.filter((r: any) => r.status === 'completed').length;
+  const partialCount = receipts.filter((r: any) => r.status === 'partial').length;
 
   const openCreate = () => {
     form.reset({
@@ -91,41 +84,14 @@ export default function GoodsReceiptPage() {
     setDialogOpen(true);
   };
 
-  const openView = (receipt: GoodsReceipt) => {
-    setViewingReceipt(receipt);
-    setViewDialogOpen(true);
-  };
+  const openView = (receipt: any) => { setViewingReceipt(receipt); setViewDialogOpen(true); };
 
-  const onSubmit = (data: ReceiptFormData) => {
-    createMutation.mutate(data);
-  };
+  const onSubmit = (data: ReceiptFormData) => { createMutation.mutate(data); };
 
   const statusBadge = (status: string) => {
-    const styles: Record<string, string> = {
-      pending: 'bg-amber-100 text-amber-700',
-      completed: 'bg-emerald-100 text-emerald-700',
-      partial: 'bg-purple-100 text-purple-700',
-      rejected: 'bg-red-100 text-red-700',
-    };
+    const styles: Record<string, string> = { pending: 'bg-amber-100 text-amber-700', completed: 'bg-emerald-100 text-emerald-700', partial: 'bg-purple-100 text-purple-700', rejected: 'bg-red-100 text-red-700' };
     return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] ?? 'bg-gray-100 text-gray-700'}`}>{status}</span>;
   };
-
-  const columns = [
-    { key: 'reference', header: 'Receipt #', render: (r: GoodsReceipt) => <span className="font-medium">{r.reference ?? r.id.slice(0, 8)}</span> },
-    { key: 'po', header: 'PO', render: (r: GoodsReceipt) => r.purchaseOrderReference ?? r.purchaseOrderId?.slice(0, 8) ?? '-' },
-    { key: 'warehouse', header: 'Warehouse', render: (r: GoodsReceipt) => r.warehouseName ?? '-' },
-    { key: 'date', header: 'Date', render: (r: GoodsReceipt) => formatDate(r.receivedDate ?? r.createdAt) },
-    { key: 'status', header: 'Status', render: (r: GoodsReceipt) => statusBadge(r.status) },
-    {
-      key: 'actions',
-      header: '',
-      render: (r: GoodsReceipt) => (
-        <div className="flex items-center gap-1">
-          <button onClick={() => openView(r)} className="rounded-md p-1.5 hover:bg-muted"><Eye className="h-4 w-4" /></button>
-        </div>
-      ),
-    },
-  ];
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
@@ -138,22 +104,49 @@ export default function GoodsReceiptPage() {
         <StatsCard title="Partial" value={partialCount} icon={AlertCircle} />
       </div>
 
-      <DataTable
-        columns={columns}
-        data={receipts}
-        isLoading={isLoading}
-        searchValue={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Search receipts..."
-        filters={
+      <div className="rounded-xl border bg-card">
+        <div className="flex items-center gap-2 p-4 border-b">
+          <div className="flex items-center gap-2 flex-1">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search receipts..." className="flex-1 bg-transparent text-sm outline-none" />
+          </div>
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
             <option value="completed">Completed</option>
             <option value="partial">Partial</option>
           </select>
-        }
-      />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-muted-foreground">
+                <th className="p-4 font-medium">Receipt #</th>
+                <th className="p-4 font-medium">PO</th>
+                <th className="p-4 font-medium">Warehouse</th>
+                <th className="p-4 font-medium">Date</th>
+                <th className="p-4 font-medium">Status</th>
+                <th className="p-4 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {receipts.map((r: any) => (
+                <tr key={r.id} className="border-b last:border-0 hover:bg-muted/50">
+                  <td className="p-4 font-medium">{r.reference ?? r.order_number ?? String(r.id).slice(0, 8)}</td>
+                  <td className="p-4">{r.purchase_order_reference ?? r.purchaseOrderReference ?? r.purchase_order?.slice(0, 8) ?? '-'}</td>
+                  <td className="p-4">{r.warehouse_name ?? r.warehouseName ?? '-'}</td>
+                  <td className="p-4 text-muted-foreground">{formatDate(r.received_date ?? r.receivedDate ?? r.created_at ?? r.createdAt)}</td>
+                  <td className="p-4">{statusBadge(r.status)}</td>
+                  <td className="p-4 text-right">
+                    <button onClick={() => openView(r)} className="rounded-md p-1.5 hover:bg-muted"><Eye className="h-4 w-4" /></button>
+                  </td>
+                </tr>
+              ))}
+              {receipts.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No receipts found</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <AnimatePresence>
         {dialogOpen && (
@@ -172,7 +165,7 @@ export default function GoodsReceiptPage() {
                   </div>
                   <div>
                     <label className="text-sm font-medium">Warehouse ID</label>
-                    <input {...form.register('warehouseId')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="Warehouse ID" />
+                    <input {...form.register('warehouseId')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
                     {form.formState.errors.warehouseId && <p className="text-xs text-destructive mt-1">{form.formState.errors.warehouseId.message}</p>}
                   </div>
                 </div>
@@ -186,7 +179,6 @@ export default function GoodsReceiptPage() {
                     <input {...form.register('reference')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
                   </div>
                 </div>
-
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-sm font-medium">Items</label>
@@ -202,17 +194,17 @@ export default function GoodsReceiptPage() {
                           </div>
                           <div>
                             <label className="text-xs text-muted-foreground">Ordered</label>
-                            <input {...form.register(`items.${index}.orderedQuantity`, { valueAsNumber: true })} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <input {...form.register(`items.${index}.orderedQuantity`)} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
                           </div>
                           <div>
                             <label className="text-xs text-muted-foreground">Received</label>
-                            <input {...form.register(`items.${index}.receivedQuantity`, { valueAsNumber: true })} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <input {...form.register(`items.${index}.receivedQuantity`)} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
                           </div>
                         </div>
                         <div className="grid grid-cols-4 gap-2 items-end">
                           <div>
                             <label className="text-xs text-muted-foreground">Unit Price</label>
-                            <input {...form.register(`items.${index}.unitPrice`, { valueAsNumber: true })} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <input {...form.register(`items.${index}.unitPrice`)} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
                           </div>
                           <div>
                             <label className="text-xs text-muted-foreground">Batch #</label>
@@ -222,25 +214,19 @@ export default function GoodsReceiptPage() {
                             <label className="text-xs text-muted-foreground">Expiry Date</label>
                             <input {...form.register(`items.${index}.expiryDate`)} type="date" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
                           </div>
-                          <div>
-                            {fields.length > 1 && <button type="button" onClick={() => remove(index)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><X className="h-4 w-4" /></button>}
-                          </div>
+                          <div>{fields.length > 1 && <button type="button" onClick={() => remove(index)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><X className="h-4 w-4" /></button>}</div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-
                 <div>
                   <label className="text-sm font-medium">Notes</label>
                   <textarea {...form.register('notes')} rows={2} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
                 </div>
-
                 <div className="flex justify-end gap-3 pt-2">
                   <button type="button" onClick={() => setDialogOpen(false)} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Cancel</button>
-                  <button type="submit" disabled={createMutation.isPending} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                    Create
-                  </button>
+                  <button type="submit" disabled={createMutation.isPending} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">Create</button>
                 </div>
               </form>
             </motion.div>
@@ -253,25 +239,14 @@ export default function GoodsReceiptPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg mx-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Receipt {viewingReceipt.reference ?? viewingReceipt.id.slice(0, 8)}</h2>
+                <h2 className="text-lg font-semibold">Receipt {viewingReceipt.reference ?? viewingReceipt.id?.slice(0, 8)}</h2>
                 <button onClick={() => setViewDialogOpen(false)} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>
               </div>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between"><span className="text-muted-foreground">Purchase Order</span><span>{viewingReceipt.purchaseOrderReference ?? '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Warehouse</span><span>{viewingReceipt.warehouseName ?? '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span>{formatDate(viewingReceipt.receivedDate ?? viewingReceipt.createdAt)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Purchase Order</span><span>{viewingReceipt.purchase_order_reference ?? viewingReceipt.purchaseOrderReference ?? '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Warehouse</span><span>{viewingReceipt.warehouse_name ?? viewingReceipt.warehouseName ?? '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span>{formatDate(viewingReceipt.received_date ?? viewingReceipt.receivedDate ?? viewingReceipt.created_at)}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Status</span>{statusBadge(viewingReceipt.status)}</div>
-                {viewingReceipt.items && viewingReceipt.items.length > 0 && (
-                  <div className="border-t pt-3">
-                    <h4 className="font-medium mb-2">Items</h4>
-                    {viewingReceipt.items.map((item: any, i: number) => (
-                      <div key={i} className="flex justify-between py-1 border-b last:border-0">
-                        <span>{item.description}</span>
-                        <span>{item.receivedQuantity ?? 0} received</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
               <div className="flex justify-end mt-6">
                 <button onClick={() => setViewDialogOpen(false)} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Close</button>

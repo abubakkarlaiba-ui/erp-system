@@ -9,17 +9,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import PageHeader from '@/components/layout/PageHeader';
-import DataTable from '@/components/layout/DataTable';
 import StatsCard from '@/components/shared/StatsCard';
 import { purchaseApi } from '@/features/purchase/api/purchaseApi';
 import { formatDate, formatCurrency } from '@/lib/utils';
-import type { PurchaseOrder } from '@/types';
 
 const lineItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
-  quantity: z.number().min(1, 'Quantity must be at least 1'),
-  unitPrice: z.number().min(0, 'Price must be positive'),
-  tax: z.number().min(0).default(0),
+  quantity: z.coerce.number().min(1, 'Quantity must be at least 1'),
+  unitPrice: z.coerce.number().min(0, 'Price must be positive'),
+  tax: z.coerce.number().min(0).default(0),
 });
 
 const poSchema = z.object({
@@ -29,7 +27,7 @@ const poSchema = z.object({
   expectedDelivery: z.string().optional(),
   notes: z.string().optional(),
   items: z.array(lineItemSchema).min(1, 'At least one item is required'),
-  discount: z.number().min(0).default(0),
+  discount: z.coerce.number().min(0).default(0),
 });
 
 type POFormData = z.infer<typeof poSchema>;
@@ -39,9 +37,9 @@ export default function PurchaseOrdersPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingPO, setEditingPO] = useState<PurchaseOrder | null>(null);
+  const [editingPO, setEditingPO] = useState<any>(null);
 
-  const { data: poData, isLoading } = useQuery({
+  const { data: poData } = useQuery({
     queryKey: ['purchase-orders', search, statusFilter],
     queryFn: () => purchaseApi.orders.get({ search, status: statusFilter !== 'all' ? statusFilter : undefined, limit: 50 }),
   });
@@ -73,9 +71,9 @@ export default function PurchaseOrdersPage() {
 
   const purchaseOrders = poData?.data?.results ?? [];
   const total = poData?.data?.count ?? 0;
-  const pendingCount = purchaseOrders.filter((o) => o.status === 'pending').length;
-  const receivedCount = purchaseOrders.filter((o) => o.status === 'received').length;
-  const cancelledCount = purchaseOrders.filter((o) => o.status === 'cancelled').length;
+  const pendingCount = purchaseOrders.filter((o: any) => o.status === 'pending').length;
+  const receivedCount = purchaseOrders.filter((o: any) => o.status === 'received').length;
+  const cancelledCount = purchaseOrders.filter((o: any) => o.status === 'cancelled').length;
 
   const openCreate = () => {
     setEditingPO(null);
@@ -83,15 +81,15 @@ export default function PurchaseOrdersPage() {
     setDialogOpen(true);
   };
 
-  const openEdit = (po: PurchaseOrder) => {
+  const openEdit = (po: any) => {
     setEditingPO(po);
     form.reset({
-      supplierId: po.supplierId ?? '',
+      supplierId: po.supplierId ?? po.supplier ?? '',
       reference: po.reference ?? '',
-      orderDate: po.orderDate ?? '',
-      expectedDelivery: po.expectedDelivery ?? '',
+      orderDate: po.orderDate ?? po.date ?? '',
+      expectedDelivery: po.expectedDelivery ?? po.required_date ?? '',
       notes: po.notes ?? '',
-      items: po.items?.length ? po.items : [{ description: '', quantity: 1, unitPrice: 0, tax: 0 }],
+      items: po.items?.length ? po.items.map((i: any) => ({ description: i.description, quantity: i.quantity, unitPrice: i.unit_price ?? i.unitPrice, tax: i.tax_rate ?? i.tax ?? 0 })) : [{ description: '', quantity: 1, unitPrice: 0, tax: 0 }],
       discount: po.discount ?? 0,
     });
     setDialogOpen(true);
@@ -106,35 +104,9 @@ export default function PurchaseOrdersPage() {
   };
 
   const statusBadge = (status: string) => {
-    const styles: Record<string, string> = {
-      pending: 'bg-amber-100 text-amber-700',
-      confirmed: 'bg-blue-100 text-blue-700',
-      partial: 'bg-purple-100 text-purple-700',
-      received: 'bg-emerald-100 text-emerald-700',
-      cancelled: 'bg-red-100 text-red-700',
-    };
+    const styles: Record<string, string> = { pending: 'bg-amber-100 text-amber-700', confirmed: 'bg-blue-100 text-blue-700', partial: 'bg-purple-100 text-purple-700', received: 'bg-emerald-100 text-emerald-700', cancelled: 'bg-red-100 text-red-700' };
     return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] ?? 'bg-gray-100 text-gray-700'}`}>{status}</span>;
   };
-
-  const columns = [
-    { key: 'reference', header: 'PO #', render: (o: PurchaseOrder) => <span className="font-medium">{o.reference ?? o.id.slice(0, 8)}</span> },
-    { key: 'supplier', header: 'Supplier', render: (o: PurchaseOrder) => o.supplierName ?? '-' },
-    { key: 'date', header: 'Date', render: (o: PurchaseOrder) => formatDate(o.orderDate ?? o.createdAt) },
-    { key: 'amount', header: 'Amount', render: (o: PurchaseOrder) => formatCurrency(o.total ?? 0) },
-    { key: 'status', header: 'Status', render: (o: PurchaseOrder) => statusBadge(o.status) },
-    {
-      key: 'actions',
-      header: '',
-      render: (o: PurchaseOrder) => (
-        <div className="flex items-center gap-1">
-          {(o.status === 'pending' || o.status === 'confirmed') && <button onClick={() => openEdit(o)} className="rounded-md p-1.5 hover:bg-muted"><Pencil className="h-4 w-4" /></button>}
-          {(o.status === 'pending' || o.status === 'confirmed') && (
-            <button onClick={() => cancelMutation.mutate(o.id)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><XCircle className="h-4 w-4" /></button>
-          )}
-        </div>
-      ),
-    },
-  ];
 
   const watchedItems = form.watch('items');
   const subtotal = watchedItems?.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0) ?? 0;
@@ -153,24 +125,53 @@ export default function PurchaseOrdersPage() {
         <StatsCard title="Cancelled" value={cancelledCount} icon={Ban} />
       </div>
 
-      <DataTable
-        columns={columns}
-        data={purchaseOrders}
-        isLoading={isLoading}
-        searchValue={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Search purchase orders..."
-        filters={
+      <div className="rounded-xl border bg-card">
+        <div className="flex items-center gap-2 p-4 border-b">
+          <div className="flex items-center gap-2 flex-1">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search purchase orders..." className="flex-1 bg-transparent text-sm outline-none" />
+          </div>
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
-            <option value="partial">Partial</option>
             <option value="received">Received</option>
             <option value="cancelled">Cancelled</option>
           </select>
-        }
-      />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-muted-foreground">
+                <th className="p-4 font-medium">PO #</th>
+                <th className="p-4 font-medium">Supplier</th>
+                <th className="p-4 font-medium">Date</th>
+                <th className="p-4 font-medium text-right">Amount</th>
+                <th className="p-4 font-medium">Status</th>
+                <th className="p-4 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {purchaseOrders.map((o: any) => (
+                <tr key={o.id} className="border-b last:border-0 hover:bg-muted/50">
+                  <td className="p-4 font-medium">{o.order_number ?? o.reference ?? String(o.id).slice(0, 8)}</td>
+                  <td className="p-4">{o.supplier_name ?? o.supplierName ?? '-'}</td>
+                  <td className="p-4 text-muted-foreground">{formatDate(o.date ?? o.created_at ?? o.createdAt)}</td>
+                  <td className="p-4 text-right">{formatCurrency(o.total ?? 0)}</td>
+                  <td className="p-4">{statusBadge(o.status)}</td>
+                  <td className="p-4 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      {(o.status === 'pending' || o.status === 'confirmed') && <button onClick={() => openEdit(o)} className="rounded-md p-1.5 hover:bg-muted"><Pencil className="h-4 w-4" /></button>}
+                      {(o.status === 'pending' || o.status === 'confirmed') && <button onClick={() => cancelMutation.mutate(o.id)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><XCircle className="h-4 w-4" /></button>}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {purchaseOrders.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No purchase orders found</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <AnimatePresence>
         {dialogOpen && (
@@ -202,7 +203,6 @@ export default function PurchaseOrdersPage() {
                     <input {...form.register('expectedDelivery')} type="date" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
                   </div>
                 </div>
-
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-sm font-medium">Line Items</label>
@@ -211,38 +211,25 @@ export default function PurchaseOrdersPage() {
                   <div className="space-y-3">
                     {fields.map((field, index) => (
                       <div key={field.id} className="grid grid-cols-12 gap-2 items-end">
-                        <div className="col-span-5">
-                          <input {...form.register(`items.${index}.description`)} placeholder="Description" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
-                        </div>
-                        <div className="col-span-2">
-                          <input {...form.register(`items.${index}.quantity`, { valueAsNumber: true })} type="number" placeholder="Qty" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
-                        </div>
-                        <div className="col-span-2">
-                          <input {...form.register(`items.${index}.unitPrice`, { valueAsNumber: true })} type="number" placeholder="Price" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
-                        </div>
-                        <div className="col-span-2">
-                          <input {...form.register(`items.${index}.tax`, { valueAsNumber: true })} type="number" placeholder="Tax %" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
-                        </div>
-                        <div className="col-span-1">
-                          {fields.length > 1 && <button type="button" onClick={() => remove(index)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><X className="h-4 w-4" /></button>}
-                        </div>
+                        <div className="col-span-5"><input {...form.register(`items.${index}.description`)} placeholder="Description" className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+                        <div className="col-span-2"><input {...form.register(`items.${index}.quantity`)} type="number" placeholder="Qty" className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+                        <div className="col-span-2"><input {...form.register(`items.${index}.unitPrice`)} type="number" placeholder="Price" className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+                        <div className="col-span-2"><input {...form.register(`items.${index}.tax`)} type="number" placeholder="Tax %" className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+                        <div className="col-span-1">{fields.length > 1 && <button type="button" onClick={() => remove(index)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><X className="h-4 w-4" /></button>}</div>
                       </div>
                     ))}
                   </div>
                 </div>
-
                 <div className="border-t pt-3 space-y-1 text-sm">
                   <div className="flex justify-between"><span>Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
                   <div className="flex justify-between"><span>Tax</span><span>{formatCurrency(taxTotal)}</span></div>
                   <div className="flex justify-between"><span>Discount</span><span>-{formatCurrency(discount)}</span></div>
                   <div className="flex justify-between font-semibold text-base"><span>Total</span><span>{formatCurrency(grandTotal)}</span></div>
                 </div>
-
                 <div>
                   <label className="text-sm font-medium">Notes</label>
                   <textarea {...form.register('notes')} rows={2} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
                 </div>
-
                 <div className="flex justify-end gap-3 pt-2">
                   <button type="button" onClick={() => { setDialogOpen(false); setEditingPO(null); }} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Cancel</button>
                   <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
