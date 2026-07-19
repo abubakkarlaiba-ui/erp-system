@@ -13,19 +13,20 @@ export interface PaginatedResponse<T> {
 }
 
 export interface User {
-  id: number
+  id: string
   email: string
   first_name: string
   last_name: string
   phone?: string
   avatar?: string
-  is_active: boolean
-  is_staff: boolean
-  is_superuser: boolean
-  date_joined: string
-  last_login?: string
-  company?: Company
-  branches?: Branch[]
+  role?: string
+  company?: Company | null
+  is_verified?: boolean
+  two_factor_enabled?: boolean
+  timezone?: string
+  language?: string
+  created_at?: string
+  updated_at?: string
 }
 
 export interface Company {

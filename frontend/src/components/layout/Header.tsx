@@ -113,14 +113,18 @@ export function Header() {
             onClick={() => setShowUserMenu(!showUserMenu)}
             className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
-              {user ? getInitials(user.name) : "U"}
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white overflow-hidden">
+              {user?.avatar ? (
+                <img src={user.avatar} alt="" className="h-full w-full object-cover" />
+              ) : (
+                user ? getInitials(`${user.first_name || ""} ${user.last_name || ""}`) : "U"
+              )}
             </div>
             <div className="hidden text-left md:block">
               <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                {user?.name || "User"}
+                {user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() || "User" : "User"}
               </div>
-              <div className="text-xs text-zinc-500">{user?.role || "User"}</div>
+              <div className="text-xs text-zinc-500">{user?.email || "User"}</div>
             </div>
             <ChevronDown className="hidden h-4 w-4 text-zinc-400 md:block" />
           </button>
@@ -134,7 +138,7 @@ export function Header() {
               >
                 <div className="border-b border-zinc-200 p-3 dark:border-zinc-700">
                   <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                    {user?.name}
+                    {user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() || "User" : "User"}
                   </div>
                   <div className="text-xs text-zinc-500">{user?.email}</div>
                 </div>
