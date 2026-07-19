@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           const { api } = await import("@/lib/api");
           const { setAuthToken } = await import("@/lib/api");
           const response = await api.post("/auth/login/", { email, password });
-          const { access, refresh, user } = response.data.data;
+          const { access, refresh, user } = response.data;
           setAuthToken(access);
           set({
             user,
@@ -86,7 +86,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         try {
           const { api } = await import("@/lib/api");
           const response = await api.get("/auth/profile/");
-          set({ user: response.data.data || response.data, isAuthenticated: true });
+          set({ user: response.data, isAuthenticated: true });
         } catch {
           get().logout();
         }
