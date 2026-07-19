@@ -79,8 +79,8 @@ export default function CustomersPage() {
     onError: () => toast.error('Failed to delete customer'),
   });
 
-  const customers = customersData?.data?.items ?? [];
-  const totalCustomers = customersData?.data?.total ?? 0;
+  const customers = customersData?.data?.results ?? [];
+  const totalCustomers = customersData?.data?.count ?? 0;
   const activeCustomers = customers.filter((c) => c.status === 'active').length;
   const newThisMonth = customers.filter((c) => {
     const d = new Date(c.createdAt);

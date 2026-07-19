@@ -66,7 +66,7 @@ export default function PerformancePage() {
     onError: () => toast.error("Failed to create review"),
   });
 
-  const reviews = reviewsData?.data ?? [];
+  const reviews = reviewsData?.data?.data ?? [];
 
   const stats = {
     completed: reviews.filter((r) => r.status === "completed").length,

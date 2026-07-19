@@ -73,8 +73,8 @@ export default function GoodsReceiptPage() {
     onError: () => toast.error('Failed to create goods receipt'),
   });
 
-  const receipts = receiptsData?.data?.items ?? [];
-  const total = receiptsData?.data?.total ?? 0;
+  const receipts = receiptsData?.data?.results ?? [];
+  const total = receiptsData?.data?.count ?? 0;
   const pendingCount = receipts.filter((r) => r.status === 'pending').length;
   const completedCount = receipts.filter((r) => r.status === 'completed').length;
   const partialCount = receipts.filter((r) => r.status === 'partial').length;

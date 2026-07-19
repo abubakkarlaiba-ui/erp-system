@@ -52,7 +52,7 @@ export default function AttendancePage() {
       }),
   });
 
-  const records: AttendanceRecord[] = (attendanceData as any)?.data ?? [];
+  const records: AttendanceRecord[] = (attendanceData as any)?.data?.data ?? [];
 
   const stats = useMemo(() => {
     const today = format(new Date(), "yyyy-MM-dd");

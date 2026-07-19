@@ -84,8 +84,8 @@ export default function QuotationsPage() {
     onError: () => toast.error('Failed to reject quotation'),
   });
 
-  const quotations = quotationsData?.data?.items ?? [];
-  const total = quotationsData?.data?.total ?? 0;
+  const quotations = quotationsData?.data?.results ?? [];
+  const total = quotationsData?.data?.count ?? 0;
   const draftCount = quotations.filter((q) => q.status === 'draft').length;
   const sentCount = quotations.filter((q) => q.status === 'sent').length;
   const acceptedCount = quotations.filter((q) => q.status === 'accepted').length;

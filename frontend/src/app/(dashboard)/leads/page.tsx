@@ -85,8 +85,8 @@ export default function LeadsPage() {
     onError: () => toast.error('Failed to update lead'),
   });
 
-  const leads = leadsData?.data?.items ?? [];
-  const totalLeads = leadsData?.data?.total ?? 0;
+  const leads = leadsData?.data?.results ?? [];
+  const totalLeads = leadsData?.data?.count ?? 0;
   const newLeads = leads.filter((l) => l.status === 'new').length;
   const qualifiedLeads = leads.filter((l) => l.status === 'qualified').length;
   const convertedLeads = leads.filter((l) => l.status === 'converted').length;

@@ -71,8 +71,8 @@ export default function PurchaseOrdersPage() {
     onError: () => toast.error('Failed to cancel purchase order'),
   });
 
-  const purchaseOrders = poData?.data?.items ?? [];
-  const total = poData?.data?.total ?? 0;
+  const purchaseOrders = poData?.data?.results ?? [];
+  const total = poData?.data?.count ?? 0;
   const pendingCount = purchaseOrders.filter((o) => o.status === 'pending').length;
   const receivedCount = purchaseOrders.filter((o) => o.status === 'received').length;
   const cancelledCount = purchaseOrders.filter((o) => o.status === 'cancelled').length;

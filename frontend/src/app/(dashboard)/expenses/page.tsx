@@ -106,9 +106,9 @@ export default function ExpensesPage() {
     },
   });
 
-  const expenses = expensesData?.data?.data ?? [];
+  const expenses = expensesData?.data?.results ?? [];
   const totalExpenses =
-    expensesData?.data?.total ??
+    expensesData?.data?.count ??
     expenses.reduce((s, e) => s + e.amount, 0);
   const pendingCount = expenses.filter((e) => e.status === "pending").length;
   const approvedCount = expenses.filter((e) => e.status === "approved").length;

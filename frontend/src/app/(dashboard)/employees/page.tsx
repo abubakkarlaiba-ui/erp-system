@@ -166,7 +166,7 @@ export default function EmployeesPage() {
     }
   };
 
-  const filteredEmployees = (employeesData?.data || []).filter((employee) => {
+  const filteredEmployees = (employeesData?.results || []).filter((employee) => {
     const fullName = `${employee.firstName} ${employee.lastName}`.toLowerCase();
     const matchesSearch =
       fullName.includes(searchQuery.toLowerCase()) ||
@@ -181,11 +181,11 @@ export default function EmployeesPage() {
   });
 
   const stats = {
-    total: employeesData?.data?.length || 0,
-    active: employeesData?.data?.filter((e) => e.status === "active").length || 0,
-    onLeave: employeesData?.data?.filter((e) => e.status === "on_leave").length || 0,
+    total: employeesData?.results?.length || 0,
+    active: employeesData?.results?.filter((e) => e.status === "active").length || 0,
+    onLeave: employeesData?.results?.filter((e) => e.status === "on_leave").length || 0,
     newThisMonth:
-      employeesData?.data?.filter((e) => {
+      employeesData?.results?.filter((e) => {
         const joiningDate = new Date(e.joiningDate);
         const now = new Date();
         return (
@@ -309,7 +309,7 @@ export default function EmployeesPage() {
 
   const departments = [
     ...new Map(
-      (employeesData?.data || [])
+      (employeesData?.results || [])
         .filter((e) => e.department)
         .map((e) => [e.departmentId, e.department])
     ).values(),
@@ -317,7 +317,7 @@ export default function EmployeesPage() {
 
   const branches = [
     ...new Map(
-      (employeesData?.data || [])
+      (employeesData?.results || [])
         .filter((e) => e.branch)
         .map((e) => [e.branchId, e.branch])
     ).values(),
@@ -531,7 +531,7 @@ export default function EmployeesPage() {
                       className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Select Company</option>
-                      {companiesData?.data?.map((company) => (
+                      {companiesData?.results?.map((company) => (
                         <option key={company.id} value={company.id}>
                           {company.name}
                         </option>

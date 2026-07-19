@@ -162,7 +162,7 @@ export default function CompaniesPage() {
     }
   };
 
-  const filteredCompanies = (companiesData?.data || []).filter((company) => {
+  const filteredCompanies = (companiesData?.results || []).filter((company) => {
     const matchesSearch =
       company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       company.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -173,10 +173,10 @@ export default function CompaniesPage() {
   });
 
   const stats = {
-    total: companiesData?.data?.length || 0,
-    active: companiesData?.data?.filter((c) => c.status === "active").length || 0,
-    totalBranches: companiesData?.data?.reduce((acc, c) => acc + (c.branchCount || 0), 0) || 0,
-    totalEmployees: companiesData?.data?.reduce((acc, c) => acc + (c.employeeCount || 0), 0) || 0,
+    total: companiesData?.results?.length || 0,
+    active: companiesData?.results?.filter((c) => c.status === "active").length || 0,
+    totalBranches: companiesData?.results?.reduce((acc, c) => acc + (c.branchCount || 0), 0) || 0,
+    totalEmployees: companiesData?.results?.reduce((acc, c) => acc + (c.employeeCount || 0), 0) || 0,
   };
 
   const columns = [

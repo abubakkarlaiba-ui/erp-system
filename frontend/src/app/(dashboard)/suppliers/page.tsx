@@ -64,8 +64,8 @@ export default function SuppliersPage() {
     onError: () => toast.error('Failed to delete supplier'),
   });
 
-  const suppliers = suppliersData?.data?.items ?? [];
-  const total = suppliersData?.data?.total ?? 0;
+  const suppliers = suppliersData?.data?.results ?? [];
+  const total = suppliersData?.data?.count ?? 0;
   const activeCount = suppliers.filter((s) => s.status === 'active').length;
   const pendingBills = suppliers.filter((s) => (s.balance ?? 0) > 0).length;
   const totalPurchases = suppliers.reduce((sum, s) => sum + (s.balance ?? 0), 0);

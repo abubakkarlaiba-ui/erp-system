@@ -137,11 +137,11 @@ export default function StockMovementsPage() {
     },
   });
 
-  const movements = movementsData?.data?.data ?? [];
-  const products = productsData?.data?.data ?? [];
-  const warehouseList = warehouses?.data ?? [];
+  const movements = movementsData?.data?.results ?? [];
+  const products = productsData?.data?.results ?? [];
+  const warehouseList = warehouses?.data?.results ?? [];
 
-  const totalMovements = movementsData?.data?.total ?? movements.length;
+  const totalMovements = movementsData?.data?.count ?? movements.length;
   const purchases = movements.filter((m) => m.type === "purchase").length;
   const sales = movements.filter((m) => m.type === "sale").length;
   const transfers = movements.filter((m) => m.type === "transfer").length;

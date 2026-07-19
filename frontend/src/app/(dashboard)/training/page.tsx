@@ -54,7 +54,7 @@ export default function TrainingPage() {
     onError: () => toast.error("Failed to create training"),
   });
 
-  const trainingList = trainings ?? [];
+  const trainingList = trainings?.data ?? [];
 
   const stats = {
     active: trainingList.filter((t) => t.status === "in-progress").length,

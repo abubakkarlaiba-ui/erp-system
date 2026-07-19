@@ -80,8 +80,8 @@ export default function SalesOrdersPage() {
     onError: () => toast.error('Failed to cancel order'),
   });
 
-  const orders = ordersData?.data?.items ?? [];
-  const total = ordersData?.data?.total ?? 0;
+  const orders = ordersData?.data?.results ?? [];
+  const total = ordersData?.data?.count ?? 0;
   const pendingCount = orders.filter((o) => o.status === 'pending').length;
   const processingCount = orders.filter((o) => o.status === 'processing').length;
   const completedCount = orders.filter((o) => o.status === 'completed').length;

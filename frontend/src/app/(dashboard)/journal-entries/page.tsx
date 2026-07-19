@@ -150,10 +150,10 @@ export default function JournalEntriesPage() {
   const totalCredit = lines.reduce((s, l) => s + (l.credit || 0), 0);
   const isBalanced = Math.abs(totalDebit - totalCredit) < 0.01;
 
-  const accounts = accountsData?.data?.data ?? [];
+  const accounts = accountsData?.data?.results ?? [];
 
-  const entries = entriesData?.data?.data ?? [];
-  const totalEntries = entriesData?.data?.total ?? entries.length;
+  const entries = entriesData?.data?.results ?? [];
+  const totalEntries = entriesData?.data?.count ?? entries.length;
   const draftCount = entries.filter((e) => e.status === "draft").length;
   const postedCount = entries.filter((e) => e.status === "posted").length;
   const thisMonthCount = entries.filter(

@@ -155,14 +155,14 @@ export default function ProductsPage() {
     },
   });
 
-  const products = productsData?.data?.data ?? [];
-  const totalProducts = productsData?.data?.total ?? products.length;
+  const products = productsData?.data?.results ?? [];
+  const totalProducts = productsData?.data?.count ?? products.length;
   const activeCount = products.filter((p) => p.isActive).length;
   const lowStockCount = products.filter(
     (p) => p.stock > 0 && p.stock <= p.minStock
   ).length;
   const outOfStockCount = products.filter((p) => p.stock === 0).length;
-  const categoryList = categories?.data ?? [];
+  const categoryList = categories?.data?.results ?? [];
 
   const openCreate = () => {
     setEditingProduct(null);
@@ -466,7 +466,7 @@ export default function ProductsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    {(brands?.data ?? []).map((b) => (
+                    {(brands?.data?.results ?? []).map((b) => (
                       <SelectItem key={b.id} value={b.id}>
                         {b.name}
                       </SelectItem>

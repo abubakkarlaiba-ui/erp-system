@@ -246,7 +246,7 @@ export default function ChartOfAccountsPage() {
     }
   };
 
-  const accounts = accountsData?.data?.data ?? [];
+  const accounts = accountsData?.data?.results ?? [];
   const flatAccounts = accounts.reduce<Account[]>((acc, a) => {
     acc.push(a);
     if (a.children) acc.push(...a.children);

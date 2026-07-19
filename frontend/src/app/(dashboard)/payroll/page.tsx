@@ -62,7 +62,7 @@ export default function PayrollPage() {
     onError: () => toast.error("Failed to generate payslips"),
   });
 
-  const payslips = payslipsData?.data ?? [];
+  const payslips = payslipsData?.data?.data ?? [];
 
   const stats = {
     totalPayroll: payslips.reduce((a, b) => a + b.netPay, 0),
@@ -171,7 +171,7 @@ export default function PayrollPage() {
           transition={{ duration: 0.2 }}
         >
           {activeTab === "Payroll Periods" && (
-            <DataTable columns={periodColumns} data={periods ?? []} isLoading={periodsLoading} searchKey="name" searchPlaceholder="Search periods..." />
+            <DataTable columns={periodColumns} data={periods?.data ?? []} isLoading={periodsLoading} searchKey="name" searchPlaceholder="Search periods..." />
           )}
 
           {activeTab === "Payslips" && (
@@ -180,7 +180,7 @@ export default function PayrollPage() {
 
           {activeTab === "Salary Structures" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {(structures ?? []).map((s: SalaryStructure, i: number) => (
+              {(structures?.data ?? []).map((s: SalaryStructure, i: number) => (
                 <motion.div
                   key={s.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -271,7 +271,7 @@ export default function PayrollPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">Select period</option>
-                    {(periods ?? []).map((p: PayrollPeriod) => (
+                    {(periods?.data ?? []).map((p: PayrollPeriod) => (
                       <option key={p.id} value={p.id}>{p.name}</option>
                     ))}
                   </select>

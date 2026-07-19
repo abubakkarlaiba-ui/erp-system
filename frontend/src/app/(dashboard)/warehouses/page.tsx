@@ -109,8 +109,8 @@ export default function WarehousesPage() {
     defaultValues: { name: "", code: "", address: "", city: "", manager: "", phone: "" },
   });
 
-  const warehouses = warehousesData?.data ?? [];
-  const stock = stockData?.data?.data ?? [];
+  const warehouses = warehousesData?.data?.results ?? [];
+  const stock = stockData?.data?.results ?? [];
   const totalStock = warehouses.reduce((s, w) => s + w.totalStock, 0);
 
   const openCreate = () => {
