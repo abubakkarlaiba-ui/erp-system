@@ -1,6 +1,6 @@
 "use client"
 
-import type { ElementType, ReactNode } from "react"
+import { type ReactNode, type ElementType, isValidElement, createElement } from "react"
 import { cn } from "@/lib/utils"
 import { TrendingUp, TrendingDown } from "lucide-react"
 
@@ -8,8 +8,8 @@ interface StatsCardProps {
   title: string
   value: string | number
   change?: number
-  icon: ReactNode
-  color: "indigo" | "emerald" | "amber" | "rose" | "sky" | "violet"
+  icon: ReactNode | ElementType
+  color?: "indigo" | "emerald" | "amber" | "rose" | "sky" | "violet"
 }
 
 const colorMap = {
@@ -21,7 +21,13 @@ const colorMap = {
   violet: { bg: "from-violet-500/10 to-violet-500/5", text: "text-violet-600 dark:text-violet-400", iconBg: "bg-violet-100 dark:bg-violet-900/50" },
 }
 
-export function StatsCard({ title, value, change, icon, color }: StatsCardProps) {
+function renderIcon(icon: ReactNode | ElementType): ReactNode {
+  if (isValidElement(icon)) return icon
+  if (typeof icon === "function") return createElement(icon, { className: "h-5 w-5" })
+  return null
+}
+
+export function StatsCard({ title, value, change, icon, color = "indigo" }: StatsCardProps) {
   const c = colorMap[color]
   const isPositive = change != null && change >= 0
 
@@ -30,7 +36,7 @@ export function StatsCard({ title, value, change, icon, color }: StatsCardProps)
       <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50", c.bg)} />
       <div className="relative flex items-start justify-between">
         <div className={cn("rounded-lg p-2.5", c.iconBg)}>
-          {icon}
+          {renderIcon(icon)}
         </div>
         {change != null && (
           <div
