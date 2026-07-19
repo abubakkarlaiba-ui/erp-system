@@ -186,32 +186,28 @@ export default function DashboardPage() {
         <StatsCard
           title="Total Revenue"
           value="$326,000"
-          description="+12.5% from last month"
-          icon={DollarSign}
+          icon={<DollarSign className="h-5 w-5" />}
           color="indigo"
           change={12.5}
         />
         <StatsCard
           title="Total Employees"
           value="58"
-          description="+3 new this month"
-          icon={Users}
+          icon={<Users className="h-5 w-5" />}
           color="emerald"
           change={3}
         />
         <StatsCard
           title="Active Products"
           value="1,247"
-          description="-2 discontinued"
-          icon={Package}
+          icon={<Package className="h-5 w-5" />}
           color="amber"
           change={-2}
         />
         <StatsCard
           title="Pending Invoices"
           value="23"
-          description="$45,200 outstanding"
-          icon={FileText}
+          icon={<FileText className="h-5 w-5" />}
           color="rose"
         />
       </motion.div>
