@@ -1,5 +1,8 @@
-from rest_framework import viewsets
+from django.utils import timezone
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from apps.hr.models import (
     Attendance,
@@ -50,6 +53,55 @@ class AttendanceViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
     filterset_fields = ["employee", "date", "status"]
     search_fields = ["employee__first_name", "employee__last_name"]
     ordering_fields = ["date", "status"]
+
+    def _get_employee(self, request):
+        user = request.user
+        if hasattr(user, "employee_profile"):
+            return user.employee_profile
+        from apps.employees.models import Employee
+        emp = Employee.objects.filter(company=user.company).first()
+        return emp
+
+    @action(detail=False, methods=["post"], url_path="clock-in")
+    def clock_in(self, request):
+        user = request.user
+        today = timezone.now().date()
+        now_time = timezone.now().time()
+        employee = self._get_employee(request)
+        if not employee:
+            return Response({"detail": "No employee profile found."}, status=status.HTTP_400_BAD_REQUEST)
+        attendance, created = Attendance.objects.get_or_create(
+            employee=employee,
+            date=today,
+            defaults={"company": user.company, "check_in": now_time, "status": "present"},
+        )
+        if not created:
+            attendance.check_in = now_time
+            attendance.status = "present"
+            attendance.save(update_fields=["check_in", "status"])
+        return Response(AttendanceSerializer(attendance).data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["post"], url_path="clock-out")
+    def clock_out(self, request):
+        user = request.user
+        today = timezone.now().date()
+        now_time = timezone.now().time()
+        employee = self._get_employee(request)
+        if not employee:
+            return Response({"detail": "No employee profile found."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            attendance = Attendance.objects.get(employee=employee, date=today)
+        except Attendance.DoesNotExist:
+            return Response({"detail": "No clock-in record found for today."}, status=status.HTTP_400_BAD_REQUEST)
+        attendance.check_out = now_time
+        if attendance.check_in:
+            from datetime import datetime
+            check_in_dt = datetime.combine(today, attendance.check_in)
+            check_out_dt = datetime.combine(today, now_time)
+            diff = check_out_dt - check_in_dt
+            attendance.hours_worked = round(diff.total_seconds() / 3600, 2)
+        attendance.save(update_fields=["check_out", "hours_worked"])
+        return Response(AttendanceSerializer(attendance).data, status=status.HTTP_200_OK)
 
 
 class LeaveTypeViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
