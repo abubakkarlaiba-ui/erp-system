@@ -38,7 +38,7 @@ class User(AbstractUser):
         related_name="users",
     )
     phone = models.CharField(max_length=20, blank=True, default="")
-    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    avatar = models.TextField(blank=True, null=True)
     role = models.CharField(max_length=30, choices=Role.choices, default=Role.EMPLOYEE)
     is_verified = models.BooleanField(default=False)
     two_factor_enabled = models.BooleanField(default=False)

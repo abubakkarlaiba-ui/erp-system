@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import filters, generics, permissions, status, viewsets
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -161,6 +162,23 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        avatar_file = request.FILES.get("avatar")
+        if avatar_file:
+            import base64
+            content_type = avatar_file.content_type
+            data = avatar_file.read()
+            b64 = base64.b64encode(data).decode("utf-8")
+            serializer.validated_data["avatar"] = f"data:{content_type};base64,{b64}"
+
+        self.perform_update(instance, serializer)
+        return Response(serializer.data)
 
 
 @extend_schema(tags=["Authentication"])
