@@ -111,7 +111,7 @@ export default function AttendancePage() {
   const columns = [
     { header: "Date", accessorKey: "date" as const, cell: (info: any) => {
       const row = info.row?.original || info;
-      return format(parseISO(row.date), "MMM dd, yyyy");
+      try { return format(parseISO(row.date), "MMM dd, yyyy"); } catch { return row.date || "-"; }
     }},
     { header: "Employee", accessorKey: "employeeName" as const, cell: (info: any) => {
       const row = info.row?.original || info;
@@ -119,11 +119,17 @@ export default function AttendancePage() {
     }},
     { header: "Check In", accessorKey: "checkIn" as const, cell: (info: any) => {
       const row = info.row?.original || info;
-      return row.checkIn ? format(parseISO(row.checkIn), "hh:mm a") : "—";
+      const val = row.checkIn;
+      if (!val) return "—";
+      if (/^\d{2}:\d{2}/.test(val)) return val.substring(0, 5);
+      try { return format(parseISO(val), "hh:mm a"); } catch { return val; }
     }},
     { header: "Check Out", accessorKey: "checkOut" as const, cell: (info: any) => {
       const row = info.row?.original || info;
-      return row.checkOut ? format(parseISO(row.checkOut), "hh:mm a") : "—";
+      const val = row.checkOut;
+      if (!val) return "—";
+      if (/^\d{2}:\d{2}/.test(val)) return val.substring(0, 5);
+      try { return format(parseISO(val), "hh:mm a"); } catch { return val; }
     }},
     { header: "Hours", accessorKey: "hoursWorked" as const, cell: (info: any) => {
       const row = info.row?.original || info;
@@ -201,13 +207,13 @@ export default function AttendancePage() {
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-indigo-600" />
               <span className="text-sm text-gray-600">Clocked In:</span>
-              <span className="font-semibold text-indigo-700">{format(parseISO(todayRecord.checkIn), "hh:mm a")}</span>
+              <span className="font-semibold text-indigo-700">{/^\d{2}:\d{2}/.test(todayRecord.checkIn) ? todayRecord.checkIn.substring(0, 5) : format(parseISO(todayRecord.checkIn), "hh:mm a")}</span>
             </div>
             {todayRecord.checkOut && (
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-red-600" />
                 <span className="text-sm text-gray-600">Clocked Out:</span>
-                <span className="font-semibold text-red-700">{format(parseISO(todayRecord.checkOut), "hh:mm a")}</span>
+                <span className="font-semibold text-red-700">{/^\d{2}:\d{2}/.test(todayRecord.checkOut) ? todayRecord.checkOut.substring(0, 5) : format(parseISO(todayRecord.checkOut), "hh:mm a")}</span>
               </div>
             )}
             <div className="flex items-center gap-2">
