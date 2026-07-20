@@ -37,7 +37,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class LeaveTypeSerializer(serializers.ModelSerializer):
@@ -55,7 +55,7 @@ class LeaveTypeSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class LeaveRequestSerializer(serializers.ModelSerializer):
@@ -88,7 +88,7 @@ class LeaveRequestSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class HolidayCalendarSerializer(serializers.ModelSerializer):
@@ -109,7 +109,7 @@ class HolidayCalendarSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class PayrollPeriodSerializer(serializers.ModelSerializer):
@@ -131,7 +131,7 @@ class PayrollPeriodSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class SalaryStructureSerializer(serializers.ModelSerializer):
@@ -153,7 +153,7 @@ class SalaryStructureSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class PayslipSerializer(serializers.ModelSerializer):
@@ -183,7 +183,7 @@ class PayslipSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class BonusSerializer(serializers.ModelSerializer):
@@ -208,7 +208,7 @@ class BonusSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class ShiftSerializer(serializers.ModelSerializer):
@@ -225,7 +225,7 @@ class ShiftSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class EmployeeShiftSerializer(serializers.ModelSerializer):
@@ -245,7 +245,7 @@ class EmployeeShiftSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class TrainingSerializer(serializers.ModelSerializer):
@@ -265,7 +265,7 @@ class TrainingSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class TrainingAssignmentSerializer(serializers.ModelSerializer):
@@ -289,7 +289,7 @@ class TrainingAssignmentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class PerformanceReviewSerializer(serializers.ModelSerializer):
@@ -322,7 +322,7 @@ class PerformanceReviewSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class OvertimeSerializer(serializers.ModelSerializer):
@@ -347,4 +347,4 @@ class OvertimeSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
