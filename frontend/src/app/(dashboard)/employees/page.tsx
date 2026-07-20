@@ -41,7 +41,7 @@ const employeeSchema = z.object({
   joiningDate: z.string().min(1, "Joining date is required"),
   employmentType: z.enum(["full_time", "part_time", "contract", "intern"]),
   salary: z.number().min(0, "Salary must be positive").optional(),
-  status: z.enum(["active", "inactive", "on_leave"]),
+  status: z.enum(["active", "inactive"]),
 });
 
 type EmployeeFormData = z.infer<typeof employeeSchema>;
@@ -134,28 +134,42 @@ export default function EmployeesPage() {
   });
 
   const onSubmit = (data: EmployeeFormData) => {
+    const payload: any = {
+      first_name: data.firstName,
+      last_name: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      company: data.companyId ? Number(data.companyId) : undefined,
+      branch: data.branchId ? Number(data.branchId) : undefined,
+      department: data.departmentId ? Number(data.departmentId) : undefined,
+      designation: data.designationId ? Number(data.designationId) : undefined,
+      joining_date: data.joiningDate,
+      employment_type: data.employmentType,
+      salary: data.salary,
+      is_active: data.status === "active",
+    };
     if (editingEmployee) {
-      updateMutation.mutate({ id: editingEmployee.id, data });
+      updateMutation.mutate({ id: String(editingEmployee.id), data: payload });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(payload);
     }
   };
 
   const handleEdit = (employee: Employee) => {
     setEditingEmployee(employee);
     reset({
-      firstName: employee.firstName,
-      lastName: employee.lastName,
+      firstName: employee.first_name,
+      lastName: employee.last_name,
       email: employee.email,
       phone: employee.phone || "",
-      companyId: employee.companyId,
-      branchId: employee.branchId,
-      departmentId: employee.departmentId,
-      designationId: employee.designationId,
-      joiningDate: employee.joiningDate,
-      employmentType: employee.employmentType,
+      companyId: String(employee.company || ""),
+      branchId: String(employee.branch || ""),
+      departmentId: String(employee.department || ""),
+      designationId: String(employee.designation || ""),
+      joiningDate: employee.joining_date,
+      employmentType: employee.employment_type as any,
       salary: employee.salary || 0,
-      status: employee.status,
+      status: employee.is_active ? "active" : "inactive",
     });
     setIsDialogOpen(true);
   };
@@ -167,26 +181,26 @@ export default function EmployeesPage() {
   };
 
   const filteredEmployees = (employeesData?.results || []).filter((employee) => {
-    const fullName = `${employee.firstName} ${employee.lastName}`.toLowerCase();
+    const fullName = `${employee.first_name} ${employee.last_name}`.toLowerCase();
     const matchesSearch =
       fullName.includes(searchQuery.toLowerCase()) ||
-      employee.employeeId.toLowerCase().includes(searchQuery.toLowerCase());
+      (employee.employee_id || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
-      statusFilter === "all" || employee.status === statusFilter;
+      statusFilter === "all" || (statusFilter === "active" ? employee.is_active : !employee.is_active);
     const matchesDepartment =
-      departmentFilter === "all" || employee.departmentId === departmentFilter;
+      departmentFilter === "all" || String(employee.department) === departmentFilter;
     const matchesBranch =
-      branchFilter === "all" || employee.branchId === branchFilter;
+      branchFilter === "all" || String(employee.branch) === branchFilter;
     return matchesSearch && matchesStatus && matchesDepartment && matchesBranch;
   });
 
   const stats = {
     total: employeesData?.results?.length || 0,
-    active: employeesData?.results?.filter((e) => e.status === "active").length || 0,
-    onLeave: employeesData?.results?.filter((e) => e.status === "on_leave").length || 0,
+    active: employeesData?.results?.filter((e) => e.is_active).length || 0,
+    onLeave: employeesData?.results?.filter((e) => !e.is_active).length || 0,
     newThisMonth:
       employeesData?.results?.filter((e) => {
-        const joiningDate = new Date(e.joiningDate);
+        const joiningDate = new Date(e.joining_date);
         const now = new Date();
         return (
           joiningDate.getMonth() === now.getMonth() &&
@@ -198,129 +212,145 @@ export default function EmployeesPage() {
   const columns = [
     {
       header: "Employee",
-      accessorKey: "firstName" as const,
-      cell: (row: Employee) => (
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
-            {row.avatar ? (
-              <img
-                src={row.avatar}
-                alt={`${row.firstName} ${row.lastName}`}
-                className="h-10 w-10 rounded-full object-cover"
-              />
-            ) : (
-              `${row.firstName[0]}${row.lastName[0]}`
-            )}
+      accessorKey: "first_name" as const,
+      cell: (info: any) => {
+        const emp = info.row?.original || info;
+        return (
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+              {emp.photo ? (
+                <img
+                  src={emp.photo}
+                  alt={`${emp.first_name} ${emp.last_name}`}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+              ) : (
+                `${(emp.first_name || "")[0] || ""}${(emp.last_name || "")[0] || ""}`
+              )}
+            </div>
+            <div>
+              <Link
+                href={`/employees/${emp.id}`}
+                className="font-medium hover:underline"
+              >
+                {emp.first_name} {emp.last_name}
+              </Link>
+              <div className="text-sm text-muted-foreground">{emp.email}</div>
+            </div>
           </div>
-          <div>
-            <Link
-              href={`/employees/${row.id}`}
-              className="font-medium hover:underline"
-            >
-              {row.firstName} {row.lastName}
-            </Link>
-            <div className="text-sm text-muted-foreground">{row.email}</div>
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       header: "Employee ID",
-      accessorKey: "employeeId" as const,
-      cell: (row: Employee) => (
-        <span className="font-mono text-sm">{row.employeeId}</span>
-      ),
+      accessorKey: "employee_id" as const,
+      cell: (info: any) => {
+        const emp = info.row?.original || info;
+        return <span className="font-mono text-sm">{emp.employee_id || "-"}</span>;
+      },
     },
     {
       header: "Department",
-      accessorKey: "department" as const,
-      cell: (row: Employee) => (
-        <span>{row.department?.name || "-"}</span>
-      ),
+      accessorKey: "department_name" as const,
+      cell: (info: any) => {
+        const emp = info.row?.original || info;
+        return <span>{emp.department_name || "-"}</span>;
+      },
     },
     {
       header: "Designation",
-      accessorKey: "designation" as const,
-      cell: (row: Employee) => (
-        <span>{row.designation?.name || "-"}</span>
-      ),
+      accessorKey: "designation_name" as const,
+      cell: (info: any) => {
+        const emp = info.row?.original || info;
+        return <span>{emp.designation_name || "-"}</span>;
+      },
     },
     {
       header: "Branch",
-      accessorKey: "branch" as const,
-      cell: (row: Employee) => <span>{row.branch?.name || "-"}</span>,
+      accessorKey: "branch_name" as const,
+      cell: (info: any) => {
+        const emp = info.row?.original || info;
+        return <span>{emp.branch_name || "-"}</span>;
+      },
     },
     {
       header: "Joining Date",
-      accessorKey: "joiningDate" as const,
-      cell: (row: Employee) => (
-        <span className="text-muted-foreground">
-          {formatDate(row.joiningDate)}
-        </span>
-      ),
+      accessorKey: "joining_date" as const,
+      cell: (info: any) => {
+        const emp = info.row?.original || info;
+        return (
+          <span className="text-muted-foreground">
+            {formatDate(emp.joining_date)}
+          </span>
+        );
+      },
     },
     {
       header: "Status",
-      accessorKey: "status" as const,
-      cell: (row: Employee) => (
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium",
-            row.status === "active"
-              ? "bg-green-100 text-green-700"
-              : row.status === "on_leave"
-              ? "bg-yellow-100 text-yellow-700"
-              : "bg-red-100 text-red-700"
-          )}
-        >
-          {row.status === "active" && <CheckCircle2 className="h-3 w-3" />}
-          {row.status === "on_leave" && <Clock className="h-3 w-3" />}
-          {row.status === "inactive" && <Users className="h-3 w-3" />}
-          {row.status.replace("_", " ")}
-        </span>
-      ),
+      accessorKey: "is_active" as const,
+      cell: (info: any) => {
+        const emp = info.row?.original || info;
+        const status = emp.is_active ? "active" : "inactive";
+        return (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium",
+              status === "active"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            )}
+          >
+            {status === "active" && <CheckCircle2 className="h-3 w-3" />}
+            {status === "inactive" && <Users className="h-3 w-3" />}
+            {status.replace("_", " ")}
+          </span>
+        );
+      },
     },
     {
       header: "Actions",
-      cell: (row: Employee) => (
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/employees/${row.id}`}
-            className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <MoreVertical className="h-4 w-4" />
-          </Link>
-          <button
-            onClick={() => handleEdit(row)}
-            className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <Edit className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => setDeletingEmployee(row)}
-            className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-      ),
+      cell: (info: any) => {
+        const emp = info.row?.original || info;
+        return (
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/employees/${emp.id}`}
+              className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </Link>
+            <button
+              onClick={() => handleEdit(emp)}
+              className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              <Edit className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setDeletingEmployee(emp)}
+              className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        );
+      },
     },
   ];
 
   const departments = [
-    ...new Map(
+    ...new Set(
       (employeesData?.results || [])
         .filter((e) => e.department)
-        .map((e) => [e.departmentId, e.department])
-    ).values(),
+        .map((e) => `${e.department}`)
+    ),
   ];
 
   const branches = [
-    ...new Map(
+    ...new Set(
       (employeesData?.results || [])
         .filter((e) => e.branch)
-        .map((e) => [e.branchId, e.branch])
-    ).values(),
+        .map((e) => `${e.branch}`)
+    ),
   ];
 
   return (
@@ -389,7 +419,6 @@ export default function EmployeesPage() {
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
-            <option value="on_leave">On Leave</option>
             <option value="inactive">Inactive</option>
           </select>
           <select
@@ -398,9 +427,9 @@ export default function EmployeesPage() {
             className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Departments</option>
-            {departments.map((dept) => (
-              <option key={dept?.id} value={dept?.id}>
-                {dept?.name}
+            {departments.map((deptId) => (
+              <option key={deptId} value={deptId}>
+                {deptId}
               </option>
             ))}
           </select>
@@ -410,9 +439,9 @@ export default function EmployeesPage() {
             className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Branches</option>
-            {branches.map((branch) => (
-              <option key={branch?.id} value={branch?.id}>
-                {branch?.name}
+            {branches.map((branchId) => (
+              <option key={branchId} value={branchId}>
+                {branchId}
               </option>
             ))}
           </select>
@@ -443,16 +472,18 @@ export default function EmployeesPage() {
             !searchQuery &&
             statusFilter === "all" &&
             departmentFilter === "all" &&
-            branchFilter === "all"
-              ? {
-                  label: "Add Employee",
-                  onClick: () => {
-                    setEditingEmployee(null);
-                    reset();
-                    setIsDialogOpen(true);
-                  },
-                }
-              : undefined
+            branchFilter === "all" ? (
+              <button
+                onClick={() => {
+                  setEditingEmployee(null);
+                  reset();
+                  setIsDialogOpen(true);
+                }}
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Add Employee
+              </button>
+            ) : undefined
           }
         />
       ) : (
@@ -630,7 +661,6 @@ export default function EmployeesPage() {
                       className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="active">Active</option>
-                      <option value="on_leave">On Leave</option>
                       <option value="inactive">Inactive</option>
                     </select>
                   </div>
@@ -685,7 +715,7 @@ export default function EmployeesPage() {
                   <h2 className="text-lg font-semibold">Delete Employee</h2>
                   <p className="text-sm text-muted-foreground">
                     Are you sure you want to delete{" "}
-                    {deletingEmployee.firstName} {deletingEmployee.lastName}?
+                    {deletingEmployee.first_name} {deletingEmployee.last_name}?
                     This action cannot be undone.
                   </p>
                 </div>

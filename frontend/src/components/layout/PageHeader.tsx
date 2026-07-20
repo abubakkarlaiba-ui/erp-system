@@ -1,10 +1,16 @@
 import React from "react"
 import Link from "next/link"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, Plus } from "lucide-react"
 
 interface Breadcrumb {
   label: string
   href?: string
+}
+
+interface PageHeaderAction {
+  label?: string
+  onClick?: () => void
+  icon?: React.ElementType
 }
 
 interface PageHeaderProps {
@@ -12,6 +18,7 @@ interface PageHeaderProps {
   description?: string
   breadcrumbs?: Breadcrumb[]
   actions?: React.ReactNode
+  action?: PageHeaderAction
 }
 
 export function PageHeader({
@@ -19,7 +26,18 @@ export function PageHeader({
   description,
   breadcrumbs,
   actions,
+  action,
 }: PageHeaderProps) {
+  const actionButton = action?.label ? (
+    <button
+      onClick={action.onClick}
+      className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+    >
+      {action.icon ? <action.icon className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+      {action.label}
+    </button>
+  ) : null
+
   return (
     <div className="mb-6">
       {breadcrumbs && breadcrumbs.length > 0 && (
@@ -52,7 +70,10 @@ export function PageHeader({
             <p className="mt-1 text-sm text-zinc-500">{description}</p>
           )}
         </div>
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
+        <div className="flex items-center gap-2">
+          {actions}
+          {actionButton}
+        </div>
       </div>
     </div>
   )

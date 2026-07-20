@@ -52,7 +52,20 @@ export default function AttendancePage() {
       }),
   });
 
-  const records: AttendanceRecord[] = (attendanceData as any)?.data?.data ?? [];
+  const records: AttendanceRecord[] = useMemo(() => {
+    const raw = (attendanceData as any)?.data?.results ?? [];
+    return raw.map((r: any) => ({
+      id: String(r.id),
+      employeeId: String(r.employee),
+      employeeName: r.employee_name || "-",
+      date: r.date || "",
+      checkIn: r.check_in || null,
+      checkOut: r.check_out || null,
+      hoursWorked: Number(r.hours_worked) || 0,
+      status: r.status || "present",
+      overtime: Number(r.overtime_hours) || 0,
+    }));
+  }, [attendanceData]);
 
   const stats = useMemo(() => {
     const today = format(new Date(), "yyyy-MM-dd");
@@ -96,24 +109,46 @@ export default function AttendancePage() {
   const clockedIn = todayRecord?.checkIn && !todayRecord?.checkOut;
 
   const columns = [
-    { header: "Date", accessorKey: "date" as const, cell: (row: AttendanceRecord) => format(parseISO(row.date), "MMM dd, yyyy") },
-    { header: "Employee", accessorKey: "employeeName" as const },
-    { header: "Check In", accessorKey: "checkIn" as const, cell: (row: AttendanceRecord) => row.checkIn ? format(parseISO(row.checkIn), "hh:mm a") : "—" },
-    { header: "Check Out", accessorKey: "checkOut" as const, cell: (row: AttendanceRecord) => row.checkOut ? format(parseISO(row.checkOut), "hh:mm a") : "—" },
-    { header: "Hours", accessorKey: "hoursWorked" as const, cell: (row: AttendanceRecord) => `${row.hoursWorked.toFixed(1)}h` },
+    { header: "Date", accessorKey: "date" as const, cell: (info: any) => {
+      const row = info.row?.original || info;
+      return format(parseISO(row.date), "MMM dd, yyyy");
+    }},
+    { header: "Employee", accessorKey: "employeeName" as const, cell: (info: any) => {
+      const row = info.row?.original || info;
+      return row.employeeName || "-";
+    }},
+    { header: "Check In", accessorKey: "checkIn" as const, cell: (info: any) => {
+      const row = info.row?.original || info;
+      return row.checkIn ? format(parseISO(row.checkIn), "hh:mm a") : "—";
+    }},
+    { header: "Check Out", accessorKey: "checkOut" as const, cell: (info: any) => {
+      const row = info.row?.original || info;
+      return row.checkOut ? format(parseISO(row.checkOut), "hh:mm a") : "—";
+    }},
+    { header: "Hours", accessorKey: "hoursWorked" as const, cell: (info: any) => {
+      const row = info.row?.original || info;
+      return `${Number(row.hoursWorked || 0).toFixed(1)}h`;
+    }},
     {
       header: "Status",
       accessorKey: "status" as const,
-      cell: (row: AttendanceRecord) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[row.status]}`}>
-          {row.status.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-        </span>
-      ),
+      cell: (info: any) => {
+        const row = info.row?.original || info;
+        const status = String(row.status || "present");
+        return (
+          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[status] || "bg-gray-100 text-gray-700"}`}>
+            {status.replace("-", " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}
+          </span>
+        );
+      },
     },
     {
       header: "Overtime",
       accessorKey: "overtime" as const,
-      cell: (row: AttendanceRecord) => (row.overtime > 0 ? <span className="text-amber-600 font-medium">{row.overtime}h</span> : "—"),
+      cell: (info: any) => {
+        const row = info.row?.original || info;
+        return (Number(row.overtime || 0) > 0 ? <span className="text-amber-600 font-medium">{row.overtime}h</span> : "—");
+      },
     },
   ];
 
@@ -298,7 +333,7 @@ export default function AttendancePage() {
         </div>
       </div>
 
-      <DataTable columns={columns} data={records} isLoading={isLoading} searchKey="employeeName" searchPlaceholder="Search by employee name..." />
+      <DataTable columns={columns} data={records} isLoading={isLoading} />
 
       {showMarkDialog && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowMarkDialog(false)}>

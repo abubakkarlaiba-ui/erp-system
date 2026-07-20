@@ -60,10 +60,6 @@ export function DataTable<TData extends { id?: string | number }>({
   const [pageSize, setPageSize] = useState(10)
   const [pageIndex, setPageIndex] = useState(0)
 
-  const selectedRows = useMemo(() => {
-    return table.getSelectedRowModel().rows.map((r) => r.original)
-  }, [rowSelection])
-
   const table = useReactTable({
     data,
     columns,
@@ -90,6 +86,10 @@ export function DataTable<TData extends { id?: string | number }>({
     enableRowSelection: !!bulkActions,
     getRowId: (row) => String(row.id ?? Math.random()),
   })
+
+  const selectedRows = useMemo(() => {
+    return table.getSelectedRowModel().rows.map((r) => r.original)
+  }, [rowSelection, table])
 
   if (isLoading) {
     return (

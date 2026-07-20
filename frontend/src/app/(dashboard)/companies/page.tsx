@@ -183,94 +183,80 @@ export default function CompaniesPage() {
     {
       header: "Name",
       accessorKey: "name" as const,
-      cell: (row: Company) => (
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <Building2 className="h-5 w-5 text-primary" />
+      cell: (info: any) => {
+        const row = info.row?.original || info;
+        return (
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <Building2 className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <div className="font-medium">{row.name}</div>
+              {row.email && (
+                <div className="text-sm text-muted-foreground">{row.email}</div>
+              )}
+            </div>
           </div>
-          <div>
-            <div className="font-medium">{row.name}</div>
-            {row.email && (
-              <div className="text-sm text-muted-foreground">{row.email}</div>
-            )}
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       header: "Registration #",
-      accessorKey: "registrationNumber" as const,
+      accessorKey: "registration_number" as const,
     },
     {
       header: "Tax ID",
-      accessorKey: "taxId" as const,
-      cell: (row: Company) => (
-        <span className="text-muted-foreground">{row.taxId || "-"}</span>
-      ),
-    },
-    {
-      header: "Currency",
-      accessorKey: "currency" as const,
-    },
-    {
-      header: "Branches",
-      accessorKey: "branchCount" as const,
-      cell: (row: Company) => (
-        <div className="flex items-center gap-1">
-          <MapPin className="h-4 w-4 text-muted-foreground" />
-          <span>{row.branchCount || 0}</span>
-        </div>
-      ),
-    },
-    {
-      header: "Employees",
-      accessorKey: "employeeCount" as const,
-      cell: (row: Company) => (
-        <div className="flex items-center gap-1">
-          <Users className="h-4 w-4 text-muted-foreground" />
-          <span>{row.employeeCount || 0}</span>
-        </div>
-      ),
+      accessorKey: "tax_number" as const,
+      cell: (info: any) => {
+        const row = info.row?.original || info;
+        return <span className="text-muted-foreground">{row.tax_number || "-"}</span>;
+      },
     },
     {
       header: "Status",
-      accessorKey: "status" as const,
-      cell: (row: Company) => (
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium",
-            row.status === "active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          )}
-        >
-          {row.status === "active" ? (
-            <CheckCircle2 className="h-3 w-3" />
-          ) : (
-            <XCircle className="h-3 w-3" />
-          )}
-          {row.status}
-        </span>
-      ),
+      accessorKey: "is_active" as const,
+      cell: (info: any) => {
+        const row = info.row?.original || info;
+        return (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium",
+              row.is_active
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            )}
+          >
+            {row.is_active ? (
+              <CheckCircle2 className="h-3 w-3" />
+            ) : (
+              <XCircle className="h-3 w-3" />
+            )}
+            {row.is_active ? "active" : "inactive"}
+          </span>
+        );
+      },
     },
     {
       header: "Actions",
-      cell: (row: Company) => (
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleEdit(row)}
-            className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <Edit className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => setDeletingCompany(row)}
-            className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-      ),
+      cell: (info: any) => {
+        const row = info.row?.original || info;
+        return (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleEdit(row)}
+              className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              <Edit className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setDeletingCompany(row)}
+              className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        );
+      },
     },
   ];
 
