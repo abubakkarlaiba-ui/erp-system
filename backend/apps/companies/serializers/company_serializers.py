@@ -44,10 +44,17 @@ class CompanySerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "slug", "created_at", "updated_at"]
 
     def get_branches_count(self, obj):
-        return obj.branches.count()
+        try:
+            return Branch.objects.filter(company=obj).count()
+        except Exception:
+            return 0
 
     def get_employees_count(self, obj):
-        return obj.employees.count()
+        try:
+            from apps.employees.models import Employee
+            return Employee.objects.filter(company=obj).count()
+        except Exception:
+            return 0
 
 
 class CompanyCreateUpdateSerializer(serializers.ModelSerializer):
