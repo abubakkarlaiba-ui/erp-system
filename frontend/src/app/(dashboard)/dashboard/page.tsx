@@ -35,6 +35,10 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 import StatsCard from "@/components/shared/StatsCard";
+import { useQuery } from "@tanstack/react-query";
+import { inventoryApi } from "@/features/inventory/api/inventoryApi";
+import { salesApi } from "@/features/sales/api/salesApi";
+import { accountingApi } from "@/features/accounting/api/accountingApi";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -163,6 +167,32 @@ const quickActions = [
 export default function DashboardPage() {
   const today = new Date();
 
+  const { data: lowStockData } = useQuery({
+    queryKey: ["dashboard", "low-stock"],
+    queryFn: () => inventoryApi.getLowStockProducts(),
+  });
+
+  const { data: salesData } = useQuery({
+    queryKey: ["dashboard", "sales-summary"],
+    queryFn: () => salesApi.salesOrders.list({ page_size: 100 }),
+  });
+
+  const { data: customerData } = useQuery({
+    queryKey: ["dashboard", "customers"],
+    queryFn: () => salesApi.customers.list({ page_size: 100 }),
+  });
+
+  const lowStockItems = (lowStockData?.data ?? []).map((item: any) => ({
+    name: item.product_name ?? item.name ?? "Unknown",
+    sku: item.sku ?? item.product_sku ?? "",
+    current: item.quantity ?? 0,
+    reorder: item.reorder_level ?? 0,
+  }));
+
+  const totalRevenue = (salesData?.data ?? []).reduce((sum: number, o: any) => sum + parseFloat(o.total ?? "0"), 0);
+  const totalCustomers = customerData?.data?.length ?? 0;
+  const totalOrders = salesData?.data?.length ?? 0;
+
   return (
     <motion.div
       variants={containerVariants}
@@ -185,28 +215,25 @@ export default function DashboardPage() {
       >
         <StatsCard
           title="Total Revenue"
-          value="$326,000"
+          value={`$${totalRevenue.toLocaleString()}`}
           icon={<DollarSign className="h-5 w-5" />}
           color="indigo"
-          change={12.5}
         />
         <StatsCard
-          title="Total Employees"
-          value="58"
+          title="Total Customers"
+          value={totalCustomers.toString()}
           icon={<Users className="h-5 w-5" />}
           color="emerald"
-          change={3}
         />
         <StatsCard
-          title="Active Products"
-          value="1,247"
+          title="Sales Orders"
+          value={totalOrders.toString()}
           icon={<Package className="h-5 w-5" />}
           color="amber"
-          change={-2}
         />
         <StatsCard
-          title="Pending Invoices"
-          value="23"
+          title="Low Stock Items"
+          value={lowStockItems.length.toString()}
           icon={<FileText className="h-5 w-5" />}
           color="rose"
         />
@@ -367,7 +394,9 @@ export default function DashboardPage() {
         >
           <h2 className="mb-4 text-lg font-semibold">Low Stock Alerts</h2>
           <div className="space-y-3">
-            {lowStockItems.map((item) => (
+            {lowStockItems.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No low stock items.</p>
+            ) : lowStockItems.map((item) => (
               <div
                 key={item.sku}
                 className="flex items-center justify-between rounded-lg border p-3"
