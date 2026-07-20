@@ -38,10 +38,12 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         set({ isLoading: true });
         try {
           const { api } = await import("@/lib/api");
-          const { setAuthToken } = await import("@/lib/api");
           const response = await api.post("/auth/login/", { email, password });
           const { access, refresh, user } = response.data;
-          setAuthToken(access);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("access_token", access);
+            if (refresh) localStorage.setItem("refresh_token", refresh);
+          }
           set({
             user,
             token: access,
@@ -78,6 +80,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       setTokens: (access: string, refresh: string) => {
         if (typeof window !== "undefined") {
           localStorage.setItem("access_token", access);
+          localStorage.setItem("refresh_token", refresh);
         }
         set({ token: access, refreshToken: refresh });
       },
