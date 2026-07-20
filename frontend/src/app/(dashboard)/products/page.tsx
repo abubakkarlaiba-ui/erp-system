@@ -91,9 +91,9 @@ export default function ProductsPage() {
     queryKey: ["products", search, categoryFilter],
     queryFn: () =>
       inventoryApi.getProducts({
-        perPage: 100,
-        search,
-        categoryId: categoryFilter === "all" ? undefined : categoryFilter,
+        page_size: 100,
+        search: search || undefined,
+        category: categoryFilter === "all" ? undefined : categoryFilter,
       }),
   });
 
@@ -155,14 +155,14 @@ export default function ProductsPage() {
     },
   });
 
-  const products = productsData?.data?.results ?? [];
-  const totalProducts = productsData?.data?.count ?? products.length;
+  const products = productsData?.data ?? [];
+  const totalProducts = productsData?.count ?? products.length;
   const activeCount = products.filter((p) => p.isActive).length;
   const lowStockCount = products.filter(
     (p) => p.stock > 0 && p.stock <= p.minStock
   ).length;
   const outOfStockCount = products.filter((p) => p.stock === 0).length;
-  const categoryList = categories?.data?.results ?? [];
+  const categoryList = categories?.data ?? [];
 
   const openCreate = () => {
     setEditingProduct(null);
@@ -405,8 +405,6 @@ export default function ProductsPage() {
           <DataTable
             columns={columns}
             data={products}
-            searchValue={search}
-            onSearchChange={setSearch}
             isLoading={isLoading}
           />
         </motion.div>
@@ -466,7 +464,7 @@ export default function ProductsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    {(brands?.data?.results ?? []).map((b) => (
+                    {(brands?.data ?? []).map((b) => (
                       <SelectItem key={b.id} value={b.id}>
                         {b.name}
                       </SelectItem>

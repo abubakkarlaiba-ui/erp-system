@@ -93,15 +93,15 @@ export default function StockMovementsPage() {
     queryKey: ["stock-movements", search, typeFilter],
     queryFn: () =>
       inventoryApi.getStockMovements({
-        perPage: 100,
-        search,
-        type: typeFilter === "all" ? undefined : typeFilter,
+        page_size: 100,
+        search: search || undefined,
+        movement_type: typeFilter === "all" ? undefined : typeFilter,
       }),
   });
 
   const { data: productsData } = useQuery({
     queryKey: ["products-list"],
-    queryFn: () => inventoryApi.getProducts({ perPage: 1000 }),
+    queryFn: () => inventoryApi.getProducts({ page_size: 1000 }),
   });
 
   const { data: warehouses } = useQuery({
@@ -137,11 +137,11 @@ export default function StockMovementsPage() {
     },
   });
 
-  const movements = movementsData?.data?.results ?? [];
-  const products = productsData?.data?.results ?? [];
-  const warehouseList = warehouses?.data?.results ?? [];
+  const movements = movementsData?.data ?? [];
+  const products = productsData?.data ?? [];
+  const warehouseList = warehouses?.data ?? [];
 
-  const totalMovements = movementsData?.data?.count ?? movements.length;
+  const totalMovements = movementsData?.count ?? movements.length;
   const purchases = movements.filter((m) => m.type === "purchase").length;
   const sales = movements.filter((m) => m.type === "sale").length;
   const transfers = movements.filter((m) => m.type === "transfer").length;

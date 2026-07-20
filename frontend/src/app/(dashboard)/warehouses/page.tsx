@@ -71,8 +71,8 @@ export default function WarehousesPage() {
     queryKey: ["warehouse-stock", selectedWarehouse?.id],
     queryFn: () =>
       inventoryApi.getStock({
-        perPage: 100,
-        warehouseId: selectedWarehouse!.id,
+        page_size: 100,
+        warehouse: selectedWarehouse!.id,
       }),
     enabled: !!selectedWarehouse,
   });
@@ -109,8 +109,8 @@ export default function WarehousesPage() {
     defaultValues: { name: "", code: "", address: "", city: "", manager: "", phone: "" },
   });
 
-  const warehouses = warehousesData?.data?.results ?? [];
-  const stock = stockData?.data?.results ?? [];
+  const warehouses = warehousesData?.data ?? [];
+  const stock = stockData?.data ?? [];
   const totalStock = warehouses.reduce((s, w) => s + w.totalStock, 0);
 
   const openCreate = () => {

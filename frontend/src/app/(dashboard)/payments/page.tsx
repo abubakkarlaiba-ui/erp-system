@@ -107,8 +107,8 @@ export default function PaymentsPage() {
     },
   });
 
-  const payments = paymentsData?.data?.results ?? [];
-  const totalPayments = paymentsData?.data?.count ?? payments.length;
+  const payments = paymentsData?.data ?? [];
+  const totalPayments = payments.length;
   const incomingAmount = payments
     .filter((p) => p.type === "incoming" && p.status === "completed")
     .reduce((s, p) => s + p.amount, 0);

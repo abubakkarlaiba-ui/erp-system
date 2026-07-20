@@ -157,8 +157,8 @@ export default function InvoicesPage() {
   );
   const total = subtotal + tax - discount;
 
-  const invoices = invoicesData?.data?.results ?? [];
-  const totalInvoices = invoicesData?.data?.count ?? invoices.length;
+  const invoices = invoicesData?.data ?? [];
+  const totalInvoices = invoices.length;
   const outstandingAmount = invoices
     .filter((i) => i.status === "pending" || i.status === "overdue")
     .reduce((s, i) => s + i.total, 0);
@@ -171,7 +171,7 @@ export default function InvoicesPage() {
     )
     .reduce((s, i) => s + i.total, 0);
 
-  const accounts = accountsData?.data?.results ?? [];
+  const accounts = accountsData?.data ?? [];
 
   const openCreate = () => {
     setEditingInvoice(null);
@@ -307,8 +307,6 @@ export default function InvoicesPage() {
             <DataTable
               columns={columns}
               data={invoices}
-              searchValue={search}
-              onSearchChange={setSearch}
               isLoading={isLoading}
             />
           </TabsContent>
@@ -316,8 +314,6 @@ export default function InvoicesPage() {
             <DataTable
               columns={columns}
               data={invoices}
-              searchValue={search}
-              onSearchChange={setSearch}
               isLoading={isLoading}
             />
           </TabsContent>

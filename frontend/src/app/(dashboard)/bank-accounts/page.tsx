@@ -104,8 +104,8 @@ export default function BankAccountsPage() {
     defaultValues: { name: "", accountNumber: "", bankName: "", currency: "USD" },
   });
 
-  const accounts = bankAccounts?.data?.results ?? [];
-  const transactions = transactionsData?.data?.results ?? [];
+  const accounts = bankAccounts?.data ?? [];
+  const transactions = transactionsData?.data ?? [];
   const totalBalance = accounts.reduce((s, a) => s + a.balance, 0);
 
   const onSubmit = (data: BankAccountFormData) => {
