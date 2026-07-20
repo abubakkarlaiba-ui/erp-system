@@ -165,79 +165,125 @@ export interface EmployeeShift {
 export const hrApi = {
   attendance: {
     get: (params?: AttendanceParams) =>
-      apiClient.get<{ data: AttendanceRecord[]; total: number }>("/hr/attendance/", { params }),
+      apiClient.get("/hr/attendance/", { params }).then((r) => {
+        const d = r.data;
+        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        return { data: results, count: d?.count ?? results.length };
+      }),
     clockIn: () =>
-      apiClient.post<AttendanceRecord>("/hr/attendance/clock-in/"),
+      apiClient.post("/hr/attendance/clock-in/"),
     clockOut: () =>
-      apiClient.post<AttendanceRecord>("/hr/attendance/clock-out/"),
+      apiClient.post("/hr/attendance/clock-out/"),
     mark: (data: { employeeId: string; date: string; status: string; checkIn?: string; checkOut?: string }) =>
-      apiClient.post<AttendanceRecord>("/hr/attendance/", data),
+      apiClient.post("/hr/attendance/", data),
   },
 
   leave: {
     getTypes: () =>
-      apiClient.get<LeaveType[]>("/hr/leave-types/"),
+      apiClient.get("/hr/leave-types/").then((r) => {
+        const d = r.data;
+        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        return { data: results };
+      }),
     getRequests: (params?: AttendanceParams) =>
-      apiClient.get<{ data: LeaveRequest[]; total: number }>("/hr/leave-requests/", { params }),
+      apiClient.get("/hr/leave-requests/", { params }).then((r) => {
+        const d = r.data;
+        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        return { data: results, count: d?.count ?? results.length };
+      }),
     createRequest: (data: { leaveTypeId: string; startDate: string; endDate: string; reason: string }) =>
-      apiClient.post<LeaveRequest>("/hr/leave-requests/", data),
+      apiClient.post("/hr/leave-requests/", data),
     approve: (id: string) =>
-      apiClient.put<LeaveRequest>(`/hr/leave-requests/${id}/approve/`),
+      apiClient.put(`/hr/leave-requests/${id}/approve/`),
     reject: (id: string) =>
-      apiClient.put<LeaveRequest>(`/hr/leave-requests/${id}/reject/`),
+      apiClient.put(`/hr/leave-requests/${id}/reject/`),
     getBalance: (employeeId: string) =>
-      apiClient.get<LeaveBalance>(`/hr/leave-requests/balance/${employeeId}/`),
+      apiClient.get(`/hr/leave-requests/balance/${employeeId}/`).then((r) => {
+        const d = r.data;
+        return { data: d?.data ?? d };
+      }),
   },
 
   payroll: {
     getPeriods: () =>
-      apiClient.get<PayrollPeriod[]>("/hr/payroll-periods/"),
+      apiClient.get("/hr/payroll-periods/").then((r) => {
+        const d = r.data;
+        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+      }),
     getPayslips: (params?: AttendanceParams) =>
-      apiClient.get<{ data: Payslip[]; total: number }>("/hr/payslips/", { params }),
+      apiClient.get("/hr/payslips/", { params }).then((r) => {
+        const d = r.data;
+        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        return { data: results, count: d?.count ?? results.length };
+      }),
     generatePayslip: (data: { periodId: string; employeeIds?: string[] }) =>
-      apiClient.post<Payslip[]>("/hr/payslips/", data),
+      apiClient.post("/hr/payslips/", data),
     getPayslip: (id: string) =>
-      apiClient.get<Payslip>(`/hr/payslips/${id}/`),
+      apiClient.get(`/hr/payslips/${id}/`),
   },
 
   salary: {
     getStructures: () =>
-      apiClient.get<SalaryStructure[]>("/hr/salary-structures/"),
+      apiClient.get("/hr/salary-structures/").then((r) => {
+        const d = r.data;
+        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+      }),
     createStructure: (data: Omit<SalaryStructure, "id">) =>
-      apiClient.post<SalaryStructure>("/hr/salary-structures/", data),
+      apiClient.post("/hr/salary-structures/", data),
   },
 
   training: {
     getAll: () =>
-      apiClient.get<Training[]>("/hr/trainings/"),
+      apiClient.get("/hr/trainings/").then((r) => {
+        const d = r.data;
+        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+      }),
     create: (data: Omit<Training, "id" | "currentParticipants" | "progress">) =>
-      apiClient.post<Training>("/hr/trainings/", data),
+      apiClient.post("/hr/trainings/", data),
     getAssignments: (id: string) =>
-      apiClient.get<TrainingAssignment[]>(`/hr/training-assignments/?training=${id}`),
+      apiClient.get(`/hr/training-assignments/?training=${id}`).then((r) => {
+        const d = r.data;
+        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+      }),
   },
 
   performance: {
     getReviews: (params?: AttendanceParams) =>
-      apiClient.get<{ data: PerformanceReview[]; total: number }>("/hr/performance-reviews/", { params }),
+      apiClient.get("/hr/performance-reviews/", { params }).then((r) => {
+        const d = r.data;
+        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        return { data: results, count: d?.count ?? results.length };
+      }),
     createReview: (data: Omit<PerformanceReview, "id" | "createdAt">) =>
-      apiClient.post<PerformanceReview>("/hr/performance-reviews/", data),
+      apiClient.post("/hr/performance-reviews/", data),
   },
 
   overtime: {
     getRequests: (params?: AttendanceParams) =>
-      apiClient.get<{ data: OvertimeRequest[]; total: number }>("/hr/overtimes/", { params }),
+      apiClient.get("/hr/overtimes/", { params }).then((r) => {
+        const d = r.data;
+        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        return { data: results, count: d?.count ?? results.length };
+      }),
     createRequest: (data: { employeeId: string; date: string; hours: number; reason: string }) =>
-      apiClient.post<OvertimeRequest>("/hr/overtimes/", data),
+      apiClient.post("/hr/overtimes/", data),
     approve: (id: string) =>
-      apiClient.put<OvertimeRequest>(`/hr/overtimes/${id}/approve/`),
+      apiClient.put(`/hr/overtimes/${id}/approve/`),
   },
 
   shifts: {
     getAll: () =>
-      apiClient.get<Shift[]>("/hr/shifts/"),
+      apiClient.get("/hr/shifts/").then((r) => {
+        const d = r.data;
+        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+      }),
     create: (data: Omit<Shift, "id">) =>
-      apiClient.post<Shift>("/hr/shifts/", data),
+      apiClient.post("/hr/shifts/", data),
     getEmployeeShifts: (params?: AttendanceParams) =>
-      apiClient.get<{ data: EmployeeShift[]; total: number }>("/hr/employee-shifts/", { params }),
+      apiClient.get("/hr/employee-shifts/", { params }).then((r) => {
+        const d = r.data;
+        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        return { data: results, count: d?.count ?? results.length };
+      }),
   },
 };

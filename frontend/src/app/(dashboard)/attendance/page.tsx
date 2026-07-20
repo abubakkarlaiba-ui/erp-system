@@ -53,7 +53,7 @@ export default function AttendancePage() {
   });
 
   const records: AttendanceRecord[] = useMemo(() => {
-    const raw = (attendanceData as any)?.data?.results ?? [];
+    const raw = (attendanceData as any)?.data ?? [];
     return raw.map((r: any) => ({
       id: String(r.id),
       employeeId: String(r.employee),

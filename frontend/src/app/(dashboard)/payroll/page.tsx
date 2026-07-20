@@ -62,7 +62,7 @@ export default function PayrollPage() {
     onError: () => toast.error("Failed to generate payslips"),
   });
 
-  const payslips = payslipsData?.data?.data ?? [];
+  const payslips = payslipsData?.data ?? [];
 
   const stats = {
     totalPayroll: payslips.reduce((a, b) => a + b.netPay, 0),
