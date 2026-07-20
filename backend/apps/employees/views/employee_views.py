@@ -66,7 +66,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = self.request.user
-        if not user.is_superuser and user.company:
+        if user.company:
             serializer.save(company=user.company)
         else:
             serializer.save()
