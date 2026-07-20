@@ -108,7 +108,7 @@ class PurchaseOrderItemSerializer(serializers.ModelSerializer):
             "total",
             "quantity_received",
         ]
-        read_only_fields = ["id", "total", "quantity_received"]
+        read_only_fields = ["id", "order", "total", "quantity_received"]
 
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
@@ -175,7 +175,7 @@ class GoodsReceiptItemSerializer(serializers.ModelSerializer):
             "expiry_date",
             "notes",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "receipt"]
 
 
 class GoodsReceiptSerializer(serializers.ModelSerializer):

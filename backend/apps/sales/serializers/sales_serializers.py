@@ -121,7 +121,7 @@ class QuotationItemSerializer(serializers.ModelSerializer):
             "discount",
             "total",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "quotation"]
 
 
 class QuotationSerializer(serializers.ModelSerializer):
@@ -183,7 +183,7 @@ class QuotationCreateSerializer(serializers.ModelSerializer):
             "created_by",
             "items",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "company", "created_by"]
 
     def create(self, validated_data):
         items_data = validated_data.pop("items", [])
@@ -222,7 +222,7 @@ class SalesOrderItemSerializer(serializers.ModelSerializer):
             "total",
             "quantity_delivered",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "order"]
 
 
 class SalesOrderSerializer(serializers.ModelSerializer):
@@ -288,7 +288,7 @@ class SalesOrderCreateSerializer(serializers.ModelSerializer):
             "created_by",
             "items",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "company", "created_by"]
 
     def create(self, validated_data):
         items_data = validated_data.pop("items", [])
