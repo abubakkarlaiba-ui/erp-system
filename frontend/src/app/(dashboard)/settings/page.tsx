@@ -119,11 +119,13 @@ export default function SettingsPage() {
 
   const uploadAvatarMutation = useMutation({
     mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append('avatar', file);
-      const res = await api.patch('/auth/profile/', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const b64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
+      const res = await api.patch('/auth/profile/', { avatar: b64 });
       return res.data;
     },
     onSuccess: (data) => {
