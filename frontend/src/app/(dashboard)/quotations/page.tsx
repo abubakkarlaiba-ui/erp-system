@@ -53,7 +53,28 @@ export default function QuotationsPage() {
   const { fields, append, remove } = useFieldArray({ control: form.control, name: 'items' });
 
   const createMutation = useMutation({
-    mutationFn: (data: QuotationFormData) => salesApi.quotations.create(data),
+    mutationFn: (data: QuotationFormData) => {
+      const today = new Date().toISOString().split('T')[0];
+      const payload = {
+        customer: data.customerId,
+        date: today,
+        valid_until: data.validUntil,
+        notes: data.notes || '',
+        discount_amount: data.discount || 0,
+        subtotal: data.items.reduce((s, i) => s + i.quantity * i.unitPrice, 0),
+        tax_amount: data.items.reduce((s, i) => s + i.quantity * i.unitPrice * (i.tax || 0) / 100, 0),
+        total: data.items.reduce((s, i) => s + i.quantity * i.unitPrice, 0) + data.items.reduce((s, i) => s + i.quantity * i.unitPrice * (i.tax || 0) / 100, 0) - (data.discount || 0),
+        items: data.items.map(i => ({
+          description: i.description,
+          quantity: i.quantity,
+          unit_price: i.unitPrice,
+          tax_rate: i.tax || 0,
+          discount: 0,
+          total: i.quantity * i.unitPrice,
+        })),
+      };
+      return salesApi.quotations.create(payload as any);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['quotations'] }); toast.success('Quotation created'); setDialogOpen(false); form.reset(); },
     onError: () => toast.error('Failed to create quotation'),
   });

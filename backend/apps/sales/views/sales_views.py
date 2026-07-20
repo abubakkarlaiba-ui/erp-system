@@ -204,10 +204,13 @@ class QuotationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         company_id = self.kwargs.get("company_pk")
+        kwargs = {}
         if company_id:
-            serializer.save(company_id=company_id)
-        else:
-            serializer.save()
+            kwargs["company_id"] = company_id
+        elif self.request.user.company:
+            kwargs["company"] = self.request.user.company
+        kwargs["created_by"] = self.request.user
+        serializer.save(**kwargs)
 
 
 @extend_schema_view(
@@ -264,10 +267,13 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         company_id = self.kwargs.get("company_pk")
+        kwargs = {}
         if company_id:
-            serializer.save(company_id=company_id)
-        else:
-            serializer.save()
+            kwargs["company_id"] = company_id
+        elif self.request.user.company:
+            kwargs["company"] = self.request.user.company
+        kwargs["created_by"] = self.request.user
+        serializer.save(**kwargs)
 
 
 @extend_schema_view(

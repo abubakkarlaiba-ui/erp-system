@@ -111,7 +111,6 @@ const navSections: NavItem[] = [
     icon: Settings,
     items: [
       { label: "Company Settings", href: "/settings" },
-      { label: "System Settings", href: "/settings" },
     ],
   },
 ]
