@@ -76,14 +76,14 @@ export default function LeavePage() {
     onError: () => toast.error("Failed to submit leave request"),
   });
 
-  const myRequests = myRequestsData?.data?.data ?? [];
-  const allRequests = allRequestsData?.data?.data ?? [];
+  const myRequests = myRequestsData?.data?.results ?? myRequestsData?.data?.data ?? (Array.isArray(myRequestsData?.data) ? myRequestsData.data : []);
+  const allRequests = allRequestsData?.data?.results ?? allRequestsData?.data?.data ?? (Array.isArray(allRequestsData?.data) ? allRequestsData.data : []);
 
   const stats = {
     pending: myRequests.filter((r) => r.status === "pending").length,
     approved: myRequests.filter((r) => r.status === "approved" && r.startDate.startsWith(format(new Date(), "yyyy-MM"))).length,
     rejected: myRequests.filter((r) => r.status === "rejected").length,
-    remaining: balanceData?.balances?.reduce((a, b) => a + b.remaining, 0) ?? 0,
+    remaining: balanceData?.data?.balances?.reduce((a: number, b: any) => a + b.remaining, 0) ?? balanceData?.balances?.reduce((a: number, b: any) => a + b.remaining, 0) ?? 0,
   };
 
   const myColumns = [
@@ -210,7 +210,7 @@ export default function LeavePage() {
 
           {activeTab === "Leave Types" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {(leaveTypes?.data ?? []).map((lt: LeaveType, i: number) => (
+              {(leaveTypes?.data?.results ?? leaveTypes?.data?.data ?? (Array.isArray(leaveTypes?.data) ? leaveTypes.data : [])).map((lt: LeaveType, i: number) => (
                 <motion.div
                   key={lt.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -309,7 +309,7 @@ export default function LeavePage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">Select leave type</option>
-                    {(leaveTypes?.data ?? []).map((lt: LeaveType) => (
+                    {(leaveTypes?.data?.results ?? leaveTypes?.data?.data ?? (Array.isArray(leaveTypes?.data) ? leaveTypes.data : [])).map((lt: LeaveType) => (
                       <option key={lt.id} value={lt.id}>{lt.name} ({lt.daysAllowed - lt.daysUsed} days left)</option>
                     ))}
                   </select>
