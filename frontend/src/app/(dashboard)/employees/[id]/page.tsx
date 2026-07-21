@@ -460,7 +460,7 @@ export default function EmployeeDetailPage({
                       ? "bg-blue-100 text-blue-700"
                       : skill.proficiency === "intermediate"
                       ? "bg-green-100 text-green-700"
-                      : "bg-gray-100 text-gray-700"
+                      : "bg-muted text-foreground"
                   )}
                 >
                   {skill.proficiency}
@@ -500,7 +500,7 @@ export default function EmployeeDetailPage({
                     ? "bg-blue-500"
                     : event.type === "resignation"
                     ? "bg-red-500"
-                    : "bg-gray-500"
+                    : "bg-muted0"
                 )}
               />
               <div className="rounded-xl border bg-card p-4">
@@ -573,7 +573,7 @@ export default function EmployeeDetailPage({
                         <div
                           className={cn(
                             "h-2 w-2 rounded-full",
-                            goal.completed ? "bg-green-500" : "bg-gray-300"
+                            goal.completed ? "bg-green-500" : "bg-muted"
                           )}
                         />
                         {goal.title}

@@ -376,7 +376,7 @@ export default function CompaniesPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-2xl rounded-xl border bg-white shadow-2xl p-6"
+              className="w-full max-w-2xl rounded-xl border bg-card shadow-2xl p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-lg font-semibold">
@@ -542,7 +542,7 @@ export default function CompaniesPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-xl border bg-white shadow-2xl p-6"
+              className="w-full max-w-md rounded-xl border bg-card shadow-2xl p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3">

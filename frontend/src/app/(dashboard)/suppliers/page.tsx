@@ -143,7 +143,7 @@ export default function SuppliersPage() {
                   <td className="p-4"><span className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-muted-foreground" />{s.phone}</span></td>
                   <td className="p-4 text-right">{formatCurrency(s.balance ?? 0)}</td>
                   <td className="p-4">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${s.status === 'active' ? 'bg-emerald-100 text-emerald-700' : s.status === 'inactive' ? 'bg-gray-100 text-gray-700' : 'bg-amber-100 text-amber-700'}`}>{s.status}</span>
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${s.status === 'active' ? 'bg-emerald-100 text-emerald-700' : s.status === 'inactive' ? 'bg-muted text-foreground' : 'bg-amber-100 text-amber-700'}`}>{s.status}</span>
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-1">
@@ -162,7 +162,7 @@ export default function SuppliersPage() {
       <AnimatePresence>
         {dialogOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-white shadow-2xl p-6 mx-4">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-card shadow-2xl p-6 mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">{editingSupplier ? 'Edit Supplier' : 'Add Supplier'}</h2>
                 <button onClick={() => { setDialogOpen(false); setEditingSupplier(null); }} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>
@@ -226,7 +226,7 @@ export default function SuppliersPage() {
       <AnimatePresence>
         {deleteConfirm && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-sm rounded-xl border bg-white shadow-2xl p-6 mx-4">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-sm rounded-xl border bg-card shadow-2xl p-6 mx-4">
               <h2 className="text-lg font-semibold mb-2">Delete Supplier</h2>
               <p className="text-sm text-muted-foreground mb-4">Are you sure you want to delete this supplier?</p>
               <div className="flex justify-end gap-3">

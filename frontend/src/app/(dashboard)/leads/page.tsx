@@ -42,7 +42,7 @@ const sourceColors: Record<string, string> = {
   cold_call: 'bg-amber-100 text-amber-700',
   social_media: 'bg-purple-100 text-purple-700',
   advertisement: 'bg-pink-100 text-pink-700',
-  other: 'bg-gray-100 text-gray-700',
+  other: 'bg-muted text-foreground',
 };
 
 export default function LeadsPage() {
@@ -178,7 +178,7 @@ export default function LeadsPage() {
                       <Mail className="h-3 w-3" />{lead.email}
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${sourceColors[lead.source] ?? 'bg-gray-100 text-gray-700'}`}>
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${sourceColors[lead.source] ?? 'bg-muted text-foreground'}`}>
                         {lead.source?.replace('_', ' ')}
                       </span>
                       {lead.value != null && lead.value > 0 && (
@@ -209,7 +209,7 @@ export default function LeadsPage() {
       <AnimatePresence>
         {dialogOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-white shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-card shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">{editingLead ? 'Edit Lead' : 'Add Lead'}</h2>
                 <button onClick={() => { setDialogOpen(false); setEditingLead(null); setSelectedLead(null); }} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>

@@ -105,7 +105,7 @@ export default function PurchaseOrdersPage() {
 
   const statusBadge = (status: string) => {
     const styles: Record<string, string> = { pending: 'bg-amber-100 text-amber-700', confirmed: 'bg-blue-100 text-blue-700', partial: 'bg-purple-100 text-purple-700', received: 'bg-emerald-100 text-emerald-700', cancelled: 'bg-red-100 text-red-700' };
-    return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] ?? 'bg-gray-100 text-gray-700'}`}>{status}</span>;
+    return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] ?? 'bg-muted text-foreground'}`}>{status}</span>;
   };
 
   const watchedItems = form.watch('items');
@@ -176,7 +176,7 @@ export default function PurchaseOrdersPage() {
       <AnimatePresence>
         {dialogOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-2xl rounded-xl border bg-white shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-2xl rounded-xl border bg-card shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">{editingPO ? 'Edit Purchase Order' : 'Create Purchase Order'}</h2>
                 <button onClick={() => { setDialogOpen(false); setEditingPO(null); }} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>

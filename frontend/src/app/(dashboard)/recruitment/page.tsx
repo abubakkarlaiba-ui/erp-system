@@ -101,10 +101,10 @@ export default function RecruitmentPage() {
           <div key={col.key} className="min-w-[280px] flex-1">
             <div className="flex items-center gap-2 mb-3">
               <div className={`w-2.5 h-2.5 rounded-full ${col.color}`} />
-              <h3 className="font-semibold text-gray-800 text-sm">{col.label}</h3>
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{grouped[col.key]?.length ?? 0}</span>
+              <h3 className="font-semibold text-foreground text-sm">{col.label}</h3>
+              <span className="text-xs bg-muted text-foreground px-2 py-0.5 rounded-full">{grouped[col.key]?.length ?? 0}</span>
             </div>
-            <div className="space-y-3 min-h-[200px] bg-gray-50 rounded-xl p-3">
+            <div className="space-y-3 min-h-[200px] bg-muted rounded-xl p-3">
               {grouped[col.key]?.map((candidate, i) => (
                 <motion.div
                   key={candidate.id}
@@ -117,25 +117,25 @@ export default function RecruitmentPage() {
                   dragElastic={0.1}
                   onDragEnd={() => {}}
                   onClick={() => setSelectedCandidate(candidate)}
-                  className={`bg-white rounded-xl p-4 border border-gray-200 border-l-4 ${statusCardColors[candidate.status]} shadow-sm hover:shadow-md transition-all cursor-pointer`}
+                  className={`bg-card rounded-xl p-4 border border-border border-l-4 ${statusCardColors[candidate.status]} shadow-sm hover:shadow-md transition-all cursor-pointer`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold text-sm">
                       {candidate.name.split(" ").map((n) => n[0]).join("")}
                     </div>
-                    <Eye className="w-4 h-4 text-gray-400" />
+                    <Eye className="w-4 h-4 text-muted-foreground" />
                   </div>
-                  <h4 className="font-medium text-gray-900 mt-3 text-sm">{candidate.name}</h4>
-                  <p className="text-xs text-gray-500 mt-0.5">{candidate.position}</p>
-                  <p className="text-xs text-gray-400 mt-1">{candidate.department}</p>
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                    <span className="text-[11px] text-gray-400">{format(parseISO(candidate.appliedDate), "MMM dd, yyyy")}</span>
-                    <span className="text-[11px] text-gray-500">{candidate.experience}</span>
+                  <h4 className="font-medium text-foreground mt-3 text-sm">{candidate.name}</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">{candidate.position}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{candidate.department}</p>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                    <span className="text-[11px] text-muted-foreground">{format(parseISO(candidate.appliedDate), "MMM dd, yyyy")}</span>
+                    <span className="text-[11px] text-muted-foreground">{candidate.experience}</span>
                   </div>
                 </motion.div>
               ))}
               {(!grouped[col.key] || grouped[col.key].length === 0) && (
-                <div className="text-center py-8 text-sm text-gray-400">No candidates</div>
+                <div className="text-center py-8 text-sm text-muted-foreground">No candidates</div>
               )}
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function RecruitmentPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg"
+              className="bg-card rounded-xl shadow-2xl p-6 w-full max-w-lg"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-start justify-between mb-6">
@@ -164,47 +164,47 @@ export default function RecruitmentPage() {
                     {selectedCandidate.name.split(" ").map((n) => n[0]).join("")}
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">{selectedCandidate.name}</h3>
-                    <p className="text-sm text-gray-500">{selectedCandidate.position}</p>
-                    <p className="text-xs text-gray-400">{selectedCandidate.department}</p>
+                    <h3 className="text-xl font-semibold text-foreground">{selectedCandidate.name}</h3>
+                    <p className="text-sm text-muted-foreground">{selectedCandidate.position}</p>
+                    <p className="text-xs text-muted-foreground">{selectedCandidate.department}</p>
                   </div>
                 </div>
-                <button onClick={() => setSelectedCandidate(null)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <X className="w-5 h-5 text-gray-500" />
+                <button onClick={() => setSelectedCandidate(null)} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                  <X className="w-5 h-5 text-muted-foreground" />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 mb-1">Email</p>
-                    <p className="text-sm font-medium text-gray-900">{selectedCandidate.email}</p>
+                  <div className="bg-muted rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-1">Email</p>
+                    <p className="text-sm font-medium text-foreground">{selectedCandidate.email}</p>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 mb-1">Phone</p>
-                    <p className="text-sm font-medium text-gray-900">{selectedCandidate.phone}</p>
+                  <div className="bg-muted rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-1">Phone</p>
+                    <p className="text-sm font-medium text-foreground">{selectedCandidate.phone}</p>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 mb-1">Experience</p>
-                    <p className="text-sm font-medium text-gray-900">{selectedCandidate.experience}</p>
+                  <div className="bg-muted rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-1">Experience</p>
+                    <p className="text-sm font-medium text-foreground">{selectedCandidate.experience}</p>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 mb-1">Education</p>
-                    <p className="text-sm font-medium text-gray-900">{selectedCandidate.education}</p>
+                  <div className="bg-muted rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-1">Education</p>
+                    <p className="text-sm font-medium text-foreground">{selectedCandidate.education}</p>
                   </div>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">Applied Date</p>
-                  <p className="text-sm font-medium text-gray-900">{format(parseISO(selectedCandidate.appliedDate), "MMMM dd, yyyy")}</p>
+                <div className="bg-muted rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground mb-1">Applied Date</p>
+                  <p className="text-sm font-medium text-foreground">{format(parseISO(selectedCandidate.appliedDate), "MMMM dd, yyyy")}</p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">Notes</p>
-                  <p className="text-sm text-gray-700">{selectedCandidate.notes}</p>
+                <div className="bg-muted rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground mb-1">Notes</p>
+                  <p className="text-sm text-foreground">{selectedCandidate.notes}</p>
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 mt-6">
-                <button onClick={() => setSelectedCandidate(null)} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                <button onClick={() => setSelectedCandidate(null)} className="px-4 py-2 text-foreground bg-muted rounded-lg hover:bg-muted transition-colors">
                   Close
                 </button>
                 <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
