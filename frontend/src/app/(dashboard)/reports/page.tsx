@@ -80,11 +80,42 @@ const REPORT_TYPES = [
 export default function ReportsPage() {
   const [activeReport, setActiveReport] = useState("revenue");
 
+  const exportCSV = () => {
+    let headers: string[] = [];
+    let rows: (string | number)[][] = [];
+
+    if (activeReport === "revenue") {
+      headers = ["Month", "Revenue", "Expenses", "Profit"];
+      rows = monthlyRevenue.map((r) => [r.month, r.revenue, r.expenses, r.profit]);
+    } else if (activeReport === "sales") {
+      headers = ["Category", "Share (%)"];
+      rows = salesByCategory.map((r) => [r.name, r.value]);
+    } else if (activeReport === "inventory") {
+      headers = ["Product", "Units Sold", "Revenue"];
+      rows = topProducts.map((p) => [p.name, p.sales, p.revenue]);
+    } else if (activeReport === "employees") {
+      headers = ["Metric", "Value"];
+      rows = [["Total Revenue", "$326,000"], ["Total Orders", "1,847"], ["Products Sold", "4,231"], ["Active Customers", "312"]];
+    } else if (activeReport === "invoices") {
+      headers = ["Metric", "Value"];
+      rows = [["Total Revenue", "$326,000"], ["Total Orders", "1,847"], ["Products Sold", "4,231"], ["Active Customers", "312"]];
+    }
+
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${activeReport}-report.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
       <motion.div variants={itemVariants} className="flex items-center justify-between">
         <PageHeader title="Reports & Analytics" />
-        <button className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90">
+        <button onClick={exportCSV} className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90">
           <Download className="h-4 w-4" /> Export Report
         </button>
       </motion.div>
