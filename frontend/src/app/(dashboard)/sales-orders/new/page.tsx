@@ -12,6 +12,7 @@ import PageHeader from '@/components/layout/PageHeader';
 import { salesApi } from '@/features/sales/api/salesApi';
 import { formatCurrency } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 
 const lineItemSchema = z.object({
@@ -52,6 +53,13 @@ export default function NewSalesOrderPage() {
   });
 
   const { fields, append, remove } = useFieldArray({ control: form.control, name: 'items' });
+
+  const { data: customersData } = useQuery({
+    queryKey: ['customers-list'],
+    queryFn: () => salesApi.customers.get({ page_size: 200 }),
+  });
+
+  const customerList = customersData?.results ?? [];
 
   const createMutation = useMutation({
     mutationFn: (data: Record<string, any>) => salesApi.orders.create(data),
@@ -135,12 +143,18 @@ export default function NewSalesOrderPage() {
           <h2 className="text-base font-semibold mb-4">Order Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Customer ID *</label>
-              <input
+              <label className="text-sm font-medium">Customer *</label>
+              <select
                 {...form.register('customerId')}
                 className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm"
-                placeholder="Enter customer ID"
-              />
+              >
+                <option value="">Select a customer</option>
+                {customerList.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
               {form.formState.errors.customerId && (
                 <p className="text-xs text-destructive mt-1">{form.formState.errors.customerId.message}</p>
               )}

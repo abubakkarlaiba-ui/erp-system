@@ -45,6 +45,13 @@ export default function QuotationsPage() {
     queryFn: () => salesApi.quotations.get({ search, status: statusFilter !== 'all' ? statusFilter : undefined, limit: 50 }),
   });
 
+  const { data: customersData } = useQuery({
+    queryKey: ['customers-list'],
+    queryFn: () => salesApi.customers.get({ page_size: 200 }),
+  });
+
+  const customerList = customersData?.results ?? [];
+
   const form = useForm<QuotationFormData>({
     resolver: zodResolver(quotationSchema),
     defaultValues: { customerId: '', reference: '', validUntil: '', notes: '', items: [{ description: '', quantity: 1, unitPrice: 0, tax: 0 }], discount: 0 },
@@ -224,8 +231,13 @@ export default function QuotationsPage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Customer ID</label>
-                    <input {...form.register('customerId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
+                    <label className="text-sm font-medium">Customer</label>
+                    <select {...form.register('customerId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
+                      <option value="">Select a customer</option>
+                      {customerList.map((c: any) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
                     {form.formState.errors.customerId && <p className="text-xs text-destructive mt-1">{form.formState.errors.customerId.message}</p>}
                   </div>
                   <div>
