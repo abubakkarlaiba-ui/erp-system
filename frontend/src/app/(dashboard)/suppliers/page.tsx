@@ -12,6 +12,7 @@ import PageHeader from '@/components/layout/PageHeader';
 import StatsCard from '@/components/shared/StatsCard';
 import { purchaseApi } from '@/features/purchase/api/purchaseApi';
 import { formatCurrency } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 
 const supplierSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -28,6 +29,8 @@ type SupplierFormData = z.infer<typeof supplierSchema>;
 
 export default function SuppliersPage() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const companyId = user?.company && typeof user.company === 'object' ? (user.company as any).id : user?.company;
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -45,13 +48,39 @@ export default function SuppliersPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: SupplierFormData) => purchaseApi.suppliers.create(data),
+    mutationFn: (data: SupplierFormData) => {
+      const payload: Record<string, any> = {
+        name: data.name,
+        contact_person: data.contactPerson,
+        email: data.email,
+        phone: data.phone,
+        address_line1: data.address || null,
+        balance: data.balance,
+        payment_terms: data.paymentTerms || null,
+        is_active: data.status === 'active',
+        company: companyId,
+      };
+      return purchaseApi.suppliers.create(payload as any);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['suppliers'] }); toast.success('Supplier created'); setDialogOpen(false); form.reset(); },
     onError: () => toast.error('Failed to create supplier'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: SupplierFormData }) => purchaseApi.suppliers.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: SupplierFormData }) => {
+      const payload: Record<string, any> = {
+        name: data.name,
+        contact_person: data.contactPerson,
+        email: data.email,
+        phone: data.phone,
+        address_line1: data.address || null,
+        balance: data.balance,
+        payment_terms: data.paymentTerms || null,
+        is_active: data.status === 'active',
+        company: companyId,
+      };
+      return purchaseApi.suppliers.update(id, payload as any);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['suppliers'] }); toast.success('Supplier updated'); setDialogOpen(false); setEditingSupplier(null); form.reset(); },
     onError: () => toast.error('Failed to update supplier'),
   });

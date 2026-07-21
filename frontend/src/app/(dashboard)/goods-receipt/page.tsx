@@ -11,7 +11,9 @@ import { toast } from 'sonner';
 import PageHeader from '@/components/layout/PageHeader';
 import StatsCard from '@/components/shared/StatsCard';
 import { purchaseApi } from '@/features/purchase/api/purchaseApi';
+import { inventoryApi } from '@/features/inventory/api/inventoryApi';
 import { formatDate } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 
 const receiptItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
@@ -35,6 +37,8 @@ type ReceiptFormData = z.infer<typeof receiptSchema>;
 
 export default function GoodsReceiptPage() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const companyId = user?.company && typeof user.company === 'object' ? (user.company as any).id : user?.company;
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -45,6 +49,19 @@ export default function GoodsReceiptPage() {
     queryKey: ['goods-receipts', search, statusFilter],
     queryFn: () => purchaseApi.receipts.get({ search, status: statusFilter !== 'all' ? statusFilter : undefined, limit: 50 }),
   });
+
+  const { data: poData } = useQuery({
+    queryKey: ['purchase-orders-list'],
+    queryFn: () => purchaseApi.orders.get({ page_size: 200 }),
+  });
+
+  const { data: warehousesData } = useQuery({
+    queryKey: ['warehouses-list'],
+    queryFn: () => inventoryApi.getWarehouses(),
+  });
+
+  const poList = poData?.data?.results ?? [];
+  const warehouseList = warehousesData?.data ?? [];
 
   const form = useForm<ReceiptFormData>({
     resolver: zodResolver(receiptSchema),
@@ -61,7 +78,27 @@ export default function GoodsReceiptPage() {
   const { fields, append, remove } = useFieldArray({ control: form.control, name: 'items' });
 
   const createMutation = useMutation({
-    mutationFn: (data: ReceiptFormData) => purchaseApi.receipts.create(data),
+    mutationFn: (data: ReceiptFormData) => {
+      const payload: Record<string, any> = {
+        purchase_order: data.purchaseOrderId,
+        warehouse: data.warehouseId,
+        company: companyId,
+        received_by: user?.id,
+        date: data.receivedDate,
+        reference: data.reference || null,
+        notes: data.notes || null,
+        status: 'pending',
+        items: data.items.map((item) => ({
+          description: item.description,
+          ordered_quantity: item.orderedQuantity,
+          received_quantity: item.receivedQuantity,
+          unit_price: item.unitPrice,
+          batch_number: item.batchNumber || null,
+          expiry_date: item.expiryDate || null,
+        })),
+      };
+      return purchaseApi.receipts.create(payload as any);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['goods-receipts'] }); toast.success('Goods receipt created'); setDialogOpen(false); form.reset(); },
     onError: () => toast.error('Failed to create goods receipt'),
   });
@@ -159,13 +196,23 @@ export default function GoodsReceiptPage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Purchase Order ID</label>
-                    <input {...form.register('purchaseOrderId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
+                    <label className="text-sm font-medium">Purchase Order</label>
+                    <select {...form.register('purchaseOrderId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
+                      <option value="">Select a purchase order</option>
+                      {poList.map((po: any) => (
+                        <option key={po.id} value={po.id}>{po.order_number ?? po.reference ?? po.id?.slice(0, 8)}</option>
+                      ))}
+                    </select>
                     {form.formState.errors.purchaseOrderId && <p className="text-xs text-destructive mt-1">{form.formState.errors.purchaseOrderId.message}</p>}
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Warehouse ID</label>
-                    <input {...form.register('warehouseId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
+                    <label className="text-sm font-medium">Warehouse</label>
+                    <select {...form.register('warehouseId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
+                      <option value="">Select a warehouse</option>
+                      {warehouseList.map((w: any) => (
+                        <option key={w.id} value={w.id}>{w.name}</option>
+                      ))}
+                    </select>
                     {form.formState.errors.warehouseId && <p className="text-xs text-destructive mt-1">{form.formState.errors.warehouseId.message}</p>}
                   </div>
                 </div>

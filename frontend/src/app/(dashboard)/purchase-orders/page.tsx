@@ -12,6 +12,7 @@ import PageHeader from '@/components/layout/PageHeader';
 import StatsCard from '@/components/shared/StatsCard';
 import { purchaseApi } from '@/features/purchase/api/purchaseApi';
 import { formatDate, formatCurrency } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 
 const lineItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
@@ -34,6 +35,8 @@ type POFormData = z.infer<typeof poSchema>;
 
 export default function PurchaseOrdersPage() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const companyId = user?.company && typeof user.company === 'object' ? (user.company as any).id : user?.company;
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -44,6 +47,13 @@ export default function PurchaseOrdersPage() {
     queryFn: () => purchaseApi.orders.get({ search, status: statusFilter !== 'all' ? statusFilter : undefined, limit: 50 }),
   });
 
+  const { data: suppliersData } = useQuery({
+    queryKey: ['suppliers-list'],
+    queryFn: () => purchaseApi.suppliers.get({ page_size: 200 }),
+  });
+
+  const supplierList = suppliersData?.data?.results ?? [];
+
   const form = useForm<POFormData>({
     resolver: zodResolver(poSchema),
     defaultValues: { supplierId: '', reference: '', orderDate: '', expectedDelivery: '', notes: '', items: [{ description: '', quantity: 1, unitPrice: 0, tax: 0 }], discount: 0 },
@@ -52,7 +62,32 @@ export default function PurchaseOrdersPage() {
   const { fields, append, remove } = useFieldArray({ control: form.control, name: 'items' });
 
   const createMutation = useMutation({
-    mutationFn: (data: POFormData) => purchaseApi.orders.create(data),
+    mutationFn: (data: POFormData) => {
+      const items = data.items.map((item) => ({
+        description: item.description,
+        quantity: item.quantity,
+        unit_price: item.unitPrice,
+        tax_rate: item.tax,
+        total: +(item.quantity * item.unitPrice + item.quantity * item.unitPrice * (item.tax / 100)).toFixed(2),
+      }));
+      const subtotal = items.reduce((s: number, i: any) => s + i.quantity * i.unit_price, 0);
+      const taxAmount = items.reduce((s: number, i: any) => s + i.quantity * i.unit_price * (i.tax_rate / 100), 0);
+      const payload: Record<string, any> = {
+        supplier: data.supplierId,
+        company: companyId,
+        created_by: user?.id,
+        date: data.orderDate,
+        required_date: data.expectedDelivery || null,
+        notes: data.notes || null,
+        status: 'draft',
+        subtotal: +subtotal.toFixed(2),
+        tax_amount: +taxAmount.toFixed(2),
+        discount_amount: data.discount,
+        total: +(subtotal + taxAmount - data.discount).toFixed(2),
+        items,
+      };
+      return purchaseApi.orders.create(payload as any);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['purchase-orders'] }); toast.success('Purchase order created'); setDialogOpen(false); form.reset(); },
     onError: () => toast.error('Failed to create purchase order'),
   });
@@ -184,8 +219,13 @@ export default function PurchaseOrdersPage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Supplier ID</label>
-                    <input {...form.register('supplierId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
+                    <label className="text-sm font-medium">Supplier</label>
+                    <select {...form.register('supplierId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
+                      <option value="">Select a supplier</option>
+                      {supplierList.map((s: any) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
                     {form.formState.errors.supplierId && <p className="text-xs text-destructive mt-1">{form.formState.errors.supplierId.message}</p>}
                   </div>
                   <div>
