@@ -70,6 +70,26 @@ export default function EmployeesPage() {
     queryFn: () => companyApi.getCompanies(),
   });
 
+  const companyId = companiesData?.results?.[0]?.id;
+
+  const { data: branchesData } = useQuery({
+    queryKey: ["branches", companyId],
+    queryFn: () => companyApi.getBranches(companyId!),
+    enabled: !!companyId,
+  });
+
+  const { data: departmentsData } = useQuery({
+    queryKey: ["departments", companyId],
+    queryFn: () => companyApi.getDepartments(companyId!),
+    enabled: !!companyId,
+  });
+
+  const { data: designationsData } = useQuery({
+    queryKey: ["designations", companyId],
+    queryFn: () => companyApi.getDesignations(companyId!),
+    enabled: !!companyId,
+  });
+
   const createMutation = useMutation({
     mutationFn: employeeApi.createEmployee,
     onSuccess: () => {
@@ -337,21 +357,9 @@ export default function EmployeesPage() {
     },
   ];
 
-  const departments = [
-    ...new Set(
-      (employeesData?.results || [])
-        .filter((e) => e.department)
-        .map((e) => `${e.department}`)
-    ),
-  ];
-
-  const branches = [
-    ...new Set(
-      (employeesData?.results || [])
-        .filter((e) => e.branch)
-        .map((e) => `${e.branch}`)
-    ),
-  ];
+  const departments = departmentsData?.results ?? [];
+  const branches = branchesData?.results ?? [];
+  const designations = designationsData?.results ?? [];
 
   return (
     <motion.div
@@ -427,9 +435,9 @@ export default function EmployeesPage() {
             className="rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Departments</option>
-            {departments.map((deptId) => (
-              <option key={deptId} value={deptId}>
-                {deptId}
+            {departments.map((dept: any) => (
+              <option key={dept.id} value={String(dept.id)}>
+                {dept.name}
               </option>
             ))}
           </select>
@@ -439,9 +447,9 @@ export default function EmployeesPage() {
             className="rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Branches</option>
-            {branches.map((branchId) => (
-              <option key={branchId} value={branchId}>
-                {branchId}
+            {branches.map((branch: any) => (
+              <option key={branch.id} value={String(branch.id)}>
+                {branch.name}
               </option>
             ))}
           </select>
@@ -581,6 +589,11 @@ export default function EmployeesPage() {
                       className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Select Branch</option>
+                      {branches.map((branch: any) => (
+                        <option key={branch.id} value={branch.id}>
+                          {branch.name}
+                        </option>
+                      ))}
                     </select>
                     {errors.branchId && (
                       <p className="text-xs text-destructive">
@@ -595,6 +608,11 @@ export default function EmployeesPage() {
                       className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Select Department</option>
+                      {departments.map((dept: any) => (
+                        <option key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </option>
+                      ))}
                     </select>
                     {errors.departmentId && (
                       <p className="text-xs text-destructive">
@@ -609,6 +627,11 @@ export default function EmployeesPage() {
                       className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Select Designation</option>
+                      {designations.map((desig: any) => (
+                        <option key={desig.id} value={desig.id}>
+                          {desig.name}
+                        </option>
+                      ))}
                     </select>
                     {errors.designationId && (
                       <p className="text-xs text-destructive">
