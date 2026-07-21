@@ -165,8 +165,8 @@ export default function CompaniesPage() {
   const filteredCompanies = (companiesData?.results || []).filter((company) => {
     const matchesSearch =
       company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      company.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      company.taxId?.toLowerCase().includes(searchQuery.toLowerCase());
+      (company.registrationNumber ?? (company as any).registration_number ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (company.taxId ?? (company as any).tax_number ?? '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || company.status === statusFilter;
     return matchesSearch && matchesStatus;
