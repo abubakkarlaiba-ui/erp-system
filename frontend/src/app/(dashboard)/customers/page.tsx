@@ -12,6 +12,7 @@ import PageHeader from '@/components/layout/PageHeader';
 import StatsCard from '@/components/shared/StatsCard';
 import { salesApi } from '@/features/sales/api/salesApi';
 import { formatCurrency } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 import type { Customer } from '@/types';
 
 const customerSchema = z.object({
@@ -29,6 +30,8 @@ type CustomerFormData = z.infer<typeof customerSchema>;
 
 export default function CustomersPage() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const companyId = user?.company && typeof user.company === 'object' ? (user.company as any).id : user?.company;
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -46,13 +49,38 @@ export default function CustomersPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: CustomerFormData) => salesApi.customers.create(data),
+    mutationFn: (data: CustomerFormData) => {
+      const payload: Record<string, any> = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        customer_type: 'individual',
+        company: companyId,
+        credit_limit: data.creditLimit,
+        balance: data.balance,
+        is_active: data.status === 'active',
+        city: data.address || null,
+      };
+      return salesApi.customers.create(payload as any);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['customers'] }); toast.success('Customer created'); setDialogOpen(false); form.reset(); },
     onError: () => toast.error('Failed to create customer'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: CustomerFormData }) => salesApi.customers.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: CustomerFormData }) => {
+      const payload: Record<string, any> = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        company: companyId,
+        credit_limit: data.creditLimit,
+        balance: data.balance,
+        is_active: data.status === 'active',
+        city: data.address || null,
+      };
+      return salesApi.customers.update(id, payload as any);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['customers'] }); toast.success('Customer updated'); setDialogOpen(false); setEditingCustomer(null); form.reset(); },
     onError: () => toast.error('Failed to update customer'),
   });
