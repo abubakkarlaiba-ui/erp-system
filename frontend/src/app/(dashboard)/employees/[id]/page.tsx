@@ -122,7 +122,7 @@ export default function EmployeeDetailPage({
       <div className="space-y-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          className="flex items-center gap-2 text-sm text-gray-500 hover:text-black"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
@@ -139,45 +139,45 @@ export default function EmployeeDetailPage({
   const renderOverview = () => (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-xl border bg-card p-6">
+        <div className="rounded-xl border bg-white p-6">
           <h3 className="text-lg font-semibold">Personal Information</h3>
           <div className="mt-4 space-y-4">
             <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-muted-foreground" />
+              <User className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">Full Name</div>
+                <div className="text-sm text-gray-500">Full Name</div>
                 <div className="font-medium">
                   {employee.firstName} {employee.lastName}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Mail className="h-5 w-5 text-muted-foreground" />
+              <Mail className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">Email</div>
+                <div className="text-sm text-gray-500">Email</div>
                 <div className="font-medium">{employee.email}</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Phone className="h-5 w-5 text-muted-foreground" />
+              <Phone className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">Phone</div>
+                <div className="text-sm text-gray-500">Phone</div>
                 <div className="font-medium">{employee.phone || "-"}</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-muted-foreground" />
+              <MapPin className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">Address</div>
+                <div className="text-sm text-gray-500">Address</div>
                 <div className="font-medium">
                   {employee.address || "-"}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
+              <Calendar className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-gray-500">
                   Date of Birth
                 </div>
                 <div className="font-medium">
@@ -190,13 +190,13 @@ export default function EmployeeDetailPage({
           </div>
         </div>
 
-        <div className="rounded-xl border bg-card p-6">
+        <div className="rounded-xl border bg-white p-6">
           <h3 className="text-lg font-semibold">Employment Information</h3>
           <div className="mt-4 space-y-4">
             <div className="flex items-center gap-3">
-              <Briefcase className="h-5 w-5 text-muted-foreground" />
+              <Briefcase className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-gray-500">
                   Employee ID
                 </div>
                 <div className="font-mono font-medium">
@@ -205,18 +205,18 @@ export default function EmployeeDetailPage({
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Building2 className="h-5 w-5 text-muted-foreground" />
+              <Building2 className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">Department</div>
+                <div className="text-sm text-gray-500">Department</div>
                 <div className="font-medium">
                   {employee.department?.name || "-"}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Award className="h-5 w-5 text-muted-foreground" />
+              <Award className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-gray-500">
                   Designation
                 </div>
                 <div className="font-medium">
@@ -225,18 +225,18 @@ export default function EmployeeDetailPage({
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-muted-foreground" />
+              <MapPin className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">Branch</div>
+                <div className="text-sm text-gray-500">Branch</div>
                 <div className="font-medium">
                   {employee.branch?.name || "-"}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
+              <Calendar className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-gray-500">
                   Joining Date
                 </div>
                 <div className="font-medium">
@@ -245,9 +245,9 @@ export default function EmployeeDetailPage({
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <TrendingUp className="h-5 w-5 text-muted-foreground" />
+              <TrendingUp className="h-5 w-5 text-gray-500" />
               <div>
-                <div className="text-sm text-muted-foreground">Salary</div>
+                <div className="text-sm text-gray-500">Salary</div>
                 <div className="font-medium">
                   {employee.salary
                     ? formatCurrency(employee.salary)
@@ -261,7 +261,7 @@ export default function EmployeeDetailPage({
 
       {employee.emergencyContacts &&
         employee.emergencyContacts.length > 0 && (
-          <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-xl border bg-white p-6">
             <h3 className="text-lg font-semibold">Emergency Contacts</h3>
             <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {employee.emergencyContacts.map((contact, index) => (
@@ -270,12 +270,12 @@ export default function EmployeeDetailPage({
                   className="rounded-lg border p-4"
                 >
                   <div className="font-medium">{contact.name}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-gray-500">
                     {contact.relationship}
                   </div>
                   <div className="mt-2 text-sm">{contact.phone}</div>
                   {contact.email && (
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-gray-500">
                       {contact.email}
                     </div>
                   )}
@@ -300,7 +300,7 @@ export default function EmployeeDetailPage({
           {documentsData?.data?.map((doc) => (
             <div
               key={doc.id}
-              className="flex items-center justify-between rounded-xl border bg-card p-4"
+              className="flex items-center justify-between rounded-xl border bg-white p-4"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
@@ -308,7 +308,7 @@ export default function EmployeeDetailPage({
                 </div>
                 <div>
                   <div className="font-medium">{doc.name}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-gray-500">
                     {doc.type} • {formatDate(doc.uploadedAt)}
                   </div>
                 </div>
@@ -316,7 +316,7 @@ export default function EmployeeDetailPage({
               <a
                 href={doc.url}
                 download
-                className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-black"
               >
                 <Download className="h-4 w-4" />
               </a>
@@ -340,12 +340,12 @@ export default function EmployeeDetailPage({
           {contractsData?.data?.map((contract) => (
             <div
               key={contract.id}
-              className="rounded-xl border bg-card p-6"
+              className="rounded-xl border bg-white p-6"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">{contract.title}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-gray-500">
                     {contract.type}
                   </div>
                 </div>
@@ -364,13 +364,13 @@ export default function EmployeeDetailPage({
               </div>
               <div className="mt-4 grid gap-4 text-sm md:grid-cols-3">
                 <div>
-                  <div className="text-muted-foreground">Start Date</div>
+                  <div className="text-gray-500">Start Date</div>
                   <div className="font-medium">
                     {formatDate(contract.startDate)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-muted-foreground">End Date</div>
+                  <div className="text-gray-500">End Date</div>
                   <div className="font-medium">
                     {contract.endDate
                       ? formatDate(contract.endDate)
@@ -378,7 +378,7 @@ export default function EmployeeDetailPage({
                   </div>
                 </div>
                 <div>
-                  <div className="text-muted-foreground">Salary</div>
+                  <div className="text-gray-500">Salary</div>
                   <div className="font-medium">
                     {contract.salary
                       ? formatCurrency(contract.salary)
@@ -406,16 +406,16 @@ export default function EmployeeDetailPage({
           {educationData?.data?.map((edu) => (
             <div
               key={edu.id}
-              className="rounded-xl border bg-card p-6"
+              className="rounded-xl border bg-white p-6"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <div className="font-medium">{edu.degree}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-gray-500">
                     {edu.institution}
                   </div>
                 </div>
-                <div className="text-right text-sm text-muted-foreground">
+                <div className="text-right text-sm text-gray-500">
                   {edu.startYear} - {edu.endYear || "Present"}
                 </div>
               </div>
@@ -447,7 +447,7 @@ export default function EmployeeDetailPage({
           {skillsData?.data?.map((skill) => (
             <div
               key={skill.id}
-              className="rounded-xl border bg-card p-4"
+              className="rounded-xl border bg-white p-4"
             >
               <div className="flex items-center justify-between">
                 <div className="font-medium">{skill.name}</div>
@@ -460,14 +460,14 @@ export default function EmployeeDetailPage({
                       ? "bg-blue-100 text-blue-700"
                       : skill.proficiency === "intermediate"
                       ? "bg-green-100 text-green-700"
-                      : "bg-muted text-foreground"
+                      : "bg-gray-100 text-black"
                   )}
                 >
                   {skill.proficiency}
                 </span>
               </div>
               {skill.yearsOfExperience && (
-                <div className="mt-2 text-sm text-muted-foreground">
+                <div className="mt-2 text-sm text-gray-500">
                   {skill.yearsOfExperience} years of experience
                 </div>
               )}
@@ -500,24 +500,24 @@ export default function EmployeeDetailPage({
                     ? "bg-blue-500"
                     : event.type === "resignation"
                     ? "bg-red-500"
-                    : "bg-muted0"
+                    : "bg-gray-1000"
                 )}
               />
-              <div className="rounded-xl border bg-card p-4">
+              <div className="rounded-xl border bg-white p-4">
                 <div className="flex items-center justify-between">
                   <div className="font-medium capitalize">{event.type}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-gray-500">
                     {formatDate(event.date)}
                   </div>
                 </div>
                 {event.description && (
-                  <div className="mt-2 text-sm text-muted-foreground">
+                  <div className="mt-2 text-sm text-gray-500">
                     {event.description}
                   </div>
                 )}
                 {event.fromValue && event.toValue && (
                   <div className="mt-2 text-sm">
-                    <span className="text-muted-foreground">
+                    <span className="text-gray-500">
                       {event.fromValue}
                     </span>
                     <span className="mx-2">→</span>
@@ -540,12 +540,12 @@ export default function EmployeeDetailPage({
           {employee.performanceReviews.map((review) => (
             <div
               key={review.id}
-              className="rounded-xl border bg-card p-6"
+              className="rounded-xl border bg-white p-6"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">{review.period}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-gray-500">
                     Review by {review.reviewer}
                   </div>
                 </div>
@@ -557,7 +557,7 @@ export default function EmployeeDetailPage({
                 </div>
               </div>
               {review.comments && (
-                <div className="mt-4 rounded-lg bg-muted p-4 text-sm">
+                <div className="mt-4 rounded-lg bg-gray-100 p-4 text-sm">
                   {review.comments}
                 </div>
               )}
@@ -568,12 +568,12 @@ export default function EmployeeDetailPage({
                     {review.goals.map((goal, i) => (
                       <li
                         key={i}
-                        className="flex items-center gap-2 text-sm text-muted-foreground"
+                        className="flex items-center gap-2 text-sm text-gray-500"
                       >
                         <div
                           className={cn(
                             "h-2 w-2 rounded-full",
-                            goal.completed ? "bg-green-500" : "bg-muted"
+                            goal.completed ? "bg-green-500" : "bg-gray-100"
                           )}
                         />
                         {goal.title}
@@ -627,7 +627,7 @@ export default function EmployeeDetailPage({
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          className="flex items-center gap-2 text-sm text-gray-500 hover:text-black"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
@@ -641,7 +641,7 @@ export default function EmployeeDetailPage({
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push(`/employees/${params.id}/edit`)}
-            className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+            className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-100"
           >
             <Edit className="h-4 w-4" />
             Edit
@@ -659,7 +659,7 @@ export default function EmployeeDetailPage({
 
       <div className="flex flex-col gap-6 md:flex-row">
         <div className="w-full md:w-64 shrink-0">
-          <div className="rounded-xl border bg-card p-6 text-center">
+          <div className="rounded-xl border bg-white p-6 text-center">
             <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
               {employee.avatar ? (
                 <img
@@ -674,26 +674,26 @@ export default function EmployeeDetailPage({
             <h2 className="mt-4 text-lg font-semibold">
               {employee.firstName} {employee.lastName}
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-500">
               {employee.designation?.name || "No designation"}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-500">
               {employee.department?.name || "No department"}
             </p>
             <div className="mt-4 space-y-2 text-sm text-left">
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
+                <Mail className="h-4 w-4 text-gray-500" />
                 <span className="truncate">{employee.email}</span>
               </div>
               {employee.phone && (
                 <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <Phone className="h-4 w-4 text-gray-500" />
                   <span>{employee.phone}</span>
                 </div>
               )}
               {employee.branch && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <MapPin className="h-4 w-4 text-gray-500" />
                   <span>{employee.branch.name}</span>
                 </div>
               )}
@@ -716,7 +716,7 @@ export default function EmployeeDetailPage({
         </div>
 
         <div className="flex-1">
-          <div className="flex flex-wrap gap-1 rounded-lg border bg-muted p-1">
+          <div className="flex flex-wrap gap-1 rounded-lg border bg-gray-100 p-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -726,8 +726,8 @@ export default function EmployeeDetailPage({
                   className={cn(
                     "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                     activeTab === tab.id
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-white text-black shadow-sm"
+                      : "text-gray-500 hover:text-black"
                   )}
                 >
                   <Icon className="h-4 w-4" />

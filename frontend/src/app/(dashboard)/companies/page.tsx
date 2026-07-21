@@ -193,7 +193,7 @@ export default function CompaniesPage() {
             <div>
               <div className="font-medium">{row.name}</div>
               {row.email && (
-                <div className="text-sm text-muted-foreground">{row.email}</div>
+                <div className="text-sm text-gray-500">{row.email}</div>
               )}
             </div>
           </div>
@@ -209,7 +209,7 @@ export default function CompaniesPage() {
       accessorKey: "tax_number" as const,
       cell: (info: any) => {
         const row = info.row?.original || info;
-        return <span className="text-muted-foreground">{row.tax_number || "-"}</span>;
+        return <span className="text-gray-500">{row.tax_number || "-"}</span>;
       },
     },
     {
@@ -244,13 +244,13 @@ export default function CompaniesPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleEdit(row)}
-              className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-black"
             >
               <Edit className="h-4 w-4" />
             </button>
             <button
               onClick={() => setDeletingCompany(row)}
-              className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+              className="rounded-md p-2 text-gray-500 hover:bg-destructive/10 hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -306,21 +306,21 @@ export default function CompaniesPage() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             placeholder="Search companies..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border bg-background pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full rounded-lg border bg-white pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Filter className="h-4 w-4 text-gray-500" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -376,7 +376,7 @@ export default function CompaniesPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-2xl rounded-xl border bg-card shadow-2xl p-6"
+              className="w-full max-w-2xl rounded-xl border bg-white shadow-2xl p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-lg font-semibold">
@@ -388,7 +388,7 @@ export default function CompaniesPage() {
                     <label className="text-sm font-medium">Name *</label>
                     <input
                       {...register("name")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.name && (
                       <p className="text-xs text-destructive">{errors.name.message}</p>
@@ -398,7 +398,7 @@ export default function CompaniesPage() {
                     <label className="text-sm font-medium">Registration # *</label>
                     <input
                       {...register("registrationNumber")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.registrationNumber && (
                       <p className="text-xs text-destructive">
@@ -410,14 +410,14 @@ export default function CompaniesPage() {
                     <label className="text-sm font-medium">Tax ID</label>
                     <input
                       {...register("taxId")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Currency *</label>
                     <input
                       {...register("currency")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.currency && (
                       <p className="text-xs text-destructive">
@@ -430,7 +430,7 @@ export default function CompaniesPage() {
                     <input
                       {...register("email")}
                       type="email"
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.email && (
                       <p className="text-xs text-destructive">{errors.email.message}</p>
@@ -440,14 +440,14 @@ export default function CompaniesPage() {
                     <label className="text-sm font-medium">Phone</label>
                     <input
                       {...register("phone")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Website</label>
                     <input
                       {...register("website")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.website && (
                       <p className="text-xs text-destructive">
@@ -459,7 +459,7 @@ export default function CompaniesPage() {
                     <label className="text-sm font-medium">Status *</label>
                     <select
                       {...register("status")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
@@ -470,7 +470,7 @@ export default function CompaniesPage() {
                   <label className="text-sm font-medium">Address</label>
                   <input
                     {...register("address")}
-                    className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-4">
@@ -478,28 +478,28 @@ export default function CompaniesPage() {
                     <label className="text-sm font-medium">City</label>
                     <input
                       {...register("city")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">State</label>
                     <input
                       {...register("state")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Country</label>
                     <input
                       {...register("country")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Postal Code</label>
                     <input
                       {...register("postalCode")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
                 </div>
@@ -507,7 +507,7 @@ export default function CompaniesPage() {
                   <button
                     type="button"
                     onClick={() => setIsDialogOpen(false)}
-                    className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+                    className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-100"
                   >
                     Cancel
                   </button>
@@ -542,7 +542,7 @@ export default function CompaniesPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-xl border bg-card shadow-2xl p-6"
+              className="w-full max-w-md rounded-xl border bg-white shadow-2xl p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3">
@@ -551,7 +551,7 @@ export default function CompaniesPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold">Delete Company</h2>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-500">
                     Are you sure you want to delete {deletingCompany.name}? This
                     action cannot be undone.
                   </p>
@@ -560,7 +560,7 @@ export default function CompaniesPage() {
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   onClick={() => setDeletingCompany(null)}
-                  className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+                  className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-100"
                 >
                   Cancel
                 </button>

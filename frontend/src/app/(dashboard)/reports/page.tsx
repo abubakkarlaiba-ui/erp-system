@@ -97,7 +97,7 @@ export default function ReportsPage() {
             className={`flex items-center gap-2 whitespace-nowrap rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
               activeReport === report.id
                 ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card text-muted-foreground hover:bg-muted"
+                : "border-gray-200 bg-white text-gray-500 hover:bg-gray-100"
             }`}
           >
             <report.icon className="h-4 w-4" />
@@ -114,7 +114,7 @@ export default function ReportsPage() {
       </motion.div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <motion.div variants={itemVariants} className="rounded-xl border bg-card p-6">
+        <motion.div variants={itemVariants} className="rounded-xl border bg-white p-6">
           <h2 className="mb-4 text-lg font-semibold">Revenue Trend</h2>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -136,7 +136,7 @@ export default function ReportsPage() {
           </div>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="rounded-xl border bg-card p-6">
+        <motion.div variants={itemVariants} className="rounded-xl border bg-white p-6">
           <h2 className="mb-4 text-lg font-semibold">Sales by Category</h2>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -147,19 +147,19 @@ export default function ReportsPage() {
                   ))}
                 </Pie>
                 <Tooltip contentStyle={{ borderRadius: "0.5rem", border: "1px solid var(--border)", background: "var(--card)" }} formatter={(v: number) => [`${v}%`, "Share"]} />
-                <Legend verticalAlign="bottom" height={36} iconType="circle" iconSize={8} formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>} />
+                <Legend verticalAlign="bottom" height={36} iconType="circle" iconSize={8} formatter={(value) => <span className="text-xs text-gray-500">{value}</span>} />
               </RePie>
             </ResponsiveContainer>
           </div>
         </motion.div>
       </div>
 
-      <motion.div variants={itemVariants} className="rounded-xl border bg-card p-6">
+      <motion.div variants={itemVariants} className="rounded-xl border bg-white p-6">
         <h2 className="mb-4 text-lg font-semibold">Top Selling Products</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b text-left text-muted-foreground">
+              <tr className="border-b text-left text-gray-500">
                 <th className="pb-3 font-medium">Product</th>
                 <th className="pb-3 font-medium text-right">Units Sold</th>
                 <th className="pb-3 font-medium text-right">Revenue</th>

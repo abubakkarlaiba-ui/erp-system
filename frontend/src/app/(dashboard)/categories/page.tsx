@@ -70,7 +70,7 @@ function CategoryTree({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 border-b hover:bg-muted/50",
+              "flex items-center gap-2 px-4 py-2.5 border-b hover:bg-gray-50",
               level > 0 && "border-l-2 border-l-muted"
             )}
             style={{ paddingLeft: `${(level + 1) * 1.5}rem` }}
@@ -78,7 +78,7 @@ function CategoryTree({
             {cat.children && cat.children.length > 0 ? (
               <button
                 onClick={() => onToggle(cat.id)}
-                className="p-0.5 hover:bg-muted rounded"
+                className="p-0.5 hover:bg-gray-100 rounded"
               >
                 {expanded.has(cat.id) ? (
                   <ChevronDown className="h-4 w-4" />
@@ -89,9 +89,9 @@ function CategoryTree({
             ) : (
               <span className="w-5" />
             )}
-            <FolderTree className="h-4 w-4 text-muted-foreground" />
+            <FolderTree className="h-4 w-4 text-gray-500" />
             <span className="flex-1 font-medium">{cat.name}</span>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-gray-500">
               {cat.productCount} products
             </span>
             <Badge variant={cat.isActive ? "default" : "secondary"}>
@@ -246,9 +246,9 @@ export default function CategoriesPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-lg border bg-card"
+        className="rounded-lg border bg-white"
       >
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b bg-muted/30 text-sm font-medium text-muted-foreground">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b bg-gray-100/30 text-sm font-medium text-gray-500">
           <span className="w-5" />
           <span className="w-5" />
           <span className="flex-1">Name</span>
@@ -266,7 +266,7 @@ export default function CategoriesPage() {
         />
 
         {categories.length === 0 && !isLoading && (
-          <div className="px-4 py-12 text-center text-muted-foreground">
+          <div className="px-4 py-12 text-center text-gray-500">
             No categories found
           </div>
         )}

@@ -264,9 +264,9 @@ export default function ExpensesPage() {
             </div>
             <div className="space-y-2">
               <Label>Receipt (optional)</Label>
-              <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
+              <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors">
+                <Upload className="h-8 w-8 mx-auto mb-2 text-gray-500" />
+                <p className="text-sm text-gray-500">
                   Click to upload receipt
                 </p>
               </div>

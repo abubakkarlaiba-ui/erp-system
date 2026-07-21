@@ -112,7 +112,7 @@ export default function NewSalesOrderPage() {
       <div className="mb-4">
         <Link
           href="/sales-orders"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Sales Orders
@@ -131,14 +131,14 @@ export default function NewSalesOrderPage() {
       )}
 
       <form onSubmit={form.handleSubmit(onSubmit, () => toast.error('Please fill in all required fields'))} className="space-y-6">
-        <div className="rounded-xl border bg-card p-6">
+        <div className="rounded-xl border bg-white p-6">
           <h2 className="text-base font-semibold mb-4">Order Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">Customer ID *</label>
               <input
                 {...form.register('customerId')}
-                className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm"
                 placeholder="Enter customer ID"
               />
               {form.formState.errors.customerId && (
@@ -149,7 +149,7 @@ export default function NewSalesOrderPage() {
               <label className="text-sm font-medium">Reference</label>
               <input
                 {...form.register('reference')}
-                className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm"
                 placeholder="e.g. SO-001"
               />
             </div>
@@ -158,7 +158,7 @@ export default function NewSalesOrderPage() {
               <input
                 {...form.register('orderDate')}
                 type="date"
-                className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
               {form.formState.errors.orderDate && (
                 <p className="text-xs text-destructive mt-1">{form.formState.errors.orderDate.message}</p>
@@ -169,13 +169,13 @@ export default function NewSalesOrderPage() {
               <input
                 {...form.register('expectedDelivery')}
                 type="date"
-                className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border bg-card p-6">
+        <div className="rounded-xl border bg-white p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold">Line Items</h2>
             <button
@@ -196,11 +196,11 @@ export default function NewSalesOrderPage() {
             {fields.map((field, index) => (
               <div key={field.id} className="grid grid-cols-12 gap-2 items-end">
                 <div className="col-span-5">
-                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Description *</label>}
+                  {index === 0 && <label className="text-xs text-gray-500 mb-1 block">Description *</label>}
                   <input
                     {...form.register(`items.${index}.description`)}
                     placeholder="Item description"
-                    className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border bg-white px-3 py-2 text-sm"
                   />
                   {form.formState.errors.items?.[index]?.description && (
                     <p className="text-xs text-destructive mt-1">
@@ -209,39 +209,39 @@ export default function NewSalesOrderPage() {
                   )}
                 </div>
                 <div className="col-span-2">
-                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Qty *</label>}
+                  {index === 0 && <label className="text-xs text-gray-500 mb-1 block">Qty *</label>}
                   <input
                     {...form.register(`items.${index}.quantity`)}
                     type="number"
                     min="1"
                     placeholder="1"
-                    className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border bg-white px-3 py-2 text-sm"
                   />
                 </div>
                 <div className="col-span-2">
-                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Price *</label>}
+                  {index === 0 && <label className="text-xs text-gray-500 mb-1 block">Price *</label>}
                   <input
                     {...form.register(`items.${index}.unitPrice`)}
                     type="number"
                     min="0"
                     step="0.01"
                     placeholder="0.00"
-                    className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border bg-white px-3 py-2 text-sm"
                   />
                 </div>
                 <div className="col-span-2">
-                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block">Tax %</label>}
+                  {index === 0 && <label className="text-xs text-gray-500 mb-1 block">Tax %</label>}
                   <input
                     {...form.register(`items.${index}.tax`)}
                     type="number"
                     min="0"
                     step="0.01"
                     placeholder="0"
-                    className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border bg-white px-3 py-2 text-sm"
                   />
                 </div>
                 <div className="col-span-1 flex items-center justify-center">
-                  {index === 0 && <label className="text-xs text-muted-foreground mb-1 block invisible">X</label>}
+                  {index === 0 && <label className="text-xs text-gray-500 mb-1 block invisible">X</label>}
                   {fields.length > 1 && (
                     <button
                       type="button"
@@ -257,7 +257,7 @@ export default function NewSalesOrderPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border bg-card p-6">
+        <div className="rounded-xl border bg-white p-6">
           <h2 className="text-base font-semibold mb-4">Order Summary</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -268,20 +268,20 @@ export default function NewSalesOrderPage() {
                 min="0"
                 step="0.01"
                 placeholder="0.00"
-                className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-gray-500">Subtotal</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tax</span>
+                <span className="text-gray-500">Tax</span>
                 <span>{formatCurrency(taxTotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Discount</span>
+                <span className="text-gray-500">Discount</span>
                 <span>-{formatCurrency(discount)}</span>
               </div>
               <div className="border-t pt-2 flex justify-between font-semibold">
@@ -292,12 +292,12 @@ export default function NewSalesOrderPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border bg-card p-6">
+        <div className="rounded-xl border bg-white p-6">
           <h2 className="text-base font-semibold mb-4">Notes</h2>
           <textarea
             {...form.register('notes')}
             rows={3}
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+            className="w-full rounded-md border bg-white px-3 py-2 text-sm"
             placeholder="Optional notes about this order..."
           />
         </div>
@@ -305,7 +305,7 @@ export default function NewSalesOrderPage() {
         <div className="flex justify-end gap-3 pb-8">
           <Link
             href="/sales-orders"
-            className="rounded-md border px-6 py-2.5 text-sm font-medium hover:bg-muted transition-colors"
+            className="rounded-md border px-6 py-2.5 text-sm font-medium hover:bg-gray-100 transition-colors"
           >
             Cancel
           </Link>

@@ -80,7 +80,7 @@ function AccountTree({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 border-b hover:bg-muted/50 cursor-pointer",
+              "flex items-center gap-2 px-4 py-2.5 border-b hover:bg-gray-50 cursor-pointer",
               level > 0 && "border-l-2 border-l-muted"
             )}
             style={{ paddingLeft: `${(level + 1) * 1.5}rem` }}
@@ -88,7 +88,7 @@ function AccountTree({
             {account.children && account.children.length > 0 ? (
               <button
                 onClick={() => onToggle(account.id)}
-                className="p-0.5 hover:bg-muted rounded"
+                className="p-0.5 hover:bg-gray-100 rounded"
               >
                 {expanded.has(account.id) ? (
                   <ChevronDown className="h-4 w-4" />
@@ -99,7 +99,7 @@ function AccountTree({
             ) : (
               <span className="w-5" />
             )}
-            <span className="font-mono text-sm text-muted-foreground w-20">
+            <span className="font-mono text-sm text-gray-500 w-20">
               {account.code}
             </span>
             <span className="flex-1 font-medium">{account.name}</span>
@@ -281,7 +281,7 @@ export default function ChartOfAccountsPage() {
 
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
           <Input
             placeholder="Search accounts..."
             value={search}
@@ -308,9 +308,9 @@ export default function ChartOfAccountsPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-lg border bg-card"
+        className="rounded-lg border bg-white"
       >
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b bg-muted/30 text-sm font-medium text-muted-foreground">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b bg-gray-100/30 text-sm font-medium text-gray-500">
           <span className="w-5" />
           <span className="w-20">Code</span>
           <span className="flex-1">Name</span>
@@ -324,11 +324,11 @@ export default function ChartOfAccountsPage() {
           Object.entries(grouped).map(([type, items]) =>
             items.length > 0 ? (
               <div key={type}>
-                <div className="px-4 py-2 bg-muted/20 border-b text-sm font-semibold flex items-center gap-2">
+                <div className="px-4 py-2 bg-gray-100/20 border-b text-sm font-semibold flex items-center gap-2">
                   <Badge variant="secondary" className={cn(typeConfig[type]?.color)}>
                     {typeConfig[type]?.label}
                   </Badge>
-                  <span className="text-muted-foreground">({items.length})</span>
+                  <span className="text-gray-500">({items.length})</span>
                 </div>
                 <AccountTree
                   accounts={items}
@@ -351,7 +351,7 @@ export default function ChartOfAccountsPage() {
         )}
 
         {filtered.length === 0 && !isLoading && (
-          <div className="px-4 py-12 text-center text-muted-foreground">
+          <div className="px-4 py-12 text-center text-gray-500">
             No accounts found
           </div>
         )}

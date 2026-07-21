@@ -196,7 +196,7 @@ export default function BankAccountsPage() {
           </div>
 
           <div className="border rounded-lg">
-            <div className="grid grid-cols-[120px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2.5 bg-muted/30 text-sm font-medium">
+            <div className="grid grid-cols-[120px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2.5 bg-gray-100/30 text-sm font-medium">
               <span>Date</span>
               <span>Description</span>
               <span className="text-right">Debit</span>
@@ -208,12 +208,12 @@ export default function BankAccountsPage() {
               <div
                 key={tx.id}
                 className={cn(
-                  "grid grid-cols-[120px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2.5 border-t text-sm cursor-pointer hover:bg-muted/50",
+                  "grid grid-cols-[120px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2.5 border-t text-sm cursor-pointer hover:bg-gray-50",
                   selectedTransactions.has(tx.id) && "bg-blue-50"
                 )}
                 onClick={() => toggleTransactionSelection(tx.id)}
               >
-                <span className="text-muted-foreground">
+                <span className="text-gray-500">
                   {formatDate(tx.date)}
                 </span>
                 <span>{tx.description}</span>
@@ -230,13 +230,13 @@ export default function BankAccountsPage() {
                   {tx.reconciled ? (
                     <CheckCircle2 className="h-4 w-4 text-green-600 mx-auto" />
                   ) : (
-                    <span className="text-muted-foreground">-</span>
+                    <span className="text-gray-500">-</span>
                   )}
                 </span>
               </div>
             ))}
             {transactions.length === 0 && !txLoading && (
-              <div className="px-4 py-8 text-center text-muted-foreground">
+              <div className="px-4 py-8 text-center text-gray-500">
                 No transactions
               </div>
             )}
@@ -257,13 +257,13 @@ export default function BankAccountsPage() {
               >
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Building2 className="h-5 w-5 text-muted-foreground" />
+                    <Building2 className="h-5 w-5 text-gray-500" />
                     {account.name}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-gray-500">
                       {account.bankName} - {account.accountNumber}
                     </p>
                     <p className="text-2xl font-semibold font-mono">
@@ -278,7 +278,7 @@ export default function BankAccountsPage() {
             </motion.div>
           ))}
           {accounts.length === 0 && !isLoading && (
-            <div className="col-span-full py-12 text-center text-muted-foreground">
+            <div className="col-span-full py-12 text-center text-gray-500">
               No bank accounts found
             </div>
           )}
@@ -323,7 +323,7 @@ export default function BankAccountsPage() {
             <DialogTitle>Reconcile Transactions</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-500">
               Select unreconciled transactions to reconcile. Selected:{" "}
               {selectedTransactions.size}
             </p>
@@ -334,7 +334,7 @@ export default function BankAccountsPage() {
                   <div
                     key={tx.id}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2 border-b cursor-pointer hover:bg-muted/50",
+                      "flex items-center gap-3 px-3 py-2 border-b cursor-pointer hover:bg-gray-50",
                       selectedTransactions.has(tx.id) && "bg-blue-50"
                     )}
                     onClick={() => toggleTransactionSelection(tx.id)}

@@ -114,7 +114,7 @@ function SheetContent({
       />
       <div
         className={cn(
-          "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out",
+          "fixed z-50 gap-4 bg-white p-6 shadow-lg transition ease-in-out",
           sideStyles[side],
           slideStyles[side],
           className
@@ -165,7 +165,7 @@ const SheetTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTM
     <h2
       ref={ref}
       className={cn(
-        "text-lg font-semibold text-foreground",
+        "text-lg font-semibold text-black",
         className
       )}
       {...props}
@@ -178,7 +178,7 @@ const SheetDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttrib
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-sm text-gray-500", className)}
       {...props}
     />
   )

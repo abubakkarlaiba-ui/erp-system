@@ -307,7 +307,7 @@ export default function JournalEntriesPage() {
                 <p className="text-sm text-destructive">{errors.lines.message}</p>
               )}
               <div className="border rounded-lg overflow-hidden">
-                <div className="grid grid-cols-[1fr_100px_100px_40px] gap-2 px-3 py-2 bg-muted/30 text-sm font-medium">
+                <div className="grid grid-cols-[1fr_100px_100px_40px] gap-2 px-3 py-2 bg-gray-100/30 text-sm font-medium">
                   <span>Account</span>
                   <span className="text-right">Debit</span>
                   <span className="text-right">Credit</span>

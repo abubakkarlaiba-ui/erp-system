@@ -105,7 +105,7 @@ export default function PurchaseOrdersPage() {
 
   const statusBadge = (status: string) => {
     const styles: Record<string, string> = { pending: 'bg-amber-100 text-amber-700', confirmed: 'bg-blue-100 text-blue-700', partial: 'bg-purple-100 text-purple-700', received: 'bg-emerald-100 text-emerald-700', cancelled: 'bg-red-100 text-red-700' };
-    return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] ?? 'bg-muted text-foreground'}`}>{status}</span>;
+    return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] ?? 'bg-gray-100 text-black'}`}>{status}</span>;
   };
 
   const watchedItems = form.watch('items');
@@ -125,13 +125,13 @@ export default function PurchaseOrdersPage() {
         <StatsCard title="Cancelled" value={cancelledCount} icon={Ban} />
       </div>
 
-      <div className="rounded-xl border bg-card">
+      <div className="rounded-xl border bg-white">
         <div className="flex items-center gap-2 p-4 border-b">
           <div className="flex items-center gap-2 flex-1">
-            <Search className="h-4 w-4 text-muted-foreground" />
+            <Search className="h-4 w-4 text-gray-500" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search purchase orders..." className="flex-1 bg-transparent text-sm outline-none" />
           </div>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-white px-3 py-2 text-sm">
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
@@ -142,7 +142,7 @@ export default function PurchaseOrdersPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b text-left text-muted-foreground">
+              <tr className="border-b text-left text-gray-500">
                 <th className="p-4 font-medium">PO #</th>
                 <th className="p-4 font-medium">Supplier</th>
                 <th className="p-4 font-medium">Date</th>
@@ -153,21 +153,21 @@ export default function PurchaseOrdersPage() {
             </thead>
             <tbody>
               {purchaseOrders.map((o: any) => (
-                <tr key={o.id} className="border-b last:border-0 hover:bg-muted/50">
+                <tr key={o.id} className="border-b last:border-0 hover:bg-gray-50">
                   <td className="p-4 font-medium">{o.order_number ?? o.reference ?? String(o.id).slice(0, 8)}</td>
                   <td className="p-4">{o.supplier_name ?? o.supplierName ?? '-'}</td>
-                  <td className="p-4 text-muted-foreground">{formatDate(o.date ?? o.created_at ?? o.createdAt)}</td>
+                  <td className="p-4 text-gray-500">{formatDate(o.date ?? o.created_at ?? o.createdAt)}</td>
                   <td className="p-4 text-right">{formatCurrency(o.total ?? 0)}</td>
                   <td className="p-4">{statusBadge(o.status)}</td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      {(o.status === 'pending' || o.status === 'confirmed') && <button onClick={() => openEdit(o)} className="rounded-md p-1.5 hover:bg-muted"><Pencil className="h-4 w-4" /></button>}
+                      {(o.status === 'pending' || o.status === 'confirmed') && <button onClick={() => openEdit(o)} className="rounded-md p-1.5 hover:bg-gray-100"><Pencil className="h-4 w-4" /></button>}
                       {(o.status === 'pending' || o.status === 'confirmed') && <button onClick={() => cancelMutation.mutate(o.id)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><XCircle className="h-4 w-4" /></button>}
                     </div>
                   </td>
                 </tr>
               ))}
-              {purchaseOrders.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No purchase orders found</td></tr>}
+              {purchaseOrders.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-gray-500">No purchase orders found</td></tr>}
             </tbody>
           </table>
         </div>
@@ -176,31 +176,31 @@ export default function PurchaseOrdersPage() {
       <AnimatePresence>
         {dialogOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-2xl rounded-xl border bg-card shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-2xl rounded-xl border bg-white shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">{editingPO ? 'Edit Purchase Order' : 'Create Purchase Order'}</h2>
-                <button onClick={() => { setDialogOpen(false); setEditingPO(null); }} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>
+                <button onClick={() => { setDialogOpen(false); setEditingPO(null); }} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Supplier ID</label>
-                    <input {...form.register('supplierId')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('supplierId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     {form.formState.errors.supplierId && <p className="text-xs text-destructive mt-1">{form.formState.errors.supplierId.message}</p>}
                   </div>
                   <div>
                     <label className="text-sm font-medium">Reference</label>
-                    <input {...form.register('reference')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('reference')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Order Date</label>
-                    <input {...form.register('orderDate')} type="date" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('orderDate')} type="date" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Expected Delivery</label>
-                    <input {...form.register('expectedDelivery')} type="date" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('expectedDelivery')} type="date" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                 </div>
                 <div>
@@ -211,10 +211,10 @@ export default function PurchaseOrdersPage() {
                   <div className="space-y-3">
                     {fields.map((field, index) => (
                       <div key={field.id} className="grid grid-cols-12 gap-2 items-end">
-                        <div className="col-span-5"><input {...form.register(`items.${index}.description`)} placeholder="Description" className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
-                        <div className="col-span-2"><input {...form.register(`items.${index}.quantity`)} type="number" placeholder="Qty" className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
-                        <div className="col-span-2"><input {...form.register(`items.${index}.unitPrice`)} type="number" placeholder="Price" className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
-                        <div className="col-span-2"><input {...form.register(`items.${index}.tax`)} type="number" placeholder="Tax %" className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+                        <div className="col-span-5"><input {...form.register(`items.${index}.description`)} placeholder="Description" className="w-full rounded-md border bg-white px-3 py-2 text-sm" /></div>
+                        <div className="col-span-2"><input {...form.register(`items.${index}.quantity`)} type="number" placeholder="Qty" className="w-full rounded-md border bg-white px-3 py-2 text-sm" /></div>
+                        <div className="col-span-2"><input {...form.register(`items.${index}.unitPrice`)} type="number" placeholder="Price" className="w-full rounded-md border bg-white px-3 py-2 text-sm" /></div>
+                        <div className="col-span-2"><input {...form.register(`items.${index}.tax`)} type="number" placeholder="Tax %" className="w-full rounded-md border bg-white px-3 py-2 text-sm" /></div>
                         <div className="col-span-1">{fields.length > 1 && <button type="button" onClick={() => remove(index)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><X className="h-4 w-4" /></button>}</div>
                       </div>
                     ))}
@@ -228,10 +228,10 @@ export default function PurchaseOrdersPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Notes</label>
-                  <textarea {...form.register('notes')} rows={2} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                  <textarea {...form.register('notes')} rows={2} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
-                  <button type="button" onClick={() => { setDialogOpen(false); setEditingPO(null); }} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Cancel</button>
+                  <button type="button" onClick={() => { setDialogOpen(false); setEditingPO(null); }} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-100">Cancel</button>
                   <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
                     {editingPO ? 'Update' : 'Create'}
                   </button>

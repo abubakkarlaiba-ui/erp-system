@@ -204,7 +204,7 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold tracking-tight">
           Dashboard
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-gray-500">
           {format(today, "EEEE, MMMM d, yyyy")}
         </p>
       </motion.div>
@@ -242,11 +242,11 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-7">
         <motion.div
           variants={itemVariants}
-          className="lg:col-span-4 rounded-xl border bg-card p-6"
+          className="lg:col-span-4 rounded-xl border bg-white p-6"
         >
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">Revenue & Expenses</h2>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#6366f1]" />
                 Revenue
@@ -311,7 +311,7 @@ export default function DashboardPage() {
 
         <motion.div
           variants={itemVariants}
-          className="lg:col-span-3 rounded-xl border bg-card p-6"
+          className="lg:col-span-3 rounded-xl border bg-white p-6"
         >
           <h2 className="mb-4 text-lg font-semibold">Sales by Category</h2>
           <div className="h-72">
@@ -345,7 +345,7 @@ export default function DashboardPage() {
                   iconType="circle"
                   iconSize={8}
                   formatter={(value) => (
-                    <span className="text-xs text-muted-foreground">{value}</span>
+                    <span className="text-xs text-gray-500">{value}</span>
                   )}
                 />
               </PieChart>
@@ -357,7 +357,7 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <motion.div
           variants={itemVariants}
-          className="rounded-xl border bg-card p-6"
+          className="rounded-xl border bg-white p-6"
         >
           <h2 className="mb-4 text-lg font-semibold">Recent Activity</h2>
           <div className="space-y-4">
@@ -378,7 +378,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm leading-snug">{item.message}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-0.5 text-xs text-gray-500">
                       {format(item.timestamp, "MMM d, h:mm a")}
                     </p>
                   </div>
@@ -390,12 +390,12 @@ export default function DashboardPage() {
 
         <motion.div
           variants={itemVariants}
-          className="rounded-xl border bg-card p-6"
+          className="rounded-xl border bg-white p-6"
         >
           <h2 className="mb-4 text-lg font-semibold">Low Stock Alerts</h2>
           <div className="space-y-3">
             {lowStockItems.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No low stock items.</p>
+              <p className="text-sm text-gray-500">No low stock items.</p>
             ) : lowStockItems.map((item) => (
               <div
                 key={item.sku}
@@ -403,13 +403,13 @@ export default function DashboardPage() {
               >
                 <div>
                   <p className="text-sm font-medium">{item.name}</p>
-                  <p className="text-xs text-muted-foreground">{item.sku}</p>
+                  <p className="text-xs text-gray-500">{item.sku}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-red-600 dark:text-red-400">
                     {item.current} units
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-gray-500">
                     Reorder at {item.reorder}
                   </p>
                 </div>
@@ -422,10 +422,10 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <motion.div
           variants={itemVariants}
-          className="rounded-xl border bg-card p-6"
+          className="rounded-xl border bg-white p-6"
         >
           <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-muted-foreground" />
+            <Calendar className="h-5 w-5 text-gray-500" />
             Upcoming Events
           </h2>
           <div className="space-y-3">
@@ -434,7 +434,7 @@ export default function DashboardPage() {
                 <Circle className="mt-1 h-2 w-2 shrink-0 fill-current" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{event.title}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-gray-500">
                     {format(event.time, "EEE, MMM d • h:mm a")}
                   </p>
                 </div>
@@ -445,16 +445,16 @@ export default function DashboardPage() {
 
         <motion.div
           variants={itemVariants}
-          className="rounded-xl border bg-card p-6"
+          className="rounded-xl border bg-white p-6"
         >
           <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
-            <Clock className="h-5 w-5 text-muted-foreground" />
+            <Clock className="h-5 w-5 text-gray-500" />
             Today&apos;s Attendance
           </h2>
           <div className="space-y-3">
             {attendanceData.map((item) => (
               <div key={item.status} className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{item.status}</span>
+                <span className="text-sm text-gray-500">{item.status}</span>
                 <div className="flex items-center gap-3">
                   <div className="h-2 w-24 overflow-hidden rounded-full bg-secondary">
                     <div
@@ -480,8 +480,8 @@ export default function DashboardPage() {
             ))}
           </div>
           <div className="mt-4 flex items-center gap-2 rounded-lg bg-secondary/50 p-3">
-            <Activity className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">
+            <Activity className="h-4 w-4 text-gray-500" />
+            <span className="text-xs text-gray-500">
               Total: 58 employees
             </span>
           </div>
@@ -489,7 +489,7 @@ export default function DashboardPage() {
 
         <motion.div
           variants={itemVariants}
-          className="rounded-xl border bg-card p-6"
+          className="rounded-xl border bg-white p-6"
         >
           <h2 className="mb-4 text-lg font-semibold">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">

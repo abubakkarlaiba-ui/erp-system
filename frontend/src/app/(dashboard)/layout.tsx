@@ -21,7 +21,7 @@ export default function DashboardLayout({
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-white">
       {isMobile && sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 transition-opacity"

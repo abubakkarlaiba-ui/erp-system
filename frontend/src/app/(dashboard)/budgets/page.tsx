@@ -81,24 +81,24 @@ export default function BudgetsPage() {
           const pct = Math.round((budget.spent / budget.amount) * 100);
           const overBudget = pct > 90;
           return (
-            <div key={budget.id} className="rounded-xl border bg-card p-5">
+            <div key={budget.id} className="rounded-xl border bg-white p-5">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="font-semibold">{budget.name}</h3>
-                  <p className="text-xs text-muted-foreground">{budget.category} &middot; {budget.period}</p>
+                  <p className="text-xs text-gray-500">{budget.category} &middot; {budget.period}</p>
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => { setEditingBudget(budget); form.reset(budget); setDialogOpen(true); }} className="rounded p-1 hover:bg-muted"><Pencil className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => { setEditingBudget(budget); form.reset(budget); setDialogOpen(true); }} className="rounded p-1 hover:bg-gray-100"><Pencil className="h-3.5 w-3.5" /></button>
                 </div>
               </div>
               <div className="mb-2 flex items-baseline justify-between text-sm">
                 <span className="font-medium">{formatCurrency(budget.spent)}</span>
-                <span className="text-muted-foreground">of {formatCurrency(budget.amount)}</span>
+                <span className="text-gray-500">of {formatCurrency(budget.amount)}</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-secondary">
                 <div className={cn("h-full rounded-full transition-all", overBudget ? "bg-red-500" : pct > 70 ? "bg-amber-500" : "bg-emerald-500")} style={{ width: `${Math.min(pct, 100)}%` }} />
               </div>
-              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+              <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
                 <span>{pct}% used</span>
                 {overBudget && <span className="flex items-center gap-1 text-red-500"><AlertTriangle className="h-3 w-3" /> Near limit</span>}
               </div>

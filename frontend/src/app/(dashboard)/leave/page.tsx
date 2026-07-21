@@ -15,7 +15,7 @@ const statusColors: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700 border-amber-200",
   approved: "bg-emerald-100 text-emerald-700 border-emerald-200",
   rejected: "bg-red-100 text-red-700 border-red-200",
-  cancelled: "bg-muted text-foreground border-border",
+  cancelled: "bg-gray-100 text-black border-gray-200",
 };
 
 const tabs = ["My Requests", "All Requests", "Leave Types", "Calendar"];
@@ -140,7 +140,7 @@ export default function LeavePage() {
             </button>
           </div>
         ) : (
-          <span className="text-muted-foreground text-sm">—</span>
+          <span className="text-gray-500 text-sm">—</span>
         ),
     },
   ];
@@ -177,13 +177,13 @@ export default function LeavePage() {
         <StatsCard title="Remaining Balance" value={`${stats.remaining} days`} icon={<CalendarDays className="w-5 h-5" />} color="sky" />
       </div>
 
-      <div className="flex gap-1 bg-muted p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
         {tabs.map((tab) => (
           <motion.button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === tab ? "bg-card text-indigo-600 shadow-sm" : "text-foreground hover:text-foreground"
+              activeTab === tab ? "bg-white text-indigo-600 shadow-sm" : "text-black hover:text-black"
             }`}
             whileHover={{ scale: 1.02 }}
           >
@@ -216,22 +216,22 @@ export default function LeavePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-card border border-border rounded-xl p-5 hover:shadow-md transition-shadow"
+                  className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-foreground">{lt.name}</h4>
+                    <h4 className="font-semibold text-black">{lt.name}</h4>
                     <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-medium">
                       {lt.daysAllowed} days
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-4">{lt.description}</p>
-                  <div className="w-full bg-muted rounded-full h-2">
+                  <p className="text-sm text-gray-500 mb-4">{lt.description}</p>
+                  <div className="w-full bg-gray-100 rounded-full h-2">
                     <div
                       className="bg-indigo-500 h-2 rounded-full transition-all"
                       style={{ width: `${(lt.daysUsed / lt.daysAllowed) * 100}%` }}
                     />
                   </div>
-                  <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+                  <div className="flex justify-between mt-2 text-xs text-gray-500">
                     <span>Used: {lt.daysUsed}</span>
                     <span>Remaining: {lt.daysAllowed - lt.daysUsed}</span>
                   </div>
@@ -241,11 +241,11 @@ export default function LeavePage() {
           )}
 
           {activeTab === "Calendar" && (
-            <div className="bg-card rounded-xl border border-border p-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
               <h3 className="text-lg font-semibold mb-4">Approved Leaves — {format(today, "MMMM yyyy")}</h3>
               <div className="grid grid-cols-7 gap-1">
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-                  <div key={d} className="text-center text-xs font-medium text-muted-foreground py-2">{d}</div>
+                  <div key={d} className="text-center text-xs font-medium text-gray-500 py-2">{d}</div>
                 ))}
                 {calDays.map((day, i) => {
                   const dayStr = format(day, "yyyy-MM-dd");
@@ -261,10 +261,10 @@ export default function LeavePage() {
                       animate={{ opacity: 1 }}
                       transition={{ delay: i * 0.005 }}
                       className={`p-2 rounded-lg text-center text-sm min-h-[48px] border ${
-                        leavesOnDay.length > 0 ? "bg-red-50 border-red-200" : "border-border"
+                        leavesOnDay.length > 0 ? "bg-red-50 border-red-200" : "border-gray-200"
                       }`}
                     >
-                      <span className="text-xs text-foreground">{format(day, "d")}</span>
+                      <span className="text-xs text-black">{format(day, "d")}</span>
                       {leavesOnDay.length > 0 && (
                         <div className="mt-1">
                           {leavesOnDay.slice(0, 2).map((l, j) => (
@@ -293,7 +293,7 @@ export default function LeavePage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card rounded-xl shadow-2xl p-6 w-full max-w-md"
+              className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -302,11 +302,11 @@ export default function LeavePage() {
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Leave Type</label>
+                  <label className="block text-sm font-medium text-black mb-1">Leave Type</label>
                   <select
                     value={requestForm.leaveTypeId}
                     onChange={(e) => setRequestForm({ ...requestForm, leaveTypeId: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">Select leave type</option>
                     {(leaveTypes?.data ?? []).map((lt: LeaveType) => (
@@ -316,37 +316,37 @@ export default function LeavePage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Start Date</label>
+                    <label className="block text-sm font-medium text-black mb-1">Start Date</label>
                     <input
                       type="date"
                       value={requestForm.startDate}
                       onChange={(e) => setRequestForm({ ...requestForm, startDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">End Date</label>
+                    <label className="block text-sm font-medium text-black mb-1">End Date</label>
                     <input
                       type="date"
                       value={requestForm.endDate}
                       onChange={(e) => setRequestForm({ ...requestForm, endDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Reason</label>
+                  <label className="block text-sm font-medium text-black mb-1">Reason</label>
                   <textarea
                     value={requestForm.reason}
                     onChange={(e) => setRequestForm({ ...requestForm, reason: e.target.value })}
                     rows={3}
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 resize-none"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 resize-none"
                     placeholder="Reason for leave..."
                   />
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
-                <button onClick={() => setShowRequestDialog(false)} className="px-4 py-2 text-foreground bg-muted rounded-lg hover:bg-muted transition-colors">Cancel</button>
+                <button onClick={() => setShowRequestDialog(false)} className="px-4 py-2 text-black bg-gray-100 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button>
                 <button
                   onClick={() => createMutation.mutate()}
                   disabled={createMutation.isPending || !requestForm.leaveTypeId || !requestForm.startDate || !requestForm.endDate || !requestForm.reason}

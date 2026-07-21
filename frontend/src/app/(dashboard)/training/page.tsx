@@ -14,14 +14,14 @@ const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-700 border-blue-200",
   "in-progress": "bg-amber-100 text-amber-700 border-amber-200",
   completed: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  cancelled: "bg-muted text-muted-foreground border-border",
+  cancelled: "bg-gray-100 text-gray-500 border-gray-200",
 };
 
 const progressColors: Record<string, string> = {
   scheduled: "bg-blue-400",
   "in-progress": "bg-amber-400",
   completed: "bg-emerald-400",
-  cancelled: "bg-muted",
+  cancelled: "bg-gray-100",
 };
 
 export default function TrainingPage() {
@@ -96,39 +96,39 @@ export default function TrainingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
             whileHover={{ y: -4 }}
-            className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all"
+            className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all"
           >
             <div className="p-5">
               <div className="flex items-start justify-between mb-3">
-                <h4 className="font-semibold text-foreground leading-tight">{training.title}</h4>
+                <h4 className="font-semibold text-black leading-tight">{training.title}</h4>
                 <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColors[training.status]}`}>
                   {training.status.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </span>
               </div>
 
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{training.description}</p>
+              <p className="text-sm text-gray-500 mb-4 line-clamp-2">{training.description}</p>
 
               <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-foreground">
-                  <Users className="w-4 h-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 text-black">
+                  <Users className="w-4 h-4 text-gray-500" />
                   <span>{training.trainer}</span>
                 </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 text-black">
+                  <Calendar className="w-4 h-4 text-gray-500" />
                   <span>{format(parseISO(training.startDate), "MMM dd")} — {format(parseISO(training.endDate), "MMM dd, yyyy")}</span>
                 </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 text-black">
+                  <MapPin className="w-4 h-4 text-gray-500" />
                   <span>{training.location}</span>
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-border">
+              <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">Participants</span>
-                  <span className="text-xs font-medium text-foreground">{training.currentParticipants}/{training.maxParticipants}</span>
+                  <span className="text-xs text-gray-500">Participants</span>
+                  <span className="text-xs font-medium text-black">{training.currentParticipants}/{training.maxParticipants}</span>
                 </div>
-                <div className="w-full bg-muted rounded-full h-2">
+                <div className="w-full bg-gray-100 rounded-full h-2">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${training.progress}%` }}
@@ -137,8 +137,8 @@ export default function TrainingPage() {
                   />
                 </div>
                 <div className="flex justify-between mt-1">
-                  <span className="text-[11px] text-muted-foreground">Progress</span>
-                  <span className="text-[11px] font-medium text-foreground">{training.progress}%</span>
+                  <span className="text-[11px] text-gray-500">Progress</span>
+                  <span className="text-[11px] font-medium text-black">{training.progress}%</span>
                 </div>
               </div>
             </div>
@@ -148,8 +148,8 @@ export default function TrainingPage() {
 
       {trainingList.length === 0 && !isLoading && (
         <div className="text-center py-16">
-          <GraduationCap className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">No training programs found</p>
+          <GraduationCap className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+          <p className="text-gray-500">No training programs found</p>
         </div>
       )}
 
@@ -160,7 +160,7 @@ export default function TrainingPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card rounded-xl shadow-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -168,41 +168,41 @@ export default function TrainingPage() {
                   <GraduationCap className="w-5 h-5 text-indigo-600" />
                   Create Training
                 </h3>
-                <button onClick={() => setShowCreateDialog(false)} className="p-2 hover:bg-muted rounded-lg">
-                  <X className="w-5 h-5 text-muted-foreground" />
+                <button onClick={() => setShowCreateDialog(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Title</label>
-                  <input type="text" value={createForm.title} onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-background text-foreground" placeholder="Training title" />
+                  <label className="block text-sm font-medium text-black mb-1">Title</label>
+                  <input type="text" value={createForm.title} onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white text-black" placeholder="Training title" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Trainer</label>
-                  <input type="text" value={createForm.trainer} onChange={(e) => setCreateForm({ ...createForm, trainer: e.target.value })} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-background text-foreground" placeholder="Trainer name" />
+                  <label className="block text-sm font-medium text-black mb-1">Trainer</label>
+                  <input type="text" value={createForm.trainer} onChange={(e) => setCreateForm({ ...createForm, trainer: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white text-black" placeholder="Trainer name" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Description</label>
-                  <textarea value={createForm.description} onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })} rows={3} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-background text-foreground resize-none" placeholder="Training description..." />
+                  <label className="block text-sm font-medium text-black mb-1">Description</label>
+                  <textarea value={createForm.description} onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })} rows={3} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white text-black resize-none" placeholder="Training description..." />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Start Date</label>
-                    <input type="date" value={createForm.startDate} onChange={(e) => setCreateForm({ ...createForm, startDate: e.target.value })} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-background text-foreground" />
+                    <label className="block text-sm font-medium text-black mb-1">Start Date</label>
+                    <input type="date" value={createForm.startDate} onChange={(e) => setCreateForm({ ...createForm, startDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white text-black" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">End Date</label>
-                    <input type="date" value={createForm.endDate} onChange={(e) => setCreateForm({ ...createForm, endDate: e.target.value })} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-background text-foreground" />
+                    <label className="block text-sm font-medium text-black mb-1">End Date</label>
+                    <input type="date" value={createForm.endDate} onChange={(e) => setCreateForm({ ...createForm, endDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white text-black" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Max Participants</label>
-                    <input type="number" value={createForm.maxParticipants || ""} onChange={(e) => setCreateForm({ ...createForm, maxParticipants: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-background text-foreground" placeholder="0" />
+                    <label className="block text-sm font-medium text-black mb-1">Max Participants</label>
+                    <input type="number" value={createForm.maxParticipants || ""} onChange={(e) => setCreateForm({ ...createForm, maxParticipants: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white text-black" placeholder="0" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Category</label>
-                    <select value={createForm.category} onChange={(e) => setCreateForm({ ...createForm, category: e.target.value })} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-background text-foreground">
+                    <label className="block text-sm font-medium text-black mb-1">Category</label>
+                    <select value={createForm.category} onChange={(e) => setCreateForm({ ...createForm, category: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white text-black">
                       <option value="">Select category</option>
                       <option value="technical">Technical</option>
                       <option value="leadership">Leadership</option>
@@ -213,12 +213,12 @@ export default function TrainingPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Location</label>
-                  <input type="text" value={createForm.location} onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-background text-foreground" placeholder="Location or 'Online'" />
+                  <label className="block text-sm font-medium text-black mb-1">Location</label>
+                  <input type="text" value={createForm.location} onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white text-black" placeholder="Location or 'Online'" />
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
-                <button onClick={() => setShowCreateDialog(false)} className="px-4 py-2 text-foreground bg-muted rounded-lg hover:bg-muted/80 transition-colors">Cancel</button>
+                <button onClick={() => setShowCreateDialog(false)} className="px-4 py-2 text-black bg-gray-100 rounded-lg hover:bg-gray-100/80 transition-colors">Cancel</button>
                 <button
                   onClick={() => createMutation.mutate()}
                   disabled={createMutation.isPending || !createForm.title || !createForm.trainer || !createForm.startDate || !createForm.endDate}

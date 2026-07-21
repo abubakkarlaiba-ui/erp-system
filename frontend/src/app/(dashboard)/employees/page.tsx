@@ -235,7 +235,7 @@ export default function EmployeesPage() {
               >
                 {emp.first_name} {emp.last_name}
               </Link>
-              <div className="text-sm text-muted-foreground">{emp.email}</div>
+              <div className="text-sm text-gray-500">{emp.email}</div>
             </div>
           </div>
         );
@@ -279,7 +279,7 @@ export default function EmployeesPage() {
       cell: (info: any) => {
         const emp = info.row?.original || info;
         return (
-          <span className="text-muted-foreground">
+          <span className="text-gray-500">
             {formatDate(emp.joining_date)}
           </span>
         );
@@ -315,19 +315,19 @@ export default function EmployeesPage() {
           <div className="flex items-center gap-2">
             <Link
               href={`/employees/${emp.id}`}
-              className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-black"
             >
               <MoreVertical className="h-4 w-4" />
             </Link>
             <button
               onClick={() => handleEdit(emp)}
-              className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-black"
             >
               <Edit className="h-4 w-4" />
             </button>
             <button
               onClick={() => setDeletingEmployee(emp)}
-              className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+              className="rounded-md p-2 text-gray-500 hover:bg-destructive/10 hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -401,21 +401,21 @@ export default function EmployeesPage() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             placeholder="Search by name or ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border bg-background pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full rounded-lg border bg-white pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Filter className="h-4 w-4 text-gray-500" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -424,7 +424,7 @@ export default function EmployeesPage() {
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Departments</option>
             {departments.map((deptId) => (
@@ -436,7 +436,7 @@ export default function EmployeesPage() {
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
-            className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Branches</option>
             {branches.map((branchId) => (
@@ -503,7 +503,7 @@ export default function EmployeesPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border bg-card shadow-2xl p-6"
+              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border bg-white shadow-2xl p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-lg font-semibold">
@@ -515,7 +515,7 @@ export default function EmployeesPage() {
                     <label className="text-sm font-medium">First Name *</label>
                     <input
                       {...register("firstName")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.firstName && (
                       <p className="text-xs text-destructive">
@@ -527,7 +527,7 @@ export default function EmployeesPage() {
                     <label className="text-sm font-medium">Last Name *</label>
                     <input
                       {...register("lastName")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.lastName && (
                       <p className="text-xs text-destructive">
@@ -540,7 +540,7 @@ export default function EmployeesPage() {
                     <input
                       {...register("email")}
                       type="email"
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.email && (
                       <p className="text-xs text-destructive">
@@ -552,14 +552,14 @@ export default function EmployeesPage() {
                     <label className="text-sm font-medium">Phone</label>
                     <input
                       {...register("phone")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Company *</label>
                     <select
                       {...register("companyId")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Select Company</option>
                       {companiesData?.results?.map((company) => (
@@ -578,7 +578,7 @@ export default function EmployeesPage() {
                     <label className="text-sm font-medium">Branch *</label>
                     <select
                       {...register("branchId")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Select Branch</option>
                     </select>
@@ -592,7 +592,7 @@ export default function EmployeesPage() {
                     <label className="text-sm font-medium">Department *</label>
                     <select
                       {...register("departmentId")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Select Department</option>
                     </select>
@@ -606,7 +606,7 @@ export default function EmployeesPage() {
                     <label className="text-sm font-medium">Designation *</label>
                     <select
                       {...register("designationId")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Select Designation</option>
                     </select>
@@ -621,7 +621,7 @@ export default function EmployeesPage() {
                     <input
                       {...register("joiningDate")}
                       type="date"
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.joiningDate && (
                       <p className="text-xs text-destructive">
@@ -633,7 +633,7 @@ export default function EmployeesPage() {
                     <label className="text-sm font-medium">Employment Type *</label>
                     <select
                       {...register("employmentType")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="full_time">Full Time</option>
                       <option value="part_time">Part Time</option>
@@ -646,7 +646,7 @@ export default function EmployeesPage() {
                     <input
                       {...register("salary", { valueAsNumber: true })}
                       type="number"
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                     {errors.salary && (
                       <p className="text-xs text-destructive">
@@ -658,7 +658,7 @@ export default function EmployeesPage() {
                     <label className="text-sm font-medium">Status *</label>
                     <select
                       {...register("status")}
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
@@ -669,7 +669,7 @@ export default function EmployeesPage() {
                   <button
                     type="button"
                     onClick={() => setIsDialogOpen(false)}
-                    className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+                    className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-100"
                   >
                     Cancel
                   </button>
@@ -704,7 +704,7 @@ export default function EmployeesPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-xl border bg-card shadow-2xl p-6"
+              className="w-full max-w-md rounded-xl border bg-white shadow-2xl p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3">
@@ -713,7 +713,7 @@ export default function EmployeesPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold">Delete Employee</h2>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-500">
                     Are you sure you want to delete{" "}
                     {deletingEmployee.first_name} {deletingEmployee.last_name}?
                     This action cannot be undone.
@@ -723,7 +723,7 @@ export default function EmployeesPage() {
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   onClick={() => setDeletingEmployee(null)}
-                  className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+                  className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-100"
                 >
                   Cancel
                 </button>

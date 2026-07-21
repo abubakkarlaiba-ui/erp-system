@@ -175,7 +175,7 @@ export default function StockMovementsPage() {
       accessorKey: "fromWarehouse",
       header: "From",
       cell: ({ row }) => (
-        <span className="text-muted-foreground">
+        <span className="text-gray-500">
           {row.original.fromWarehouse || "-"}
         </span>
       ),
@@ -184,7 +184,7 @@ export default function StockMovementsPage() {
       accessorKey: "toWarehouse",
       header: "To",
       cell: ({ row }) => (
-        <span className="text-muted-foreground">
+        <span className="text-gray-500">
           {row.original.toWarehouse || "-"}
         </span>
       ),
@@ -252,7 +252,7 @@ export default function StockMovementsPage() {
       >
         <div className="mb-4 flex items-center gap-3">
           <div className="relative flex-1 max-w-sm">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search movements..."
               value={search}

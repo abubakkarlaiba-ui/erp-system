@@ -285,7 +285,7 @@ export default function ProductsPage() {
 
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
           <Input
             placeholder="Search products..."
             value={search}
@@ -340,7 +340,7 @@ export default function ProductsPage() {
                 transition={{ delay: index * 0.03 }}
               >
                 <Card className="hover:shadow-md transition-shadow overflow-hidden">
-                  <div className="h-40 bg-muted/30 flex items-center justify-center">
+                  <div className="h-40 bg-gray-100/30 flex items-center justify-center">
                     {product.imageUrl ? (
                       <img
                         src={product.imageUrl}
@@ -348,7 +348,7 @@ export default function ProductsPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <Package className="h-12 w-12 text-muted-foreground/50" />
+                      <Package className="h-12 w-12 text-gray-500/50" />
                     )}
                   </div>
                   <CardContent className="p-4 space-y-2">
@@ -357,7 +357,7 @@ export default function ProductsPage() {
                         <h3 className="font-medium line-clamp-1">
                           {product.name}
                         </h3>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-500">
                           {product.sku}
                         </p>
                       </div>
@@ -367,7 +367,7 @@ export default function ProductsPage() {
                       <span className="font-mono text-lg font-semibold">
                         {formatCurrency(product.unitPrice)}
                       </span>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-sm text-gray-500">
                         Stock: {product.stock}
                       </span>
                     </div>
@@ -395,7 +395,7 @@ export default function ProductsPage() {
             ))}
           </AnimatePresence>
           {products.length === 0 && !isLoading && (
-            <div className="col-span-full py-12 text-center text-muted-foreground">
+            <div className="col-span-full py-12 text-center text-gray-500">
               No products found
             </div>
           )}

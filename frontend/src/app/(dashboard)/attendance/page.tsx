@@ -142,7 +142,7 @@ export default function AttendancePage() {
         const row = info.row?.original || info;
         const status = String(row.status || "present");
         return (
-          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[status] || "bg-muted text-foreground"}`}>
+          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[status] || "bg-gray-100 text-black"}`}>
             {status.replace("-", " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}
           </span>
         );
@@ -206,19 +206,19 @@ export default function AttendancePage() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-indigo-600" />
-              <span className="text-sm text-foreground">Clocked In:</span>
+              <span className="text-sm text-black">Clocked In:</span>
               <span className="font-semibold text-indigo-700">{/^\d{2}:\d{2}/.test(todayRecord.checkIn) ? todayRecord.checkIn.substring(0, 5) : format(parseISO(todayRecord.checkIn), "hh:mm a")}</span>
             </div>
             {todayRecord.checkOut && (
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-red-600" />
-                <span className="text-sm text-foreground">Clocked Out:</span>
+                <span className="text-sm text-black">Clocked Out:</span>
                 <span className="font-semibold text-red-700">{/^\d{2}:\d{2}/.test(todayRecord.checkOut) ? todayRecord.checkOut.substring(0, 5) : format(parseISO(todayRecord.checkOut), "hh:mm a")}</span>
               </div>
             )}
             <div className="flex items-center gap-2">
               <Timer className="w-5 h-5 text-amber-600" />
-              <span className="text-sm text-foreground">Hours Today:</span>
+              <span className="text-sm text-black">Hours Today:</span>
               <span className="font-semibold text-amber-700">{todayRecord.hoursWorked.toFixed(1)}h</span>
             </div>
           </div>
@@ -232,20 +232,20 @@ export default function AttendancePage() {
         <StatsCard title="Overtime This Month" value={`${stats.overtimeThisMonth}h`} icon={<TrendingUp className="w-5 h-5" />} color="amber" />
       </div>
 
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Attendance Calendar</h3>
+          <h3 className="text-lg font-semibold text-black">Attendance Calendar</h3>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               ‹
             </button>
-            <span className="font-medium text-foreground min-w-[140px] text-center">{format(currentMonth, "MMMM yyyy")}</span>
+            <span className="font-medium text-black min-w-[140px] text-center">{format(currentMonth, "MMMM yyyy")}</span>
             <button
               onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               ›
             </button>
@@ -255,13 +255,13 @@ export default function AttendancePage() {
           {Object.entries(statusDotColors).map(([status, color]) => (
             <div key={status} className="flex items-center gap-1.5">
               <span className={`w-2.5 h-2.5 rounded-full ${color}`} />
-              <span className="text-foreground capitalize">{status.replace("-", " ")}</span>
+              <span className="text-black capitalize">{status.replace("-", " ")}</span>
             </div>
           ))}
         </div>
         <div className="grid grid-cols-7 gap-1">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-            <div key={d} className="text-center text-xs font-medium text-muted-foreground py-2">{d}</div>
+            <div key={d} className="text-center text-xs font-medium text-gray-500 py-2">{d}</div>
           ))}
           {monthDays.map((day, i) => {
             const dateStr = format(day, "yyyy-MM-dd");
@@ -273,11 +273,11 @@ export default function AttendancePage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.01 }}
-                className={`relative p-2 rounded-lg text-center text-sm min-h-[48px] border border-border ${
-                  record ? (statusColors[record.status] ?? "bg-muted") : dayOfWeek === 0 || dayOfWeek === 6 ? "bg-muted" : ""
+                className={`relative p-2 rounded-lg text-center text-sm min-h-[48px] border border-gray-200 ${
+                  record ? (statusColors[record.status] ?? "bg-gray-100") : dayOfWeek === 0 || dayOfWeek === 6 ? "bg-gray-100" : ""
                 }`}
               >
-                <span className="text-xs text-foreground">{format(day, "d")}</span>
+                <span className="text-xs text-black">{format(day, "d")}</span>
                 {record && (
                   <div className={`w-1.5 h-1.5 rounded-full mx-auto mt-1 ${statusDotColors[record.status]}`} />
                 )}
@@ -287,46 +287,46 @@ export default function AttendancePage() {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
-          <Filter className="w-4 h-4 text-muted-foreground" />
-          <h3 className="text-sm font-medium text-foreground">Filters</h3>
+          <Filter className="w-4 h-4 text-gray-500" />
+          <h3 className="text-sm font-medium text-black">Filters</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1">From</label>
+            <label className="block text-xs font-medium text-black mb-1">From</label>
             <input
               type="date"
               value={filterDateFrom}
               onChange={(e) => setFilterDateFrom(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1">To</label>
+            <label className="block text-xs font-medium text-black mb-1">To</label>
             <input
               type="date"
               value={filterDateTo}
               onChange={(e) => setFilterDateTo(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1">Employee</label>
+            <label className="block text-xs font-medium text-black mb-1">Employee</label>
             <input
               type="text"
               value={filterEmployee}
               onChange={(e) => setFilterEmployee(e.target.value)}
               placeholder="Search employee..."
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1">Status</label>
+            <label className="block text-xs font-medium text-black mb-1">Status</label>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="">All Statuses</option>
               <option value="present">Present</option>
@@ -346,36 +346,36 @@ export default function AttendancePage() {
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-card rounded-xl shadow-2xl p-6 w-full max-w-md"
+            className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold mb-4">Mark Attendance</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">Employee ID</label>
+                <label className="block text-sm font-medium text-black mb-1">Employee ID</label>
                 <input
                   type="text"
                   value={markForm.employeeId}
                   onChange={(e) => setMarkForm({ ...markForm, employeeId: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                   placeholder="Enter employee ID"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">Date</label>
+                <label className="block text-sm font-medium text-black mb-1">Date</label>
                 <input
                   type="date"
                   value={markForm.date}
                   onChange={(e) => setMarkForm({ ...markForm, date: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">Status</label>
+                <label className="block text-sm font-medium text-black mb-1">Status</label>
                 <select
                   value={markForm.status}
                   onChange={(e) => setMarkForm({ ...markForm, status: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="present">Present</option>
                   <option value="absent">Absent</option>
@@ -386,27 +386,27 @@ export default function AttendancePage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Check In</label>
+                  <label className="block text-sm font-medium text-black mb-1">Check In</label>
                   <input
                     type="time"
                     value={markForm.checkIn}
                     onChange={(e) => setMarkForm({ ...markForm, checkIn: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Check Out</label>
+                  <label className="block text-sm font-medium text-black mb-1">Check Out</label>
                   <input
                     type="time"
                     value={markForm.checkOut}
                     onChange={(e) => setMarkForm({ ...markForm, checkOut: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowMarkDialog(false)} className="px-4 py-2 text-foreground bg-muted rounded-lg hover:bg-muted transition-colors">Cancel</button>
+              <button onClick={() => setShowMarkDialog(false)} className="px-4 py-2 text-black bg-gray-100 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button>
               <button
                 onClick={() => markMutation.mutate()}
                 disabled={markMutation.isPending || !markForm.employeeId || !markForm.date}

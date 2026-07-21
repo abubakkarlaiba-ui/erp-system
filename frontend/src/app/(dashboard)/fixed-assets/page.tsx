@@ -81,11 +81,11 @@ export default function FixedAssetsPage() {
         <StatsCard title="In Maintenance" value={String(sampleAssets.filter((a) => a.status === "maintenance").length)} icon={<Calendar className="h-5 w-5" />} color="rose" />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-xl border bg-card">
+      <motion.div variants={itemVariants} className="rounded-xl border bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b text-left text-muted-foreground">
+              <tr className="border-b text-left text-gray-500">
                 <th className="p-4 font-medium">Asset</th>
                 <th className="p-4 font-medium">Category</th>
                 <th className="p-4 font-medium">Purchase Date</th>
@@ -98,16 +98,16 @@ export default function FixedAssetsPage() {
             </thead>
             <tbody>
               {sampleAssets.map((asset) => (
-                <tr key={asset.id} className="border-b last:border-0 hover:bg-muted/50">
+                <tr key={asset.id} className="border-b last:border-0 hover:bg-gray-50">
                   <td className="p-4 font-medium">{asset.name}</td>
-                  <td className="p-4 text-muted-foreground">{asset.category}</td>
-                  <td className="p-4 text-muted-foreground">{asset.purchaseDate}</td>
+                  <td className="p-4 text-gray-500">{asset.category}</td>
+                  <td className="p-4 text-gray-500">{asset.purchaseDate}</td>
                   <td className="p-4 text-right">{formatCurrency(asset.purchasePrice)}</td>
                   <td className="p-4 text-right">{formatCurrency(asset.currentValue)}</td>
                   <td className="p-4"><span className={cn("inline-flex rounded-full px-2 py-1 text-xs font-medium", STATUS_BADGE[asset.status])}>{asset.status}</span></td>
-                  <td className="p-4 text-muted-foreground">{asset.location}</td>
+                  <td className="p-4 text-gray-500">{asset.location}</td>
                   <td className="p-4 text-right">
-                    <button onClick={() => { setEditingAsset(asset); form.reset(asset); setDialogOpen(true); }} className="rounded p-1 hover:bg-muted"><Pencil className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => { setEditingAsset(asset); form.reset(asset); setDialogOpen(true); }} className="rounded p-1 hover:bg-gray-100"><Pencil className="h-3.5 w-3.5" /></button>
                   </td>
                 </tr>
               ))}

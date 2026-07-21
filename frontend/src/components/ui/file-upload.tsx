@@ -84,17 +84,17 @@ export function FileUpload({
     <div className={cn("flex items-center gap-4", className)}>
       <div
         className={cn(
-          "relative flex items-center justify-center overflow-hidden bg-muted",
+          "relative flex items-center justify-center overflow-hidden bg-gray-100",
           sizeClasses[size],
           shape === "circle" ? "rounded-full" : "rounded-lg"
         )}
       >
         {uploading ? (
-          <Loader2 className={cn("animate-spin text-muted-foreground", iconSizes[size])} />
+          <Loader2 className={cn("animate-spin text-gray-500", iconSizes[size])} />
         ) : displayImage ? (
           <img src={displayImage} alt="" className="h-full w-full object-cover" />
         ) : (
-          fallbackIcon || <ImageIcon className={cn("text-muted-foreground", iconSizes[size])} />
+          fallbackIcon || <ImageIcon className={cn("text-gray-500", iconSizes[size])} />
         )}
         {displayImage && !uploading && onRemove && (
           <button
@@ -111,7 +111,7 @@ export function FileUpload({
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="rounded-md border px-3 py-2 text-sm hover:bg-muted flex items-center gap-2 disabled:opacity-50"
+          className="rounded-md border px-3 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 disabled:opacity-50"
         >
           {uploading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -121,7 +121,7 @@ export function FileUpload({
           {uploading ? "Uploading..." : "Upload"}
         </button>
         {error && <p className="text-xs text-destructive">{error}</p>}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-gray-500">
           Max {maxSize}MB. JPG, PNG, GIF, WEBP.
         </p>
       </div>

@@ -184,7 +184,7 @@ function DropdownMenuSeparator({
   return (
     <div
       role="separator"
-      className={cn("-mx-1 my-1 h-px bg-muted", className)}
+      className={cn("-mx-1 my-1 h-px bg-gray-100", className)}
       {...props}
     />
   )

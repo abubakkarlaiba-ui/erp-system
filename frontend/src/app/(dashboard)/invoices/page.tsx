@@ -376,7 +376,7 @@ export default function InvoicesPage() {
                 </Button>
               </div>
               <div className="border rounded-lg overflow-hidden">
-                <div className="grid grid-cols-[1fr_80px_100px_100px_40px] gap-2 px-3 py-2 bg-muted/30 text-sm font-medium">
+                <div className="grid grid-cols-[1fr_80px_100px_100px_40px] gap-2 px-3 py-2 bg-gray-100/30 text-sm font-medium">
                   <span>Description</span>
                   <span className="text-right">Qty</span>
                   <span className="text-right">Unit Price</span>

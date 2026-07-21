@@ -104,13 +104,13 @@ export default function GoodsReceiptPage() {
         <StatsCard title="Partial" value={partialCount} icon={AlertCircle} />
       </div>
 
-      <div className="rounded-xl border bg-card">
+      <div className="rounded-xl border bg-white">
         <div className="flex items-center gap-2 p-4 border-b">
           <div className="flex items-center gap-2 flex-1">
-            <Search className="h-4 w-4 text-muted-foreground" />
+            <Search className="h-4 w-4 text-gray-500" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search receipts..." className="flex-1 bg-transparent text-sm outline-none" />
           </div>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-white px-3 py-2 text-sm">
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
             <option value="completed">Completed</option>
@@ -120,7 +120,7 @@ export default function GoodsReceiptPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b text-left text-muted-foreground">
+              <tr className="border-b text-left text-gray-500">
                 <th className="p-4 font-medium">Receipt #</th>
                 <th className="p-4 font-medium">PO</th>
                 <th className="p-4 font-medium">Warehouse</th>
@@ -131,18 +131,18 @@ export default function GoodsReceiptPage() {
             </thead>
             <tbody>
               {receipts.map((r: any) => (
-                <tr key={r.id} className="border-b last:border-0 hover:bg-muted/50">
+                <tr key={r.id} className="border-b last:border-0 hover:bg-gray-50">
                   <td className="p-4 font-medium">{r.reference ?? r.order_number ?? String(r.id).slice(0, 8)}</td>
                   <td className="p-4">{r.purchase_order_reference ?? r.purchaseOrderReference ?? r.purchase_order?.slice(0, 8) ?? '-'}</td>
                   <td className="p-4">{r.warehouse_name ?? r.warehouseName ?? '-'}</td>
-                  <td className="p-4 text-muted-foreground">{formatDate(r.received_date ?? r.receivedDate ?? r.created_at ?? r.createdAt)}</td>
+                  <td className="p-4 text-gray-500">{formatDate(r.received_date ?? r.receivedDate ?? r.created_at ?? r.createdAt)}</td>
                   <td className="p-4">{statusBadge(r.status)}</td>
                   <td className="p-4 text-right">
-                    <button onClick={() => openView(r)} className="rounded-md p-1.5 hover:bg-muted"><Eye className="h-4 w-4" /></button>
+                    <button onClick={() => openView(r)} className="rounded-md p-1.5 hover:bg-gray-100"><Eye className="h-4 w-4" /></button>
                   </td>
                 </tr>
               ))}
-              {receipts.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No receipts found</td></tr>}
+              {receipts.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-gray-500">No receipts found</td></tr>}
             </tbody>
           </table>
         </div>
@@ -154,29 +154,29 @@ export default function GoodsReceiptPage() {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-2xl rounded-xl border bg-white shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Create Goods Receipt</h2>
-                <button onClick={() => setDialogOpen(false)} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>
+                <button onClick={() => setDialogOpen(false)} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Purchase Order ID</label>
-                    <input {...form.register('purchaseOrderId')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('purchaseOrderId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     {form.formState.errors.purchaseOrderId && <p className="text-xs text-destructive mt-1">{form.formState.errors.purchaseOrderId.message}</p>}
                   </div>
                   <div>
                     <label className="text-sm font-medium">Warehouse ID</label>
-                    <input {...form.register('warehouseId')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('warehouseId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     {form.formState.errors.warehouseId && <p className="text-xs text-destructive mt-1">{form.formState.errors.warehouseId.message}</p>}
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Received Date</label>
-                    <input {...form.register('receivedDate')} type="date" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('receivedDate')} type="date" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Reference</label>
-                    <input {...form.register('reference')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('reference')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                 </div>
                 <div>
@@ -189,30 +189,30 @@ export default function GoodsReceiptPage() {
                       <div key={field.id} className="rounded-lg border p-3 space-y-2">
                         <div className="grid grid-cols-4 gap-2">
                           <div className="col-span-2">
-                            <label className="text-xs text-muted-foreground">Description</label>
-                            <input {...form.register(`items.${index}.description`)} className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <label className="text-xs text-gray-500">Description</label>
+                            <input {...form.register(`items.${index}.description`)} className="mt-1 w-full rounded-md border bg-white px-3 py-1.5 text-sm" />
                           </div>
                           <div>
-                            <label className="text-xs text-muted-foreground">Ordered</label>
-                            <input {...form.register(`items.${index}.orderedQuantity`)} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <label className="text-xs text-gray-500">Ordered</label>
+                            <input {...form.register(`items.${index}.orderedQuantity`)} type="number" className="mt-1 w-full rounded-md border bg-white px-3 py-1.5 text-sm" />
                           </div>
                           <div>
-                            <label className="text-xs text-muted-foreground">Received</label>
-                            <input {...form.register(`items.${index}.receivedQuantity`)} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <label className="text-xs text-gray-500">Received</label>
+                            <input {...form.register(`items.${index}.receivedQuantity`)} type="number" className="mt-1 w-full rounded-md border bg-white px-3 py-1.5 text-sm" />
                           </div>
                         </div>
                         <div className="grid grid-cols-4 gap-2 items-end">
                           <div>
-                            <label className="text-xs text-muted-foreground">Unit Price</label>
-                            <input {...form.register(`items.${index}.unitPrice`)} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <label className="text-xs text-gray-500">Unit Price</label>
+                            <input {...form.register(`items.${index}.unitPrice`)} type="number" className="mt-1 w-full rounded-md border bg-white px-3 py-1.5 text-sm" />
                           </div>
                           <div>
-                            <label className="text-xs text-muted-foreground">Batch #</label>
-                            <input {...form.register(`items.${index}.batchNumber`)} className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <label className="text-xs text-gray-500">Batch #</label>
+                            <input {...form.register(`items.${index}.batchNumber`)} className="mt-1 w-full rounded-md border bg-white px-3 py-1.5 text-sm" />
                           </div>
                           <div>
-                            <label className="text-xs text-muted-foreground">Expiry Date</label>
-                            <input {...form.register(`items.${index}.expiryDate`)} type="date" className="mt-1 w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
+                            <label className="text-xs text-gray-500">Expiry Date</label>
+                            <input {...form.register(`items.${index}.expiryDate`)} type="date" className="mt-1 w-full rounded-md border bg-white px-3 py-1.5 text-sm" />
                           </div>
                           <div>{fields.length > 1 && <button type="button" onClick={() => remove(index)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><X className="h-4 w-4" /></button>}</div>
                         </div>
@@ -222,10 +222,10 @@ export default function GoodsReceiptPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Notes</label>
-                  <textarea {...form.register('notes')} rows={2} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                  <textarea {...form.register('notes')} rows={2} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
-                  <button type="button" onClick={() => setDialogOpen(false)} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Cancel</button>
+                  <button type="button" onClick={() => setDialogOpen(false)} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-100">Cancel</button>
                   <button type="submit" disabled={createMutation.isPending} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">Create</button>
                 </div>
               </form>
@@ -240,16 +240,16 @@ export default function GoodsReceiptPage() {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-white shadow-2xl p-6 mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Receipt {viewingReceipt.reference ?? viewingReceipt.id?.slice(0, 8)}</h2>
-                <button onClick={() => setViewDialogOpen(false)} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>
+                <button onClick={() => setViewDialogOpen(false)} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between"><span className="text-muted-foreground">Purchase Order</span><span>{viewingReceipt.purchase_order_reference ?? viewingReceipt.purchaseOrderReference ?? '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Warehouse</span><span>{viewingReceipt.warehouse_name ?? viewingReceipt.warehouseName ?? '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span>{formatDate(viewingReceipt.received_date ?? viewingReceipt.receivedDate ?? viewingReceipt.created_at)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Status</span>{statusBadge(viewingReceipt.status)}</div>
+                <div className="flex justify-between"><span className="text-gray-500">Purchase Order</span><span>{viewingReceipt.purchase_order_reference ?? viewingReceipt.purchaseOrderReference ?? '-'}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Warehouse</span><span>{viewingReceipt.warehouse_name ?? viewingReceipt.warehouseName ?? '-'}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Date</span><span>{formatDate(viewingReceipt.received_date ?? viewingReceipt.receivedDate ?? viewingReceipt.created_at)}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Status</span>{statusBadge(viewingReceipt.status)}</div>
               </div>
               <div className="flex justify-end mt-6">
-                <button onClick={() => setViewDialogOpen(false)} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Close</button>
+                <button onClick={() => setViewDialogOpen(false)} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-100">Close</button>
               </div>
             </motion.div>
           </motion.div>

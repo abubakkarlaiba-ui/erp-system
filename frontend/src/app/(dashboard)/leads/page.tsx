@@ -42,7 +42,7 @@ const sourceColors: Record<string, string> = {
   cold_call: 'bg-amber-100 text-amber-700',
   social_media: 'bg-purple-100 text-purple-700',
   advertisement: 'bg-pink-100 text-pink-700',
-  other: 'bg-muted text-foreground',
+  other: 'bg-gray-100 text-black',
 };
 
 export default function LeadsPage() {
@@ -139,8 +139,8 @@ export default function LeadsPage() {
 
       <div className="flex items-center gap-3 mb-6">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search leads..." className="w-full rounded-md border bg-background pl-9 pr-3 py-2 text-sm" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search leads..." className="w-full rounded-md border bg-white pl-9 pr-3 py-2 text-sm" />
         </div>
       </div>
 
@@ -150,7 +150,7 @@ export default function LeadsPage() {
             <div className="flex items-center gap-2 mb-3">
               <div className={`h-2.5 w-2.5 rounded-full ${col.color}`} />
               <h3 className="text-sm font-semibold">{col.label}</h3>
-              <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">{getLeadsByStatus(col.id).length}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">{getLeadsByStatus(col.id).length}</span>
             </div>
             <div className="space-y-3 min-h-[200px] rounded-lg border border-dashed p-2">
               <AnimatePresence>
@@ -162,23 +162,23 @@ export default function LeadsPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     whileHover={{ scale: 1.02 }}
-                    className="rounded-lg border bg-card p-3 cursor-pointer shadow-sm hover:shadow-md transition-shadow"
+                    className="rounded-lg border bg-white p-3 cursor-pointer shadow-sm hover:shadow-md transition-shadow"
                     onClick={() => { openEdit(lead); setSelectedLead(lead); }}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="text-sm font-medium">{lead.name}</h4>
-                      <GripVertical className="h-4 w-4 text-muted-foreground" />
+                      <GripVertical className="h-4 w-4 text-gray-500" />
                     </div>
                     {lead.company && (
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
                         <Building2 className="h-3 w-3" />{lead.company}
                       </div>
                     )}
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
                       <Mail className="h-3 w-3" />{lead.email}
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${sourceColors[lead.source] ?? 'bg-muted text-foreground'}`}>
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${sourceColors[lead.source] ?? 'bg-gray-100 text-black'}`}>
                         {lead.source?.replace('_', ' ')}
                       </span>
                       {lead.value != null && lead.value > 0 && (
@@ -191,7 +191,7 @@ export default function LeadsPage() {
                           <button
                             key={next.id}
                             onClick={(e) => { e.stopPropagation(); moveLead(lead.id, next.id); }}
-                            className="text-xs rounded-md bg-muted px-2 py-1 hover:bg-muted/80"
+                            className="text-xs rounded-md bg-gray-100 px-2 py-1 hover:bg-gray-100/80"
                           >
                             → {next.label}
                           </button>
@@ -209,42 +209,42 @@ export default function LeadsPage() {
       <AnimatePresence>
         {dialogOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-card shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-white shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">{editingLead ? 'Edit Lead' : 'Add Lead'}</h2>
-                <button onClick={() => { setDialogOpen(false); setEditingLead(null); setSelectedLead(null); }} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>
+                <button onClick={() => { setDialogOpen(false); setEditingLead(null); setSelectedLead(null); }} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div>
                   <label className="text-sm font-medium">Name</label>
-                  <input {...form.register('name')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                  <input {...form.register('name')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   {form.formState.errors.name && <p className="text-xs text-destructive mt-1">{form.formState.errors.name.message}</p>}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Email</label>
-                    <input {...form.register('email')} type="email" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('email')} type="email" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     {form.formState.errors.email && <p className="text-xs text-destructive mt-1">{form.formState.errors.email.message}</p>}
                   </div>
                   <div>
                     <label className="text-sm font-medium">Phone</label>
-                    <input {...form.register('phone')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('phone')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Company</label>
-                    <input {...form.register('company')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('company')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Value</label>
-                    <input {...form.register('value', { valueAsNumber: true })} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('value', { valueAsNumber: true })} type="number" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Source</label>
-                    <select {...form.register('source')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm">
+                    <select {...form.register('source')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                       <option value="website">Website</option>
                       <option value="referral">Referral</option>
                       <option value="cold_call">Cold Call</option>
@@ -255,7 +255,7 @@ export default function LeadsPage() {
                   </div>
                   <div>
                     <label className="text-sm font-medium">Status</label>
-                    <select {...form.register('status')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm">
+                    <select {...form.register('status')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                       <option value="new">New</option>
                       <option value="contacted">Contacted</option>
                       <option value="qualified">Qualified</option>
@@ -266,10 +266,10 @@ export default function LeadsPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Notes</label>
-                  <textarea {...form.register('notes')} rows={3} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                  <textarea {...form.register('notes')} rows={3} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
-                  <button type="button" onClick={() => { setDialogOpen(false); setEditingLead(null); }} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Cancel</button>
+                  <button type="button" onClick={() => { setDialogOpen(false); setEditingLead(null); }} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-100">Cancel</button>
                   <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
                     {editingLead ? 'Update' : 'Create'}
                   </button>

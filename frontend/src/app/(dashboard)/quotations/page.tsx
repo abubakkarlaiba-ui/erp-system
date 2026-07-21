@@ -160,13 +160,13 @@ export default function QuotationsPage() {
         <StatsCard title="Accepted" value={acceptedCount} icon={Check} />
       </div>
 
-      <div className="rounded-xl border bg-card">
+      <div className="rounded-xl border bg-white">
         <div className="flex items-center gap-2 p-4 border-b">
           <div className="flex items-center gap-2 flex-1">
-            <Search className="h-4 w-4 text-muted-foreground" />
+            <Search className="h-4 w-4 text-gray-500" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search quotations..." className="flex-1 bg-transparent text-sm outline-none" />
           </div>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-md border bg-white px-3 py-2 text-sm">
             <option value="all">All Status</option>
             <option value="draft">Draft</option>
             <option value="sent">Sent</option>
@@ -177,7 +177,7 @@ export default function QuotationsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b text-left text-muted-foreground">
+              <tr className="border-b text-left text-gray-500">
                 <th className="p-4 font-medium">Quotation #</th>
                 <th className="p-4 font-medium">Customer</th>
                 <th className="p-4 font-medium">Date</th>
@@ -189,17 +189,17 @@ export default function QuotationsPage() {
             </thead>
             <tbody>
               {quotations.map((q: any) => (
-                <tr key={q.id} className="border-b last:border-0 hover:bg-muted/50">
+                <tr key={q.id} className="border-b last:border-0 hover:bg-gray-50">
                   <td className="p-4 font-medium">{q.order_number ?? q.reference ?? String(q.id).slice(0, 8)}</td>
                   <td className="p-4">{q.customer_name ?? q.customerName ?? '-'}</td>
-                  <td className="p-4 text-muted-foreground">{formatDate(q.date ?? q.created_at ?? q.createdAt)}</td>
-                  <td className="p-4 text-muted-foreground">{q.valid_until ?? q.validUntil ? formatDate(q.valid_until ?? q.validUntil) : '-'}</td>
+                  <td className="p-4 text-gray-500">{formatDate(q.date ?? q.created_at ?? q.createdAt)}</td>
+                  <td className="p-4 text-gray-500">{q.valid_until ?? q.validUntil ? formatDate(q.valid_until ?? q.validUntil) : '-'}</td>
                   <td className="p-4 text-right">{formatCurrency(q.total ?? 0)}</td>
                   <td className="p-4">{statusBadge(q.status)}</td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openView(q)} className="rounded-md p-1.5 hover:bg-muted"><Eye className="h-4 w-4" /></button>
-                      {q.status === 'draft' && <button onClick={() => openEdit(q)} className="rounded-md p-1.5 hover:bg-muted"><Pencil className="h-4 w-4" /></button>}
+                      <button onClick={() => openView(q)} className="rounded-md p-1.5 hover:bg-gray-100"><Eye className="h-4 w-4" /></button>
+                      {q.status === 'draft' && <button onClick={() => openEdit(q)} className="rounded-md p-1.5 hover:bg-gray-100"><Pencil className="h-4 w-4" /></button>}
                       {q.status === 'draft' && <button onClick={() => sendMutation.mutate(q.id)} className="rounded-md p-1.5 hover:bg-blue-100 text-blue-600"><Send className="h-4 w-4" /></button>}
                       {q.status === 'sent' && <button onClick={() => acceptMutation.mutate(q.id)} className="rounded-md p-1.5 hover:bg-emerald-100 text-emerald-600"><Check className="h-4 w-4" /></button>}
                       {q.status === 'sent' && <button onClick={() => rejectMutation.mutate(q.id)} className="rounded-md p-1.5 hover:bg-red-100 text-red-600"><XCircle className="h-4 w-4" /></button>}
@@ -207,7 +207,7 @@ export default function QuotationsPage() {
                   </td>
                 </tr>
               ))}
-              {quotations.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">No quotations found</td></tr>}
+              {quotations.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-gray-500">No quotations found</td></tr>}
             </tbody>
           </table>
         </div>
@@ -219,28 +219,28 @@ export default function QuotationsPage() {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-2xl rounded-xl border bg-white shadow-2xl p-6 mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">{editingQuotation ? 'Edit Quotation' : 'Create Quotation'}</h2>
-                <button onClick={() => { setDialogOpen(false); setEditingQuotation(null); }} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>
+                <button onClick={() => { setDialogOpen(false); setEditingQuotation(null); }} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Customer ID</label>
-                    <input {...form.register('customerId')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('customerId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     {form.formState.errors.customerId && <p className="text-xs text-destructive mt-1">{form.formState.errors.customerId.message}</p>}
                   </div>
                   <div>
                     <label className="text-sm font-medium">Reference</label>
-                    <input {...form.register('reference')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('reference')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Valid Until</label>
-                    <input {...form.register('validUntil')} type="date" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('validUntil')} type="date" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Discount</label>
-                    <input {...form.register('discount')} type="number" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                    <input {...form.register('discount')} type="number" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                   </div>
                 </div>
                 <div>
@@ -252,16 +252,16 @@ export default function QuotationsPage() {
                     {fields.map((field, index) => (
                       <div key={field.id} className="grid grid-cols-12 gap-2 items-end">
                         <div className="col-span-5">
-                          <input {...form.register(`items.${index}.description`)} placeholder="Description" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                          <input {...form.register(`items.${index}.description`)} placeholder="Description" className="w-full rounded-md border bg-white px-3 py-2 text-sm" />
                         </div>
                         <div className="col-span-2">
-                          <input {...form.register(`items.${index}.quantity`)} type="number" placeholder="Qty" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                          <input {...form.register(`items.${index}.quantity`)} type="number" placeholder="Qty" className="w-full rounded-md border bg-white px-3 py-2 text-sm" />
                         </div>
                         <div className="col-span-2">
-                          <input {...form.register(`items.${index}.unitPrice`)} type="number" placeholder="Price" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                          <input {...form.register(`items.${index}.unitPrice`)} type="number" placeholder="Price" className="w-full rounded-md border bg-white px-3 py-2 text-sm" />
                         </div>
                         <div className="col-span-2">
-                          <input {...form.register(`items.${index}.tax`)} type="number" placeholder="Tax %" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                          <input {...form.register(`items.${index}.tax`)} type="number" placeholder="Tax %" className="w-full rounded-md border bg-white px-3 py-2 text-sm" />
                         </div>
                         <div className="col-span-1">
                           {fields.length > 1 && <button type="button" onClick={() => remove(index)} className="rounded-md p-1.5 hover:bg-destructive/10 text-destructive"><Trash2 className="h-4 w-4" /></button>}
@@ -278,10 +278,10 @@ export default function QuotationsPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Notes</label>
-                  <textarea {...form.register('notes')} rows={2} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                  <textarea {...form.register('notes')} rows={2} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
-                  <button type="button" onClick={() => { setDialogOpen(false); setEditingQuotation(null); }} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Cancel</button>
+                  <button type="button" onClick={() => { setDialogOpen(false); setEditingQuotation(null); }} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-100">Cancel</button>
                   <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
                     {editingQuotation ? 'Update' : 'Create'}
                   </button>
@@ -298,16 +298,16 @@ export default function QuotationsPage() {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-white shadow-2xl p-6 mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Quotation {viewingQuotation.order_number ?? viewingQuotation.reference ?? viewingQuotation.id?.slice(0, 8)}</h2>
-                <button onClick={() => setViewDialogOpen(false)} className="rounded-md p-1.5 hover:bg-muted"><X className="h-4 w-4" /></button>
+                <button onClick={() => setViewDialogOpen(false)} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between"><span className="text-muted-foreground">Customer</span><span>{viewingQuotation.customer_name ?? viewingQuotation.customerName ?? '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span>{formatDate(viewingQuotation.date ?? viewingQuotation.created_at ?? viewingQuotation.createdAt)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Status</span>{statusBadge(viewingQuotation.status)}</div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Total</span><span className="font-semibold">{formatCurrency(viewingQuotation.total ?? 0)}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Customer</span><span>{viewingQuotation.customer_name ?? viewingQuotation.customerName ?? '-'}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Date</span><span>{formatDate(viewingQuotation.date ?? viewingQuotation.created_at ?? viewingQuotation.createdAt)}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Status</span>{statusBadge(viewingQuotation.status)}</div>
+                <div className="flex justify-between"><span className="text-gray-500">Total</span><span className="font-semibold">{formatCurrency(viewingQuotation.total ?? 0)}</span></div>
               </div>
               <div className="flex justify-end mt-6">
-                <button onClick={() => setViewDialogOpen(false)} className="rounded-md border px-4 py-2 text-sm hover:bg-muted">Close</button>
+                <button onClick={() => setViewDialogOpen(false)} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-100">Close</button>
               </div>
             </motion.div>
           </motion.div>

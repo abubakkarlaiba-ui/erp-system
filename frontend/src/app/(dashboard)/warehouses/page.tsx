@@ -184,20 +184,20 @@ export default function WarehousesPage() {
 
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <MapPin className="h-4 w-4 text-gray-500" />
               {selectedWarehouse.address}, {selectedWarehouse.city}
             </div>
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="h-4 w-4 text-gray-500" />
               Manager: {selectedWarehouse.manager}
             </div>
-            <div className="text-muted-foreground">
+            <div className="text-gray-500">
               Phone: {selectedWarehouse.phone || "N/A"}
             </div>
           </div>
 
           <div className="border rounded-lg">
-            <div className="grid grid-cols-[1fr_80px_80px_100px_100px] gap-2 px-4 py-2.5 bg-muted/30 text-sm font-medium">
+            <div className="grid grid-cols-[1fr_80px_80px_100px_100px] gap-2 px-4 py-2.5 bg-gray-100/30 text-sm font-medium">
               <span>Product</span>
               <span className="text-right">Stock</span>
               <span className="text-right">Reserved</span>
@@ -217,11 +217,11 @@ export default function WarehousesPage() {
                 <span className="text-right font-mono">
                   {item.availableQuantity}
                 </span>
-                <span className="text-muted-foreground">{item.sku}</span>
+                <span className="text-gray-500">{item.sku}</span>
               </div>
             ))}
             {stock.length === 0 && !stockLoading && (
-              <div className="px-4 py-8 text-center text-muted-foreground">
+              <div className="px-4 py-8 text-center text-gray-500">
                 No stock items
               </div>
             )}
@@ -242,7 +242,7 @@ export default function WarehousesPage() {
                 <Card className="hover:shadow-md transition-shadow">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base flex items-center gap-2">
-                      <Warehouse className="h-5 w-5 text-muted-foreground" />
+                      <Warehouse className="h-5 w-5 text-gray-500" />
                       {wh.name}
                       <Badge variant="secondary" className="ml-auto">
                         {wh.code}
@@ -250,11 +250,11 @@ export default function WarehousesPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
                       <MapPin className="h-4 w-4" />
                       {wh.address}, {wh.city}
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Users className="h-4 w-4" />
                       {wh.manager}
                     </div>
@@ -263,7 +263,7 @@ export default function WarehousesPage() {
                         <span className="text-2xl font-semibold font-mono">
                           {wh.totalStock}
                         </span>
-                        <span className="text-sm text-muted-foreground ml-2">
+                        <span className="text-sm text-gray-500 ml-2">
                           items
                         </span>
                       </div>
@@ -292,7 +292,7 @@ export default function WarehousesPage() {
             ))}
           </AnimatePresence>
           {warehouses.length === 0 && !isLoading && (
-            <div className="col-span-full py-12 text-center text-muted-foreground">
+            <div className="col-span-full py-12 text-center text-gray-500">
               No warehouses found
             </div>
           )}

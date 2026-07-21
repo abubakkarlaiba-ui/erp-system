@@ -173,7 +173,7 @@ export default function SettingsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
                   'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'text-gray-500 hover:bg-gray-100 hover:text-black'
                 )}
               >
                 <tab.icon className="h-4 w-4" />
@@ -186,7 +186,7 @@ export default function SettingsPage() {
         <div className="flex-1">
           <AnimatePresence mode="wait">
             {activeTab === 'profile' && (
-              <motion.div key="profile" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="rounded-lg border bg-card p-6">
+              <motion.div key="profile" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="rounded-lg border bg-white p-6">
                 <h3 className="text-lg font-semibold mb-4">Profile Settings</h3>
                 <form onSubmit={profileForm.handleSubmit((d) => saveProfileMutation.mutate(d))} className="space-y-4">
                   <FileUpload
@@ -198,17 +198,17 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium">Full Name</label>
-                      <input {...profileForm.register('name')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...profileForm.register('name')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                       {profileForm.formState.errors.name && <p className="text-xs text-destructive mt-1">{profileForm.formState.errors.name.message}</p>}
                     </div>
                     <div>
                       <label className="text-sm font-medium">Email</label>
-                      <input {...profileForm.register('email')} type="email" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...profileForm.register('email')} type="email" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                       {profileForm.formState.errors.email && <p className="text-xs text-destructive mt-1">{profileForm.formState.errors.email.message}</p>}
                     </div>
                     <div>
                       <label className="text-sm font-medium">Phone</label>
-                      <input {...profileForm.register('phone')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...profileForm.register('phone')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                   </div>
                   <div className="flex justify-end">
@@ -221,37 +221,37 @@ export default function SettingsPage() {
             )}
 
             {activeTab === 'company' && (
-              <motion.div key="company" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="rounded-lg border bg-card p-6">
+              <motion.div key="company" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="rounded-lg border bg-white p-6">
                 <h3 className="text-lg font-semibold mb-4">Company Settings</h3>
                 <form onSubmit={companyForm.handleSubmit((d) => saveCompanyMutation.mutate(d))} className="space-y-4">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="h-20 w-20 rounded-lg bg-muted flex items-center justify-center">
-                      <Building2 className="h-10 w-10 text-muted-foreground" />
+                    <div className="h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center">
+                      <Building2 className="h-10 w-10 text-gray-500" />
                     </div>
-                    <button type="button" className="rounded-md border px-3 py-2 text-sm hover:bg-muted flex items-center gap-2">
+                    <button type="button" className="rounded-md border px-3 py-2 text-sm hover:bg-gray-100 flex items-center gap-2">
                       <Upload className="h-4 w-4" /> Upload Logo
                     </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2">
                       <label className="text-sm font-medium">Company Name</label>
-                      <input {...companyForm.register('companyName')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...companyForm.register('companyName')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                     <div className="md:col-span-2">
                       <label className="text-sm font-medium">Address</label>
-                      <input {...companyForm.register('address')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...companyForm.register('address')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                     <div>
                       <label className="text-sm font-medium">City</label>
-                      <input {...companyForm.register('city')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...companyForm.register('city')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                     <div>
                       <label className="text-sm font-medium">Country</label>
-                      <input {...companyForm.register('country')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...companyForm.register('country')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                     <div>
                       <label className="text-sm font-medium">Currency</label>
-                      <select {...companyForm.register('currency')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm">
+                      <select {...companyForm.register('currency')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                         <option value="USD">USD - US Dollar</option>
                         <option value="EUR">EUR - Euro</option>
                         <option value="GBP">GBP - British Pound</option>
@@ -262,19 +262,19 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <label className="text-sm font-medium">Fiscal Year Start</label>
-                      <input {...companyForm.register('fiscalYearStart')} placeholder="MM-DD" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...companyForm.register('fiscalYearStart')} placeholder="MM-DD" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                     <div>
                       <label className="text-sm font-medium">Tax ID</label>
-                      <input {...companyForm.register('taxId')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...companyForm.register('taxId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                     <div>
                       <label className="text-sm font-medium">Company Phone</label>
-                      <input {...companyForm.register('phone')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...companyForm.register('phone')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                     <div>
                       <label className="text-sm font-medium">Company Email</label>
-                      <input {...companyForm.register('email')} type="email" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...companyForm.register('email')} type="email" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                     </div>
                   </div>
                   <div className="flex justify-end">
@@ -287,13 +287,13 @@ export default function SettingsPage() {
             )}
 
             {activeTab === 'system' && (
-              <motion.div key="system" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="rounded-lg border bg-card p-6">
+              <motion.div key="system" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="rounded-lg border bg-white p-6">
                 <h3 className="text-lg font-semibold mb-4">System Settings</h3>
                 <form onSubmit={systemForm.handleSubmit((d) => saveSystemMutation.mutate(d))} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium flex items-center gap-2"><Palette className="h-4 w-4" /> Theme</label>
-                      <select {...systemForm.register('theme')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm">
+                      <select {...systemForm.register('theme')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                         <option value="light">Light</option>
                         <option value="dark">Dark</option>
                         <option value="system">System</option>
@@ -301,7 +301,7 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <label className="text-sm font-medium flex items-center gap-2"><Globe className="h-4 w-4" /> Language</label>
-                      <select {...systemForm.register('language')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm">
+                      <select {...systemForm.register('language')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                         <option value="en">English</option>
                         <option value="es">Spanish</option>
                         <option value="fr">French</option>
@@ -311,7 +311,7 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <label className="text-sm font-medium flex items-center gap-2"><Clock className="h-4 w-4" /> Timezone</label>
-                      <select {...systemForm.register('timezone')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm">
+                      <select {...systemForm.register('timezone')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                         <option value="UTC">UTC</option>
                         <option value="America/New_York">Eastern Time (US)</option>
                         <option value="America/Chicago">Central Time (US)</option>
@@ -324,14 +324,14 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <label className="text-sm font-medium flex items-center gap-2"><Clock className="h-4 w-4" /> Time Format</label>
-                      <select {...systemForm.register('timeFormat')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm">
+                      <select {...systemForm.register('timeFormat')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                         <option value="12h">12 Hour</option>
                         <option value="24h">24 Hour</option>
                       </select>
                     </div>
                     <div>
                       <label className="text-sm font-medium">Date Format</label>
-                      <select {...systemForm.register('dateFormat')} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm">
+                      <select {...systemForm.register('dateFormat')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                         <option value="MM/dd/yyyy">MM/DD/YYYY</option>
                         <option value="dd/MM/yyyy">DD/MM/YYYY</option>
                         <option value="yyyy-MM-dd">YYYY-MM-DD</option>
@@ -350,26 +350,26 @@ export default function SettingsPage() {
 
             {activeTab === 'security' && (
               <motion.div key="security" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-6">
-                <div className="rounded-lg border bg-card p-6">
+                <div className="rounded-lg border bg-white p-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2"><Key className="h-5 w-5" /> Change Password</h3>
                   <form onSubmit={passwordForm.handleSubmit((d) => changePasswordMutation.mutate(d))} className="space-y-4 max-w-md">
                     <div>
                       <label className="text-sm font-medium">Current Password</label>
                       <div className="relative mt-1">
-                        <input {...passwordForm.register('currentPassword')} type={showPassword ? 'text' : 'password'} className="w-full rounded-md border bg-background px-3 py-2 text-sm pr-10" />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded">
+                        <input {...passwordForm.register('currentPassword')} type={showPassword ? 'text' : 'password'} className="w-full rounded-md border bg-white px-3 py-2 text-sm pr-10" />
+                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded">
                           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
                       </div>
                     </div>
                     <div>
                       <label className="text-sm font-medium">New Password</label>
-                      <input {...passwordForm.register('newPassword')} type="password" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...passwordForm.register('newPassword')} type="password" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                       {passwordForm.formState.errors.newPassword && <p className="text-xs text-destructive mt-1">{passwordForm.formState.errors.newPassword.message}</p>}
                     </div>
                     <div>
                       <label className="text-sm font-medium">Confirm Password</label>
-                      <input {...passwordForm.register('confirmPassword')} type="password" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" />
+                      <input {...passwordForm.register('confirmPassword')} type="password" className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
                       {passwordForm.formState.errors.confirmPassword && <p className="text-xs text-destructive mt-1">{passwordForm.formState.errors.confirmPassword.message}</p>}
                     </div>
                     <button type="submit" disabled={changePasswordMutation.isPending} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
@@ -378,23 +378,23 @@ export default function SettingsPage() {
                   </form>
                 </div>
 
-                <div className="rounded-lg border bg-card p-6">
+                <div className="rounded-lg border bg-white p-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2"><Smartphone className="h-5 w-5" /> Two-Factor Authentication</h3>
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium">Enable 2FA</p>
-                      <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
+                      <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
                     </div>
                     <button
                       onClick={() => { setTwoFAEnabled(!twoFAEnabled); toast.success(twoFAEnabled ? '2FA disabled' : '2FA enabled'); }}
-                      className={cn('relative inline-flex h-6 w-11 items-center rounded-full transition-colors', twoFAEnabled ? 'bg-primary' : 'bg-muted')}
+                      className={cn('relative inline-flex h-6 w-11 items-center rounded-full transition-colors', twoFAEnabled ? 'bg-primary' : 'bg-gray-100')}
                     >
                       <span className={cn('inline-block h-4 w-4 transform rounded-full bg-white transition-transform', twoFAEnabled ? 'translate-x-6' : 'translate-x-1')} />
                     </button>
                   </div>
                 </div>
 
-                <div className="rounded-lg border bg-card p-6">
+                <div className="rounded-lg border bg-white p-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2"><History className="h-5 w-5" /> Login History</h3>
                   <div className="space-y-3">
                     {loginHistory.map((entry) => (
@@ -403,11 +403,11 @@ export default function SettingsPage() {
                           <div className={cn('h-2 w-2 rounded-full', entry.status === 'success' ? 'bg-emerald-500' : 'bg-red-500')} />
                           <div>
                             <p className="text-sm font-medium">{entry.device}</p>
-                            <p className="text-xs text-muted-foreground">{entry.ip} &middot; {entry.location}</p>
+                            <p className="text-xs text-gray-500">{entry.ip} &middot; {entry.location}</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs text-muted-foreground">{entry.date}</p>
+                          <p className="text-xs text-gray-500">{entry.date}</p>
                           <span className={cn('text-xs', entry.status === 'success' ? 'text-emerald-600' : 'text-red-600')}>
                             {entry.status}
                           </span>
