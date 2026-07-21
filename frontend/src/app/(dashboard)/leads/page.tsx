@@ -12,17 +12,18 @@ import PageHeader from '@/components/layout/PageHeader';
 import StatsCard from '@/components/shared/StatsCard';
 import { salesApi } from '@/features/sales/api/salesApi';
 import { formatCurrency } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 import type { Lead } from '@/types';
 
 const leadSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email'),
-  phone: z.string().min(1, 'Phone is required'),
-  company: z.string().optional(),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Invalid email').optional().or(z.literal('')),
+  phone: z.string().optional(),
+  companyName: z.string().optional(),
   source: z.enum(['website', 'referral', 'cold_call', 'social_media', 'advertisement', 'other']).default('website'),
   value: z.number().min(0).default(0),
   status: z.enum(['new', 'contacted', 'qualified', 'converted', 'lost']).default('new'),
-  assignedTo: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -47,10 +48,13 @@ const sourceColors: Record<string, string> = {
 
 export default function LeadsPage() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+
+  const companyId = user?.company && typeof user.company === 'object' ? (user.company as any).id : user?.company;
 
   const { data: leadsData, isLoading } = useQuery({
     queryKey: ['leads', search],
@@ -59,11 +63,25 @@ export default function LeadsPage() {
 
   const form = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
-    defaultValues: { name: '', email: '', phone: '', company: '', source: 'website', value: 0, status: 'new', notes: '' },
+    defaultValues: { firstName: '', lastName: '', email: '', phone: '', companyName: '', source: 'website', value: 0, status: 'new', notes: '' },
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: LeadFormData) => salesApi.leads.create(data),
+    mutationFn: (data: LeadFormData) => {
+      const payload: Record<string, any> = {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email || null,
+        phone: data.phone || null,
+        company_name: data.companyName || null,
+        company: companyId,
+        source: data.source,
+        status: data.status,
+        value: data.value,
+        notes: data.notes || null,
+      };
+      return salesApi.leads.create(payload);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
       toast.success('Lead created');
@@ -74,7 +92,19 @@ export default function LeadsPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<LeadFormData> }) => salesApi.leads.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<LeadFormData> }) => {
+      const payload: Record<string, any> = {};
+      if (data.firstName !== undefined) payload.first_name = data.firstName;
+      if (data.lastName !== undefined) payload.last_name = data.lastName;
+      if (data.email !== undefined) payload.email = data.email || null;
+      if (data.phone !== undefined) payload.phone = data.phone || null;
+      if (data.companyName !== undefined) payload.company_name = data.companyName || null;
+      if (data.source !== undefined) payload.source = data.source;
+      if (data.status !== undefined) payload.status = data.status;
+      if (data.value !== undefined) payload.value = data.value;
+      if (data.notes !== undefined) payload.notes = data.notes || null;
+      return salesApi.leads.update(id, payload);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
       toast.success('Lead updated');
@@ -93,17 +123,18 @@ export default function LeadsPage() {
 
   const openCreate = () => {
     setEditingLead(null);
-    form.reset({ name: '', email: '', phone: '', company: '', source: 'website', value: 0, status: 'new', notes: '' });
+    form.reset({ firstName: '', lastName: '', email: '', phone: '', companyName: '', source: 'website', value: 0, status: 'new', notes: '' });
     setDialogOpen(true);
   };
 
   const openEdit = (lead: Lead) => {
     setEditingLead(lead);
     form.reset({
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-      company: lead.company ?? '',
+      firstName: lead.first_name ?? (lead as any).name?.split(' ')[0] ?? '',
+      lastName: lead.last_name ?? (lead as any).name?.split(' ').slice(1).join(' ') ?? '',
+      email: lead.email ?? '',
+      phone: lead.phone ?? '',
+      companyName: lead.company_name ?? lead.company ?? '',
       source: lead.source ?? 'website',
       value: lead.value ?? 0,
       status: lead.status,
@@ -215,10 +246,17 @@ export default function LeadsPage() {
                 <button onClick={() => { setDialogOpen(false); setEditingLead(null); setSelectedLead(null); }} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Name</label>
-                  <input {...form.register('name')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
-                  {form.formState.errors.name && <p className="text-xs text-destructive mt-1">{form.formState.errors.name.message}</p>}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">First Name</label>
+                    <input {...form.register('firstName')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
+                    {form.formState.errors.firstName && <p className="text-xs text-destructive mt-1">{form.formState.errors.firstName.message}</p>}
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Last Name</label>
+                    <input {...form.register('lastName')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
+                    {form.formState.errors.lastName && <p className="text-xs text-destructive mt-1">{form.formState.errors.lastName.message}</p>}
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -233,8 +271,8 @@ export default function LeadsPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Company</label>
-                    <input {...form.register('company')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" />
+                    <label className="text-sm font-medium">Company Name</label>
+                    <input {...form.register('companyName')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm" placeholder="e.g. Acme Corp" />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Value</label>
