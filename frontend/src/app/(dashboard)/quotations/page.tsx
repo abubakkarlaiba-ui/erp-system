@@ -50,7 +50,7 @@ export default function QuotationsPage() {
     queryFn: () => salesApi.customers.get({ page_size: 200 }),
   });
 
-  const customerList = customersData?.results ?? [];
+  const customerList = customersData?.data?.results ?? [];
 
   const form = useForm<QuotationFormData>({
     resolver: zodResolver(quotationSchema),

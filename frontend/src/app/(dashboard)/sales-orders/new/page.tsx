@@ -59,7 +59,7 @@ export default function NewSalesOrderPage() {
     queryFn: () => salesApi.customers.get({ page_size: 200 }),
   });
 
-  const customerList = customersData?.results ?? [];
+  const customerList = customersData?.data?.results ?? [];
 
   const createMutation = useMutation({
     mutationFn: (data: Record<string, any>) => salesApi.orders.create(data),
