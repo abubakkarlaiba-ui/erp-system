@@ -237,7 +237,8 @@ class PayslipViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
         for emp in employees:
             if Payslip.objects.filter(employee=emp, period=period).exists():
                 continue
-            salary = emp.salary or 0
+            active_contract = emp.contracts.filter(status="active").order_by("-start_date").first() if hasattr(emp, "contracts") else None
+            salary = Decimal(str(active_contract.salary or 0)) if active_contract else Decimal("0")
             allowances = salary * Decimal("0.15")
             gross = salary + allowances
             tax = gross * Decimal("0.10")

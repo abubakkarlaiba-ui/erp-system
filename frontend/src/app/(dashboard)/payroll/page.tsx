@@ -59,7 +59,10 @@ export default function PayrollPage() {
       queryClient.invalidateQueries({ queryKey: ["payslips"] });
       queryClient.invalidateQueries({ queryKey: ["payrollPeriods"] });
     },
-    onError: () => toast.error("Failed to generate payslips"),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.error?.message || err?.response?.data?.detail || "Failed to generate payslips";
+      toast.error(msg);
+    },
   });
 
   const payslips = payslipsData?.data ?? [];
