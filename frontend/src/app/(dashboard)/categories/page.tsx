@@ -198,7 +198,7 @@ export default function CategoriesPage() {
   const categories = categoriesData?.data ?? [];
   const flatCategories = categories.reduce<Category[]>((acc, c) => {
     acc.push(c);
-    if (c.children) acc.push(...c.children);
+    if (Array.isArray(c.children)) acc.push(...c.children);
     return acc;
   }, []);
 

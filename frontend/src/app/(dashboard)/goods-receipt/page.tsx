@@ -200,7 +200,7 @@ export default function GoodsReceiptPage() {
                     <select {...form.register('purchaseOrderId')} className="mt-1 w-full rounded-md border bg-white px-3 py-2 text-sm">
                       <option value="">Select a purchase order</option>
                       {poList.map((po: any) => (
-                        <option key={po.id} value={po.id}>{po.order_number ?? po.reference ?? po.id?.slice(0, 8)}</option>
+                        <option key={po.id} value={po.id}>{po.order_number ?? po.reference ?? String(po.id ?? '').slice(0, 8)}</option>
                       ))}
                     </select>
                     {form.formState.errors.purchaseOrderId && <p className="text-xs text-destructive mt-1">{form.formState.errors.purchaseOrderId.message}</p>}
@@ -286,7 +286,7 @@ export default function GoodsReceiptPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-white shadow-2xl p-6 mx-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Receipt {viewingReceipt.reference ?? viewingReceipt.id?.slice(0, 8)}</h2>
+                <h2 className="text-lg font-semibold">Receipt {viewingReceipt.reference ?? String(viewingReceipt.id ?? '').slice(0, 8)}</h2>
                 <button onClick={() => setViewDialogOpen(false)} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <div className="space-y-3 text-sm">

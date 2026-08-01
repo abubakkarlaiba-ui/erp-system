@@ -84,7 +84,7 @@ export function DataTable<TData extends { id?: string | number }>({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     enableRowSelection: !!bulkActions,
-    getRowId: (row) => String(row.id ?? Math.random()),
+    getRowId: (row, index) => String(row.id ?? index),
   })
 
   const selectedRows = useMemo(() => {

@@ -140,18 +140,18 @@ export default function CompaniesPage() {
     setEditingCompany(company);
     reset({
       name: company.name,
-      registrationNumber: company.registrationNumber,
-      taxId: company.taxId || "",
-      email: company.email || "",
-      phone: company.phone || "",
-      address: company.address || "",
-      city: company.city || "",
-      state: company.state || "",
-      country: company.country || "",
-      postalCode: company.postalCode || "",
-      currency: company.currency,
-      website: company.website || "",
-      status: company.status,
+      registrationNumber: (company as any).registration_number ?? company.registrationNumber ?? "",
+      taxId: (company as any).tax_number ?? company.taxId ?? "",
+      email: company.email ?? "",
+      phone: company.phone ?? "",
+      address: company.address ?? "",
+      city: company.city ?? "",
+      state: company.state ?? "",
+      country: company.country ?? "",
+      postalCode: company.postalCode ?? (company as any).postal_code ?? "",
+      currency: company.currency ?? "USD",
+      website: company.website ?? "",
+      status: (company as any).is_active ? "active" : "inactive",
     });
     setIsDialogOpen(true);
   };
@@ -162,21 +162,22 @@ export default function CompaniesPage() {
     }
   };
 
-  const filteredCompanies = (companiesData?.results || []).filter((company) => {
+  const companyList = companiesData?.results ?? [];
+  const filteredCompanies = companyList.filter((company) => {
     const matchesSearch =
-      company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (company.registrationNumber ?? (company as any).registration_number ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (company.taxId ?? (company as any).tax_number ?? '').toLowerCase().includes(searchQuery.toLowerCase());
+      (company.name ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ((company as any).registration_number ?? company.registrationNumber ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ((company as any).tax_number ?? (company as any).taxId ?? '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
-      statusFilter === "all" || company.status === statusFilter;
+      statusFilter === "all" || ((company as any).is_active ? "active" : "inactive") === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   const stats = {
-    total: companiesData?.results?.length || 0,
-    active: companiesData?.results?.filter((c) => c.status === "active").length || 0,
-    totalBranches: companiesData?.results?.reduce((acc, c) => acc + (c.branchCount || 0), 0) || 0,
-    totalEmployees: companiesData?.results?.reduce((acc, c) => acc + (c.employeeCount || 0), 0) || 0,
+    total: companyList.length || 0,
+    active: companyList.filter((c) => (c as any).is_active).length || 0,
+    totalBranches: companyList.reduce((acc, c) => acc + ((c as any).branch_count ?? (c as any).branchCount ?? 0), 0) || 0,
+    totalEmployees: companyList.reduce((acc, c) => acc + ((c as any).employee_count ?? (c as any).employeeCount ?? 0), 0) || 0,
   };
 
   const columns = [

@@ -152,7 +152,7 @@ export default function QuotationsPage() {
 
   const watchedItems = form.watch('items');
   const subtotal = watchedItems?.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0) ?? 0;
-  const taxTotal = watchedItems?.reduce((sum, item) => sum + (item.quantity * item.unitPrice * (item.tax / 100)), 0) ?? 0;
+  const taxTotal = watchedItems?.reduce((sum, item) => sum + (item.quantity * item.unitPrice * ((item.tax ?? 0) / 100)), 0) ?? 0;
   const discount = form.watch('discount') ?? 0;
   const grandTotal = subtotal + taxTotal - discount;
 

@@ -249,7 +249,7 @@ export default function ChartOfAccountsPage() {
   const accounts = accountsData?.data ?? [];
   const flatAccounts = accounts.reduce<Account[]>((acc, a) => {
     acc.push(a);
-    if (a.children) acc.push(...a.children);
+    if (Array.isArray(a.children)) acc.push(...a.children);
     return acc;
   }, []);
 

@@ -68,7 +68,7 @@ export default function PurchaseOrdersPage() {
         quantity: item.quantity,
         unit_price: item.unitPrice,
         tax_rate: item.tax,
-        total: +(item.quantity * item.unitPrice + item.quantity * item.unitPrice * (item.tax / 100)).toFixed(2),
+        total: +(item.quantity * item.unitPrice + item.quantity * item.unitPrice * ((item.tax ?? 0) / 100)).toFixed(2),
       }));
       const subtotal = items.reduce((s: number, i: any) => s + i.quantity * i.unit_price, 0);
       const taxAmount = items.reduce((s: number, i: any) => s + i.quantity * i.unit_price * (i.tax_rate / 100), 0);
@@ -154,7 +154,7 @@ export default function PurchaseOrdersPage() {
 
   const watchedItems = form.watch('items');
   const subtotal = watchedItems?.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0) ?? 0;
-  const taxTotal = watchedItems?.reduce((sum, item) => sum + (item.quantity * item.unitPrice * (item.tax / 100)), 0) ?? 0;
+  const taxTotal = watchedItems?.reduce((sum, item) => sum + (item.quantity * item.unitPrice * ((item.tax ?? 0) / 100)), 0) ?? 0;
   const discount = form.watch('discount') ?? 0;
   const grandTotal = subtotal + taxTotal - discount;
 

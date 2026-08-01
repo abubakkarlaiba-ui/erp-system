@@ -229,7 +229,7 @@ export const hrApi = {
     getBalance: (employeeId: string) =>
       apiClient.get(`/hr/leave-requests/balance/${employeeId}/`).then((r) => {
         const d = r.data;
-        return { data: d?.data ?? d };
+        return { data: d?.balances ?? d?.data?.balances ?? d?.data ?? d ?? {} };
       }),
   },
 

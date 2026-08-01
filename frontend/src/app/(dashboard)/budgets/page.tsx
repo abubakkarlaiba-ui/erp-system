@@ -78,7 +78,7 @@ export default function BudgetsPage() {
 
       <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sampleBudgets.map((budget) => {
-          const pct = Math.round((budget.spent / budget.amount) * 100);
+          const pct = budget.amount > 0 ? Math.round((budget.spent / budget.amount) * 100) : 0;
           const overBudget = pct > 90;
           return (
             <div key={budget.id} className="rounded-xl border bg-white p-5">

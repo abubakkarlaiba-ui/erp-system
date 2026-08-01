@@ -166,8 +166,8 @@ export default function PaymentsPage() {
           ) : (
             <ArrowUpRight className="h-3 w-3 mr-1" />
           )}
-          {row.original.type.charAt(0).toUpperCase() +
-            row.original.type.slice(1)}
+          {(row.original.type || "").charAt(0).toUpperCase() +
+            (row.original.type || "").slice(1)}
         </Badge>
       ),
     },
@@ -179,8 +179,8 @@ export default function PaymentsPage() {
           variant="secondary"
           className={cn(statusColors[row.original.status])}
         >
-          {row.original.status.charAt(0).toUpperCase() +
-            row.original.status.slice(1)}
+          {(row.original.status || "").charAt(0).toUpperCase() +
+            (row.original.status || "").slice(1)}
         </Badge>
       ),
     },

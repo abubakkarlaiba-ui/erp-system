@@ -202,8 +202,9 @@ export default function EmployeesPage() {
     }
   };
 
-  const filteredEmployees = (employeesData?.results || []).filter((employee) => {
-    const fullName = `${employee.first_name} ${employee.last_name}`.toLowerCase();
+  const employeeList = employeesData?.data ?? [];
+  const filteredEmployees = employeeList.filter((employee) => {
+    const fullName = `${employee.first_name ?? ''} ${employee.last_name ?? ''}`.toLowerCase();
     const matchesSearch =
       fullName.includes(searchQuery.toLowerCase()) ||
       (employee.employee_id || "").toLowerCase().includes(searchQuery.toLowerCase());
@@ -217,17 +218,21 @@ export default function EmployeesPage() {
   });
 
   const stats = {
-    total: employeesData?.results?.length || 0,
-    active: employeesData?.results?.filter((e) => e.is_active).length || 0,
-    onLeave: employeesData?.results?.filter((e) => !e.is_active).length || 0,
+    total: employeeList.length || 0,
+    active: employeeList.filter((e) => e.is_active).length || 0,
+    onLeave: employeeList.filter((e) => !e.is_active).length || 0,
     newThisMonth:
-      employeesData?.results?.filter((e) => {
-        const joiningDate = new Date(e.joining_date);
-        const now = new Date();
-        return (
-          joiningDate.getMonth() === now.getMonth() &&
-          joiningDate.getFullYear() === now.getFullYear()
-        );
+      employeeList.filter((e) => {
+        try {
+          const joiningDate = new Date(e.joining_date);
+          const now = new Date();
+          return (
+            joiningDate.getMonth() === now.getMonth() &&
+            joiningDate.getFullYear() === now.getFullYear()
+          );
+        } catch {
+          return false;
+        }
       }).length || 0,
   };
 
