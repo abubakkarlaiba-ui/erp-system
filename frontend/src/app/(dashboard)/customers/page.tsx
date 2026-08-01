@@ -88,7 +88,7 @@ export default function CustomersPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => salesApi.customers.delete(id),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['customers'] }); toast.success('Customer deleted'); setDeleteConfirm(null); },
-    onError: () => toast.error('Failed to delete customer'),
+    onError: (err: any) => toast.error(err?.response?.data?.error?.message || 'Failed to delete customer'),
   });
 
   const customers = customersData?.data?.results ?? [];

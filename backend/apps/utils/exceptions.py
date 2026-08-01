@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
 from django.conf import settings
+from django.db.models.deletion import ProtectedError, RestrictedError
 
 logger = logging.getLogger("apps")
 
@@ -53,6 +54,25 @@ class ConflictException(ERPException):
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
+
+    if isinstance(exc, (ProtectedError, RestrictedError)):
+        related = getattr(exc, "protected_objects", None) or getattr(exc, "restricted_objects", None)
+        count = len(related) if related is not None else 0
+        message = (
+            "This record cannot be deleted because it is referenced by related records. "
+            f"({count} related record(s) found)"
+        )
+        return Response(
+            {
+                "success": False,
+                "error": {
+                    "status_code": 409,
+                    "message": message,
+                    "details": {"detail": message},
+                },
+            },
+            status=409,
+        )
 
     if response is not None:
         error_data = {
