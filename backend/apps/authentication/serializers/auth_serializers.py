@@ -63,7 +63,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "first_name", "last_name", "phone", "avatar",
-            "timezone", "language",
+            "timezone", "language", "company", "role",
         ]
 
 
