@@ -1,10 +1,20 @@
 import type { ReactNode, ElementType } from "react"
 
+interface EmptyStateAction {
+  label?: string
+  onClick?: () => void
+  icon?: ElementType
+}
+
 interface EmptyStateProps {
   icon: ElementType
   title: string
   description?: string
-  action?: ReactNode
+  action?: ReactNode | EmptyStateAction
+}
+
+function isActionObject(action: ReactNode | EmptyStateAction): action is EmptyStateAction {
+  return typeof action === "object" && action !== null && !("props" in action) && "label" in action
 }
 
 export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
@@ -19,7 +29,21 @@ export function EmptyState({ icon: Icon, title, description, action }: EmptyStat
           {description}
         </p>
       )}
-      {action && <div className="mt-4">{action}</div>}
+      {action && (
+        <div className="mt-4">
+          {isActionObject(action) ? (
+            <button
+              onClick={action.onClick}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              {action.icon && <action.icon className="h-4 w-4" />}
+              {action.label}
+            </button>
+          ) : (
+            action
+          )}
+        </div>
+      )}
     </div>
   )
 }
