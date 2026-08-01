@@ -269,7 +269,7 @@ export const hrApi = {
         return { data: results, count: d?.count ?? results.length };
       }),
     generatePayslip: (data: { periodId: string; employeeIds?: string[] }) =>
-      apiClient.post("/hr/payslips/", data),
+      apiClient.post("/hr/payslips/generate/", { period: data.periodId }),
     getPayslip: (id: string) =>
       apiClient.get(`/hr/payslips/${id}/`),
   },

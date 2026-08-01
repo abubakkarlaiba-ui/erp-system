@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -203,6 +205,50 @@ class PayslipViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
     filterset_fields = ["employee", "period", "status"]
     search_fields = ["employee__first_name", "employee__last_name"]
     ordering_fields = ["created_at", "status", "net_salary"]
+
+    @action(detail=False, methods=["post"])
+    def generate(self, request):
+        period_id = request.data.get("period")
+        if not period_id:
+            return Response({"error": "period is required"}, status=400)
+        try:
+            period = PayrollPeriod.objects.get(id=period_id)
+        except PayrollPeriod.DoesNotExist:
+            return Response({"error": "Period not found"}, status=404)
+
+        from apps.employees.models import Employee
+        user = request.user
+        employees = Employee.objects.filter(company=user.company, status="active") if user.company else Employee.objects.filter(status="active")
+
+        created = 0
+        for emp in employees:
+            if Payslip.objects.filter(employee=emp, period=period).exists():
+                continue
+            salary = emp.salary or 0
+            allowances = salary * Decimal("0.15")
+            gross = salary + allowances
+            tax = gross * Decimal("0.10")
+            pension = gross * Decimal("0.05")
+            insurance = gross * Decimal("0.02")
+            other = Decimal("0")
+            net = gross - tax - pension - insurance - other
+            Payslip.objects.create(
+                employee=emp,
+                period=period,
+                company=user.company,
+                basic_salary=salary,
+                allowances=allowances,
+                gross_salary=gross,
+                tax_deduction=tax,
+                pension_deduction=pension,
+                insurance_deduction=insurance,
+                other_deductions=other,
+                net_salary=net,
+                status="draft",
+            )
+            created += 1
+
+        return Response({"message": f"{created} payslips generated", "count": created})
 
 
 class BonusViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
