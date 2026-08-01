@@ -67,8 +67,15 @@ class AttendanceViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
         if hasattr(user, "employee_profile"):
             return user.employee_profile
         from apps.employees.models import Employee
-        emp = Employee.objects.filter(company=user.company).first()
-        return emp
+        emp = Employee.objects.filter(user=user, company=user.company).first()
+        if emp:
+            return emp
+        emp = Employee.objects.filter(company=user.company, email=user.email).first()
+        if emp:
+            emp.user = user
+            emp.save(update_fields=["user"])
+            return emp
+        return Employee.objects.filter(company=user.company).first()
 
     @action(detail=False, methods=["post"], url_path="clock-in")
     def clock_in(self, request):

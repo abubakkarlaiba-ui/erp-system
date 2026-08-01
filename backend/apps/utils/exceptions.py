@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
 from django.conf import settings
+from django.db import IntegrityError
 from django.db.models.deletion import ProtectedError, RestrictedError
 
 logger = logging.getLogger("apps")
@@ -54,6 +55,24 @@ class ConflictException(ERPException):
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
+
+    if isinstance(exc, IntegrityError):
+        msg = str(exc)
+        if "unique" in msg.lower() or "duplicate" in msg.lower():
+            message = "A record with this value already exists. Please use a different value."
+        else:
+            message = "A database integrity error occurred. Please check your input."
+        return Response(
+            {
+                "success": False,
+                "error": {
+                    "status_code": 400,
+                    "message": message,
+                    "details": {"detail": message},
+                },
+            },
+            status=400,
+        )
 
     if isinstance(exc, (ProtectedError, RestrictedError)):
         related = getattr(exc, "protected_objects", None) or getattr(exc, "restricted_objects", None)

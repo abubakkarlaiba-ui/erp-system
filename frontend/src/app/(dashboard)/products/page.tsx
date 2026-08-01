@@ -115,7 +115,7 @@ export default function ProductsPage() {
       setDialogOpen(false);
       reset();
     },
-    onError: () => toast.error("Failed to create product"),
+    onError: (err: any) => toast.error(err?.response?.data?.error?.message || 'Failed to create product'),
   });
 
   const updateMutation = useMutation({

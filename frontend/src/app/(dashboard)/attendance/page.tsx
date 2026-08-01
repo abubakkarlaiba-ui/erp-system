@@ -68,7 +68,8 @@ export default function AttendancePage() {
   }, [attendanceData]);
 
   const stats = useMemo(() => {
-    const today = format(new Date(), "yyyy-MM-dd");
+    const now = new Date();
+    const today = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
     const todayRecords = records.filter((r) => r.date === today);
     const present = todayRecords.filter((r) => r.status === "present" || r.status === "late").length;
     const absent = todayRecords.filter((r) => r.status === "absent").length;
@@ -83,7 +84,10 @@ export default function AttendancePage() {
       toast.success("Clocked in successfully");
       queryClient.invalidateQueries({ queryKey: ["attendance"] });
     },
-    onError: () => toast.error("Failed to clock in"),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.detail || err?.response?.data?.error?.message || "Failed to clock in";
+      toast.error(msg);
+    },
   });
 
   const clockOutMutation = useMutation({
@@ -92,7 +96,10 @@ export default function AttendancePage() {
       toast.success("Clocked out successfully");
       queryClient.invalidateQueries({ queryKey: ["attendance"] });
     },
-    onError: () => toast.error("Failed to clock out"),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.detail || err?.response?.data?.error?.message || "Failed to clock out";
+      toast.error(msg);
+    },
   });
 
   const markMutation = useMutation({
@@ -105,7 +112,11 @@ export default function AttendancePage() {
     onError: () => toast.error("Failed to mark attendance"),
   });
 
-  const todayRecord = records.find((r) => r.date === format(new Date(), "yyyy-MM-dd"));
+  const todayRecord = records.find((r) => {
+    const now = new Date();
+    const todayUtc = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
+    return r.date === todayUtc;
+  });
   const clockedIn = todayRecord?.checkIn && !todayRecord?.checkOut;
 
   const columns = [
