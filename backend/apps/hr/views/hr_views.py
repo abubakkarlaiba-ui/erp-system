@@ -22,6 +22,10 @@ from apps.hr.models import (
     PerformanceReview,
     Overtime,
 )
+from apps.hr.models import (
+    JobPosting,
+    Applicant,
+)
 from apps.hr.serializers.hr_serializers import (
     AttendanceSerializer,
     LeaveTypeSerializer,
@@ -37,6 +41,8 @@ from apps.hr.serializers.hr_serializers import (
     TrainingAssignmentSerializer,
     PerformanceReviewSerializer,
     OvertimeSerializer,
+    JobPostingSerializer,
+    ApplicantSerializer,
 )
 
 
@@ -316,3 +322,25 @@ class OvertimeViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
     filterset_fields = ["employee", "status", "date"]
     search_fields = ["employee__first_name", "employee__last_name"]
     ordering_fields = ["date", "hours", "status"]
+
+
+class JobPostingViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
+    queryset = JobPosting.objects.select_related("posted_by").all()
+    serializer_class = JobPostingSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["status", "department", "employment_type"]
+    search_fields = ["title", "department", "location"]
+    ordering_fields = ["created_at", "title", "status"]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(company=user.company, posted_by=user)
+
+
+class ApplicantViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
+    queryset = Applicant.objects.select_related("job").all()
+    serializer_class = ApplicantSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["job", "status", "department"]
+    search_fields = ["first_name", "last_name", "email", "position"]
+    ordering_fields = ["applied_date", "status", "created_at"]

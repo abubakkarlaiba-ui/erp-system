@@ -10,6 +10,7 @@ from apps.hr.models.shift import Shift, EmployeeShift
 from apps.hr.models.training import Training, TrainingAssignment
 from apps.hr.models.performance import PerformanceReview
 from apps.hr.models.overtime import Overtime
+from apps.hr.models.recruitment import JobPosting, Applicant
 
 __all__ = [
     "Attendance",
@@ -26,4 +27,6 @@ __all__ = [
     "TrainingAssignment",
     "PerformanceReview",
     "Overtime",
+    "JobPosting",
+    "Applicant",
 ]

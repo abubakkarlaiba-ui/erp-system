@@ -16,6 +16,8 @@ from apps.hr.views.hr_views import (
     TrainingAssignmentViewSet,
     PerformanceReviewViewSet,
     OvertimeViewSet,
+    JobPostingViewSet,
+    ApplicantViewSet,
 )
 
 router = DefaultRouter()
@@ -45,6 +47,8 @@ router.register(
     basename="performance-reviews",
 )
 router.register(r"overtimes", OvertimeViewSet, basename="overtimes")
+router.register(r"job-postings", JobPostingViewSet, basename="job-postings")
+router.register(r"applicants", ApplicantViewSet, basename="applicants")
 
 urlpatterns = [
     path("", include(router.urls)),

@@ -14,6 +14,8 @@ from apps.hr.models import (
     TrainingAssignment,
     PerformanceReview,
     Overtime,
+    JobPosting,
+    Applicant,
 )
 
 
@@ -346,5 +348,39 @@ class OvertimeSerializer(serializers.ModelSerializer):
             "approved_by_name",
             "created_at",
             "updated_at",
+        ]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
+
+
+class JobPostingSerializer(serializers.ModelSerializer):
+    posted_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = JobPosting
+        fields = [
+            "id", "company", "title", "department", "description", "location",
+            "employment_type", "salary_min", "salary_max", "openings",
+            "status", "posted_by", "posted_by_name", "created_at", "updated_at",
+        ]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
+
+    def get_posted_by_name(self, obj):
+        if obj.posted_by:
+            return f"{obj.posted_by.first_name} {obj.posted_by.last_name}".strip() or obj.posted_by.email
+        return None
+
+
+class ApplicantSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(read_only=True)
+    job_title = serializers.CharField(source="job.title", read_only=True, default="")
+
+    class Meta:
+        model = Applicant
+        fields = [
+            "id", "company", "job", "job_title",
+            "first_name", "last_name", "full_name",
+            "email", "phone", "position", "department",
+            "applied_date", "status", "experience", "education",
+            "notes", "resume_url", "created_at", "updated_at",
         ]
         read_only_fields = ["id", "company", "created_at", "updated_at"]
