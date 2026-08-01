@@ -221,7 +221,7 @@ export default function LeavePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow"
+                  className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl p-5 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <h4 className="font-semibold text-black">{lt.name}</h4>
@@ -311,13 +311,13 @@ export default function LeavePage() {
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-1">Leave Type</label>
-                  <select
-                    value={requestForm.leaveTypeId}
-                    onChange={(e) => setRequestForm({ ...requestForm, leaveTypeId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <option value="">Select leave type</option>
+                   <label className="block text-sm font-medium text-black dark:text-white mb-1">Leave Type</label>
+                   <select
+                     value={requestForm.leaveTypeId}
+                     onChange={(e) => setRequestForm({ ...requestForm, leaveTypeId: e.target.value })}
+                     className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                   >
+                     <option value="">Select leave type</option>
                     {(leaveTypes?.data ?? []).map((lt: LeaveType) => (
                       <option key={lt.id} value={lt.id}>{lt.name} ({lt.daysAllowed - lt.daysUsed} days left)</option>
                     ))}
@@ -325,31 +325,31 @@ export default function LeavePage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-black mb-1">Start Date</label>
+                    <label className="block text-sm font-medium text-black dark:text-white mb-1">Start Date</label>
                     <input
                       type="date"
                       value={requestForm.startDate}
                       onChange={(e) => setRequestForm({ ...requestForm, startDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-zinc-800 text-black dark:text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black mb-1">End Date</label>
+                    <label className="block text-sm font-medium text-black dark:text-white mb-1">End Date</label>
                     <input
                       type="date"
                       value={requestForm.endDate}
                       onChange={(e) => setRequestForm({ ...requestForm, endDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-zinc-800 text-black dark:text-white"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-black mb-1">Reason</label>
+                  <label className="block text-sm font-medium text-black dark:text-white mb-1">Reason</label>
                   <textarea
                     value={requestForm.reason}
                     onChange={(e) => setRequestForm({ ...requestForm, reason: e.target.value })}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 resize-none"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 resize-none bg-white dark:bg-zinc-800 text-black dark:text-white"
                     placeholder="Reason for leave..."
                   />
                 </div>
