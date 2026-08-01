@@ -128,11 +128,27 @@ export default function CompaniesPage() {
     },
   });
 
+  const mapFormData = (data: CompanyFormData) => ({
+    name: data.name,
+    registration_number: data.registrationNumber,
+    tax_id: data.taxId || "",
+    email: data.email || "",
+    phone: data.phone || "",
+    website: data.website || "",
+    address_line1: data.address || "",
+    city: data.city || "",
+    state: data.state || "",
+    country: data.country || "",
+    postal_code: data.postalCode || "",
+    default_currency: data.currency,
+    is_active: data.status === "active",
+  });
+
   const onSubmit = (data: CompanyFormData) => {
     if (editingCompany) {
-      updateMutation.mutate({ id: editingCompany.id, data });
+      updateMutation.mutate({ id: editingCompany.id, data: mapFormData(data) });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(mapFormData(data));
     }
   };
 
@@ -149,7 +165,7 @@ export default function CompaniesPage() {
       state: company.state ?? "",
       country: company.country ?? "",
       postalCode: company.postalCode ?? (company as any).postal_code ?? "",
-      currency: company.currency ?? "USD",
+      currency: (company as any).default_currency ?? company.currency ?? "USD",
       website: company.website ?? "",
       status: (company as any).is_active ? "active" : "inactive",
     });
@@ -176,8 +192,8 @@ export default function CompaniesPage() {
   const stats = {
     total: companyList.length || 0,
     active: companyList.filter((c) => (c as any).is_active).length || 0,
-    totalBranches: companyList.reduce((acc, c) => acc + ((c as any).branch_count ?? (c as any).branchCount ?? 0), 0) || 0,
-    totalEmployees: companyList.reduce((acc, c) => acc + ((c as any).employee_count ?? (c as any).employeeCount ?? 0), 0) || 0,
+    totalBranches: companyList.reduce((acc, c) => acc + ((c as any).branches_count ?? (c as any).branch_count ?? (c as any).branchCount ?? 0), 0) || 0,
+    totalEmployees: companyList.reduce((acc, c) => acc + ((c as any).employees_count ?? (c as any).employee_count ?? (c as any).employeeCount ?? 0), 0) || 0,
   };
 
   const columns = [
