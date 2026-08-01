@@ -47,9 +47,10 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "id", "email", "first_name", "last_name", "phone", "avatar",
             "role", "company", "is_verified", "two_factor_enabled",
+            "is_superuser", "is_staff",
             "timezone", "language", "created_at", "updated_at",
         ]
-        read_only_fields = ["id", "email", "is_verified", "two_factor_enabled", "created_at", "updated_at"]
+        read_only_fields = ["id", "email", "is_verified", "two_factor_enabled", "is_superuser", "is_staff", "created_at", "updated_at"]
 
 
 class TokenObtainPairResponseSerializer(serializers.Serializer):
