@@ -232,8 +232,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if hasattr(user, "company") and user.company:
             return Company.objects.filter(pk=user.company_id)
-        if user.is_superuser or user.is_staff:
-            return Company.objects.all()
         return Company.objects.none()
 
     def get_serializer_class(self):
