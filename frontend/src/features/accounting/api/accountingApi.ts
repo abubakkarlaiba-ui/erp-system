@@ -325,22 +325,7 @@ export const accountingApi = {
   },
 
   createInvoice: async (invoiceData: any) => {
-    const { data } = await api.post<any>("/accounting/invoices/", {
-      invoice_type: invoiceData.type || "sales",
-      customer: invoiceData.customerId ? invoiceData.customerId : null,
-      date: invoiceData.date,
-      due_date: invoiceData.dueDate,
-      subtotal: invoiceData.subtotal,
-      tax_amount: invoiceData.tax || 0,
-      discount_amount: invoiceData.discount || 0,
-      total: invoiceData.total,
-      notes: invoiceData.notes,
-      items: (invoiceData.items || []).map((item: any) => ({
-        description: item.description,
-        quantity: item.quantity,
-        unit_price: item.unitPrice,
-      })),
-    });
+    const { data } = await api.post<any>("/accounting/invoices/", invoiceData);
     return { data: mapInvoice(data) };
   },
 

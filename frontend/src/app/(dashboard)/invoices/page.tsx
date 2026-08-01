@@ -48,6 +48,9 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ColumnDef } from "@tanstack/react-table";
+import { salesApi } from "@/features/sales/api/salesApi";
+import { purchaseApi } from "@/features/purchase/api/purchaseApi";
+import { useAuthStore } from "@/stores/authStore";
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -78,6 +81,8 @@ const statusColors: Record<string, string> = {
 
 export default function InvoicesPage() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const companyId = user?.company && typeof user.company === 'object' ? (user.company as any).id : user?.company;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
   const [search, setSearch] = useState("");
@@ -93,13 +98,20 @@ export default function InvoicesPage() {
       }),
   });
 
+  const { data: customersData } = useQuery({
+    queryKey: ["customers-list"],
+    queryFn: () => salesApi.customers.get({ page_size: 200 }),
+  });
+
+  const customerList = customersData?.data?.results ?? [];
+
   const { data: accountsData } = useQuery({
     queryKey: ["accounts-list"],
     queryFn: () => accountingApi.getAccounts({ perPage: 1000 }),
   });
 
   const createMutation = useMutation({
-    mutationFn: accountingApi.createInvoice,
+    mutationFn: (data: any) => accountingApi.createInvoice(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       toast.success("Invoice created");
@@ -190,12 +202,25 @@ export default function InvoicesPage() {
 
   const onSubmit = (data: InvoiceFormData) => {
     const payload = {
-      ...data,
-      subtotal,
-      total,
-      customerName: "",
+      invoice_type: data.type,
+      customer: data.customerId || null,
+      date: data.date,
+      due_date: data.dueDate,
+      subtotal: subtotal,
+      tax_amount: tax,
+      discount_amount: discount,
+      total: total,
+      notes: data.notes || "",
+      company: companyId,
+      created_by: user?.id,
+      items: data.items.map((i) => ({
+        description: i.description,
+        quantity: i.quantity,
+        unit_price: i.unitPrice,
+        total: i.quantity * i.unitPrice,
+      })),
     };
-    createMutation.mutate(payload as any);
+    createMutation.mutate(payload);
   };
 
   const columns: ColumnDef<Invoice>[] = [
@@ -346,7 +371,15 @@ export default function InvoicesPage() {
               </div>
               <div className="space-y-2">
                 <Label>Customer/Supplier</Label>
-                <Input {...register("customerId")} placeholder="Select..." />
+                <select
+                  {...register("customerId")}
+                  className="w-full rounded-md border bg-white px-3 py-2 text-sm"
+                >
+                  <option value="">Select customer</option>
+                  {customerList.map((c: any) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
