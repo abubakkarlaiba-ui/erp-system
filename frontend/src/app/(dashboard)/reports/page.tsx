@@ -165,8 +165,7 @@ export default function ReportsPage() {
     else if (activeReport === "inventory") { headers = ["Product", "Stock", "Price", "Category"]; rows = topProducts.map((p) => [p.name, p.stock, p.price, p.category]) }
     else if (activeReport === "employees") { headers = ["Department", "Count"]; rows = employeeByDept.map((d) => [d.name, d.count]) }
     else if (activeReport === "invoices") { headers = ["Status", "Count"]; rows = invoiceStatusData.map((s) => [s.name, s.value]) }
-    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("
-")
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n")
     const blob = new Blob([csv], { type: "text/csv" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a"); a.href = url; a.download = activeReport + "-report-" + new Date().toISOString().split("T")[0] + ".csv"; a.click(); URL.revokeObjectURL(url)
