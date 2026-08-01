@@ -229,7 +229,12 @@ class CompanyViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsCompanyOwnerOrEmployee]
 
     def get_queryset(self):
-        return _filter_by_company(Company.objects.all(), self.request)
+        user = self.request.user
+        if user.is_superuser or user.is_staff:
+            return Company.objects.all()
+        if hasattr(user, "company") and user.company:
+            return Company.objects.filter(pk=user.company_id)
+        return Company.objects.none()
 
     def get_serializer_class(self):
         if self.action in ("create", "update", "partial_update"):
@@ -237,7 +242,11 @@ class CompanyViewSet(viewsets.ModelViewSet):
         return CompanySerializer
 
     def perform_create(self, serializer):
-        serializer.save()
+        company = serializer.save()
+        user = self.request.user
+        if not user.company:
+            user.company = company
+            user.save(update_fields=["company"])
 
 
 @extend_schema_view(
