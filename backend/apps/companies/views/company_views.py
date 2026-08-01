@@ -208,8 +208,6 @@ def _get_user_company(request):
 
 
 def _filter_by_company(queryset, request):
-    if request.user.is_superuser:
-        return queryset
     company = _get_user_company(request)
     if company:
         return queryset.filter(company=company)

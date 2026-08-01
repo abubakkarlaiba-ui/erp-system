@@ -33,8 +33,6 @@ def _get_user_company(request):
 
 
 def _filter_by_company(queryset, request):
-    if request.user.is_superuser:
-        return queryset
     company = _get_user_company(request)
     if company:
         return queryset.filter(company=company)
@@ -130,12 +128,11 @@ class GoodsReceiptViewSet(viewsets.ModelViewSet):
         qs = GoodsReceipt.objects.select_related(
             "purchase_order", "warehouse", "received_by"
         )
-        if not self.request.user.is_superuser:
-            company = _get_user_company(self.request)
-            if company:
-                qs = qs.filter(purchase_order__company=company)
-            else:
-                qs = qs.none()
+        company = _get_user_company(self.request)
+        if company:
+            qs = qs.filter(purchase_order__company=company)
+        else:
+            qs = qs.none()
         return qs
 
     def perform_create(self, serializer):

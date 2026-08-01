@@ -48,13 +48,6 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Employee.objects.select_related(
-                "department", "designation", "branch", "manager", "user",
-            ).prefetch_related(
-                "education", "experience", "skills", "documents",
-                "contracts", "promotions", "transfers", "resignations", "terminations",
-            ).all()
         if user.company:
             return Employee.objects.select_related(
                 "department", "designation", "branch", "manager", "user",
@@ -147,15 +140,13 @@ class EmployeeDocumentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return EmployeeDocument.objects.select_related("employee").all()
         if user.company:
             return EmployeeDocument.objects.select_related("employee").filter(company=user.company)
         return EmployeeDocument.objects.none()
 
     def perform_create(self, serializer):
         user = self.request.user
-        if not user.is_superuser and user.company:
+        if user.company:
             serializer.save(company=user.company)
         else:
             serializer.save()
@@ -171,15 +162,13 @@ class ContractViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Contract.objects.select_related("employee").all()
         if user.company:
             return Contract.objects.select_related("employee").filter(company=user.company)
         return Contract.objects.none()
 
     def perform_create(self, serializer):
         user = self.request.user
-        if not user.is_superuser and user.company:
+        if user.company:
             serializer.save(company=user.company)
         else:
             serializer.save()
@@ -195,8 +184,6 @@ class EducationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Education.objects.select_related("employee").all()
         if user.company:
             return Education.objects.select_related("employee").filter(
                 employee__company=user.company,
@@ -214,8 +201,6 @@ class ExperienceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Experience.objects.select_related("employee").all()
         if user.company:
             return Experience.objects.select_related("employee").filter(
                 employee__company=user.company,
@@ -233,8 +218,6 @@ class SkillViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Skill.objects.select_related("employee").all()
         if user.company:
             return Skill.objects.select_related("employee").filter(
                 employee__company=user.company,
@@ -255,8 +238,6 @@ class PromotionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Promotion.objects.select_related("employee").all()
         if user.company:
             return Promotion.objects.select_related("employee").filter(
                 employee__company=user.company,
@@ -274,10 +255,6 @@ class TransferViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Transfer.objects.select_related(
-                "employee", "from_branch", "to_branch", "from_department", "to_department",
-            ).all()
         if user.company:
             return Transfer.objects.select_related(
                 "employee", "from_branch", "to_branch", "from_department", "to_department",
@@ -295,8 +272,6 @@ class ResignationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Resignation.objects.select_related("employee", "approved_by").all()
         if user.company:
             return Resignation.objects.select_related("employee", "approved_by").filter(
                 employee__company=user.company,
@@ -314,8 +289,6 @@ class TerminationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
-            return Termination.objects.select_related("employee", "approved_by").all()
         if user.company:
             return Termination.objects.select_related("employee", "approved_by").filter(
                 employee__company=user.company,

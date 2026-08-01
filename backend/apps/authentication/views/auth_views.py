@@ -331,8 +331,6 @@ class UserRoleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser or user.role == User.Role.SUPER_ADMIN:
-            return UserRole.objects.select_related("user", "role").all()
         if user.company:
             return UserRole.objects.select_related("user", "role").filter(user__company=user.company)
         return UserRole.objects.none()
@@ -360,8 +358,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser or user.role == User.Role.SUPER_ADMIN:
-            return User.objects.all()
         if user.company:
             return User.objects.filter(company=user.company)
         return User.objects.none()
