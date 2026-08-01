@@ -49,6 +49,14 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     filterset_fields = ["company", "status", "fiscal_year", "date"]
     search_fields = ["entry_number", "description", "reference"]
 
+    def perform_create(self, serializer):
+        from django.utils import timezone
+        user = self.request.user
+        company = user.company
+        last = JournalEntry.objects.filter(company=company).count()
+        entry_number = f"JE-{timezone.now().strftime('%Y%m')}-{str(last + 1).zfill(4)}"
+        serializer.save(created_by=user, company=company, entry_number=entry_number)
+
 
 class JournalLineViewSet(viewsets.ModelViewSet):
     queryset = JournalLine.objects.select_related("account", "journal_entry")
@@ -66,6 +74,15 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     filterset_fields = ["company", "invoice_type", "status", "date", "due_date"]
     search_fields = ["invoice_number", "notes"]
 
+    def perform_create(self, serializer):
+        from django.utils import timezone
+        user = self.request.user
+        company = user.company
+        prefix = "INV" if self.request.data.get("invoice_type") == "sales" else "PIN"
+        last = Invoice.objects.filter(company=company, invoice_type=self.request.data.get("invoice_type", "sales")).count()
+        invoice_number = f"{prefix}-{timezone.now().strftime('%Y%m')}-{str(last + 1).zfill(4)}"
+        serializer.save(created_by=user, company=company, invoice_number=invoice_number)
+
 
 class InvoiceItemViewSet(viewsets.ModelViewSet):
     queryset = InvoiceItem.objects.select_related("invoice", "product")
@@ -81,6 +98,14 @@ class PaymentViewSet(viewsets.ModelViewSet):
     filterset_fields = ["company", "payment_type", "status", "payment_method", "date"]
     search_fields = ["payment_number", "reference", "notes"]
 
+    def perform_create(self, serializer):
+        from django.utils import timezone
+        user = self.request.user
+        company = user.company
+        last = Payment.objects.filter(company=company).count()
+        payment_number = f"PAY-{timezone.now().strftime('%Y%m')}-{str(last + 1).zfill(4)}"
+        serializer.save(created_by=user, company=company, payment_number=payment_number)
+
 
 class ExpenseViewSet(viewsets.ModelViewSet):
     queryset = Expense.objects.select_related("account", "created_by", "approved_by")
@@ -88,6 +113,14 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ["company", "status", "payment_method", "category", "date"]
     search_fields = ["expense_number", "category", "description"]
+
+    def perform_create(self, serializer):
+        from django.utils import timezone
+        user = self.request.user
+        company = user.company
+        last = Expense.objects.filter(company=company).count()
+        expense_number = f"EXP-{timezone.now().strftime('%Y%m')}-{str(last + 1).zfill(4)}"
+        serializer.save(created_by=user, company=company, expense_number=expense_number)
 
 
 class BankAccountViewSet(viewsets.ModelViewSet):

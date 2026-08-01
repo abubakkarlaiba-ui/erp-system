@@ -85,6 +85,8 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "entry_number",
+            "company",
+            "created_by",
             "total_debit",
             "total_credit",
             "created_at",
@@ -158,6 +160,8 @@ class InvoiceSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "invoice_number",
+            "company",
+            "created_by",
             "balance_due",
             "created_at",
             "updated_at",
@@ -196,6 +200,8 @@ class PaymentSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "payment_number",
+            "company",
+            "created_by",
             "created_at",
             "updated_at",
         ]
@@ -233,6 +239,9 @@ class ExpenseSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "expense_number",
+            "company",
+            "created_by",
+            "approved_by",
             "created_at",
             "updated_at",
         ]
