@@ -123,6 +123,52 @@ class LeaveRequestViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
     search_fields = ["employee__first_name", "employee__last_name"]
     ordering_fields = ["start_date", "status"]
 
+    def perform_create(self, serializer):
+        from apps.employees.models import Employee
+        employee = Employee.objects.filter(user=self.request.user, company=self.request.user.company).first()
+        if employee:
+            serializer.save(employee=employee, company=self.request.user.company)
+        else:
+            serializer.save(company=self.request.user.company)
+
+    @action(detail=True, methods=["put"])
+    def approve(self, request, pk=None):
+        leave = self.get_object()
+        leave.status = "approved"
+        leave.approved_by = request.user
+        leave.approval_date = timezone.now()
+        leave.save()
+        return Response(LeaveRequestSerializer(leave).data)
+
+    @action(detail=True, methods=["put"])
+    def reject(self, request, pk=None):
+        leave = self.get_object()
+        leave.status = "rejected"
+        leave.rejection_reason = request.data.get("reason", "")
+        leave.save()
+        return Response(LeaveRequestSerializer(leave).data)
+
+    @action(detail=False, methods=["get"], url_path="balance/(?P<employee_id>[^/.]+)")
+    def balance(self, request, employee_id=None):
+        from datetime import date
+        from django.db.models import Sum
+        year = date.today().year
+        leave_types = LeaveType.objects.filter(company=request.user.company, is_active=True)
+        balances = []
+        for lt in leave_types:
+            used = LeaveRequest.objects.filter(
+                leave_type=lt,
+                status="approved",
+                start_date__year=year,
+            ).aggregate(total=Sum("total_days"))["total"] or 0
+            balances.append({
+                "leaveType": lt.name,
+                "allowed": lt.days_allowed,
+                "used": int(used),
+                "remaining": lt.days_allowed - int(used),
+            })
+        return Response({"balances": balances})
+
 
 class HolidayCalendarViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
     queryset = HolidayCalendar.objects.select_related("holiday", "branch").all()
