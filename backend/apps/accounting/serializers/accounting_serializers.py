@@ -36,7 +36,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "balance", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "balance", "created_at", "updated_at"]
 
 
 class JournalLineSerializer(serializers.ModelSerializer):
@@ -84,6 +84,7 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             "id",
+            "company",
             "entry_number",
             "total_debit",
             "total_credit",
@@ -157,6 +158,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             "id",
+            "company",
             "invoice_number",
             "balance_due",
             "created_at",
@@ -195,6 +197,7 @@ class PaymentSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             "id",
+            "company",
             "payment_number",
             "created_at",
             "updated_at",
@@ -232,6 +235,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             "id",
+            "company",
             "expense_number",
             "created_at",
             "updated_at",
@@ -254,7 +258,7 @@ class BankAccountSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "current_balance", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "current_balance", "created_at", "updated_at"]
 
 
 class BankTransactionSerializer(serializers.ModelSerializer):
@@ -305,7 +309,7 @@ class BudgetSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class FixedAssetSerializer(serializers.ModelSerializer):
@@ -333,7 +337,7 @@ class FixedAssetSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class TaxRateSerializer(serializers.ModelSerializer):
@@ -351,4 +355,4 @@ class TaxRateSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
