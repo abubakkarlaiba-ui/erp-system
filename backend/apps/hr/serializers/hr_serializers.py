@@ -88,7 +88,7 @@ class LeaveRequestSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "company", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "employee", "created_at", "updated_at"]
 
 
 class HolidayCalendarSerializer(serializers.ModelSerializer):

@@ -101,8 +101,8 @@ export default function TrainingPage() {
             <div className="p-5">
               <div className="flex items-start justify-between mb-3">
                 <h4 className="font-semibold text-black leading-tight">{training.title}</h4>
-                <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColors[training.status]}`}>
-                  {training.status.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColors[training.status] || ""}`}>
+                  {(training.status || "scheduled").replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </span>
               </div>
 
@@ -115,7 +115,7 @@ export default function TrainingPage() {
                 </div>
                 <div className="flex items-center gap-2 text-black">
                   <Calendar className="w-4 h-4 text-gray-500" />
-                  <span>{format(parseISO(training.startDate), "MMM dd")} — {format(parseISO(training.endDate), "MMM dd, yyyy")}</span>
+                  <span>{training.startDate ? format(parseISO(training.startDate), "MMM dd") : "-"} — {training.endDate ? format(parseISO(training.endDate), "MMM dd, yyyy") : "-"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-black">
                   <MapPin className="w-4 h-4 text-gray-500" />

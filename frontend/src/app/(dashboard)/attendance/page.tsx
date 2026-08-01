@@ -207,13 +207,13 @@ export default function AttendancePage() {
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-indigo-600" />
               <span className="text-sm text-black">Clocked In:</span>
-              <span className="font-semibold text-indigo-700">{/^\d{2}:\d{2}/.test(todayRecord.checkIn) ? todayRecord.checkIn.substring(0, 5) : format(parseISO(todayRecord.checkIn), "hh:mm a")}</span>
+              <span className="font-semibold text-indigo-700">{/^\d{2}:\d{2}/.test(todayRecord.checkIn) ? todayRecord.checkIn.substring(0, 5) : (() => { try { return format(parseISO(todayRecord.checkIn), "hh:mm a"); } catch { return todayRecord.checkIn || "-"; } })()}</span>
             </div>
             {todayRecord.checkOut && (
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-red-600" />
                 <span className="text-sm text-black">Clocked Out:</span>
-                <span className="font-semibold text-red-700">{/^\d{2}:\d{2}/.test(todayRecord.checkOut) ? todayRecord.checkOut.substring(0, 5) : format(parseISO(todayRecord.checkOut), "hh:mm a")}</span>
+                <span className="font-semibold text-red-700">{/^\d{2}:\d{2}/.test(todayRecord.checkOut) ? todayRecord.checkOut.substring(0, 5) : (() => { try { return format(parseISO(todayRecord.checkOut), "hh:mm a"); } catch { return todayRecord.checkOut || "-"; } })()}</span>
               </div>
             )}
             <div className="flex items-center gap-2">

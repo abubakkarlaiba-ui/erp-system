@@ -129,6 +129,7 @@ export default function JournalEntriesPage() {
     reset,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<EntryFormData>({
     resolver: zodResolver(entrySchema),
@@ -171,7 +172,7 @@ export default function JournalEntriesPage() {
     {
       accessorKey: "date",
       header: "Date",
-      cell: ({ row }) => formatDate(row.original.date),
+      cell: ({ row }) => row.original.date ? formatDate(row.original.date) : '-',
     },
     { accessorKey: "description", header: "Description" },
     {
@@ -192,12 +193,13 @@ export default function JournalEntriesPage() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const cfg = statusConfig[row.original.status];
+        const cfg = statusConfig[row.original.status] ?? { icon: FileText, color: "bg-gray-100 text-gray-800" };
         const Icon = cfg.icon;
+        const s = row.original.status || '';
         return (
           <Badge variant="secondary" className={cn(cfg.color)}>
             <Icon className="h-3 w-3 mr-1" />
-            {row.original.status.charAt(0).toUpperCase() + row.original.status.slice(1)}
+            {s.charAt(0).toUpperCase() + s.slice(1)}
           </Badge>
         );
       },
@@ -321,8 +323,7 @@ export default function JournalEntriesPage() {
                     <Select
                       value={watch(`lines.${index}.accountId`)}
                       onValueChange={(v) => {
-                        const lines = watch("lines");
-                        lines[index].accountId = v;
+                        setValue(`lines.${index}.accountId`, v);
                       }}
                     >
                       <SelectTrigger>

@@ -195,7 +195,7 @@ export default function CategoriesPage() {
     defaultValues: { name: "", description: "", parentId: null, isActive: true },
   });
 
-  const categories = categoriesData?.data?.results ?? [];
+  const categories = categoriesData?.data ?? [];
   const flatCategories = categories.reduce<Category[]>((acc, c) => {
     acc.push(c);
     if (c.children) acc.push(...c.children);

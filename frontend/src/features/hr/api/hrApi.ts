@@ -182,17 +182,46 @@ export const hrApi = {
     getTypes: () =>
       apiClient.get("/hr/leave-types/").then((r) => {
         const d = r.data;
-        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((t: any) => ({
+          id: String(t.id),
+          name: t.name || "",
+          daysAllowed: Number(t.days_allowed) || 0,
+          daysUsed: 0,
+          description: t.description || "",
+        }));
         return { data: results };
       }),
     getRequests: (params?: AttendanceParams) =>
       apiClient.get("/hr/leave-requests/", { params }).then((r) => {
         const d = r.data;
-        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((l: any) => ({
+          id: String(l.id),
+          employeeId: String(l.employee || ""),
+          employeeName: l.employee_name || "",
+          leaveType: l.leave_type_name || "",
+          startDate: l.start_date || "",
+          endDate: l.end_date || "",
+          days: Number(l.total_days) || 0,
+          reason: l.reason || "",
+          status: l.status || "pending",
+          approvedBy: l.approved_by_name || "",
+          approvedAt: l.approval_date || "",
+        }));
         return { data: results, count: d?.count ?? results.length };
       }),
-    createRequest: (data: { leaveTypeId: string; startDate: string; endDate: string; reason: string }) =>
-      apiClient.post("/hr/leave-requests/", data),
+    createRequest: (data: { leaveTypeId: string; startDate: string; endDate: string; reason: string }) => {
+      const start = new Date(data.startDate);
+      const end = new Date(data.endDate);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      return apiClient.post("/hr/leave-requests/", {
+        leave_type: data.leaveTypeId,
+        start_date: data.startDate,
+        end_date: data.endDate,
+        reason: data.reason,
+        total_days: totalDays,
+      });
+    },
     approve: (id: string) =>
       apiClient.put(`/hr/leave-requests/${id}/approve/`),
     reject: (id: string) =>
@@ -208,12 +237,35 @@ export const hrApi = {
     getPeriods: () =>
       apiClient.get("/hr/payroll-periods/").then((r) => {
         const d = r.data;
-        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((p: any) => ({
+          id: String(p.id),
+          name: p.name || "",
+          startDate: p.start_date || "",
+          endDate: p.end_date || "",
+          status: p.status || "draft",
+          totalEmployees: Number(p.total_employees) || 0,
+          totalAmount: Number(p.total_amount) || 0,
+        }));
+        return { data: results };
       }),
     getPayslips: (params?: AttendanceParams) =>
       apiClient.get("/hr/payslips/", { params }).then((r) => {
         const d = r.data;
-        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((p: any) => ({
+          id: String(p.id),
+          employeeId: String(p.employee || ""),
+          employeeName: p.employee_name || "",
+          periodId: String(p.period || ""),
+          periodName: p.period_name || "",
+          basicSalary: Number(p.basic_salary) || 0,
+          allowances: Number(p.allowances) || 0,
+          overtime: Number(p.overtime) || 0,
+          grossPay: Number(p.gross_salary) || 0,
+          deductions: Number(p.tax_deduction || 0) + Number(p.pension_deduction || 0) + Number(p.insurance_deduction || 0) + Number(p.other_deductions || 0),
+          netPay: Number(p.net_salary) || 0,
+          status: p.status || "draft",
+          generatedAt: p.paid_date || p.created_at || "",
+        }));
         return { data: results, count: d?.count ?? results.length };
       }),
     generatePayslip: (data: { periodId: string; employeeIds?: string[] }) =>
@@ -226,7 +278,15 @@ export const hrApi = {
     getStructures: () =>
       apiClient.get("/hr/salary-structures/").then((r) => {
         const d = r.data;
-        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((s: any) => ({
+          id: String(s.id),
+          name: s.name || "",
+          baseSalary: Number(s.basic_salary) || 0,
+          allowances: s.allowances || {},
+          deductions: s.deductions || {},
+          description: s.description || "",
+        }));
+        return { data: results };
       }),
     createStructure: (data: Omit<SalaryStructure, "id">) =>
       apiClient.post("/hr/salary-structures/", data),
@@ -236,7 +296,21 @@ export const hrApi = {
     getAll: () =>
       apiClient.get("/hr/trainings/").then((r) => {
         const d = r.data;
-        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((t: any) => ({
+          id: String(t.id),
+          title: t.title || "",
+          trainer: t.trainer || t.instructor || "",
+          description: t.description || "",
+          startDate: t.start_date || "",
+          endDate: t.end_date || "",
+          maxParticipants: Number(t.max_participants) || 0,
+          currentParticipants: Number(t.current_participants) || 0,
+          status: t.status || "scheduled",
+          progress: Number(t.progress) || 0,
+          location: t.location || "",
+          category: t.category || "",
+        }));
+        return { data: results };
       }),
     create: (data: Omit<Training, "id" | "currentParticipants" | "progress">) =>
       apiClient.post("/hr/trainings/", data),
@@ -251,7 +325,20 @@ export const hrApi = {
     getReviews: (params?: AttendanceParams) =>
       apiClient.get("/hr/performance-reviews/", { params }).then((r) => {
         const d = r.data;
-        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((rev: any) => ({
+          id: String(rev.id),
+          employeeId: String(rev.employee || ""),
+          employeeName: rev.employee_name || "",
+          reviewPeriod: rev.review_period || "",
+          reviewerName: rev.reviewer_name || rev.reviewer || "",
+          overallRating: Number(rev.overall_rating) || 0,
+          categories: rev.categories || [],
+          status: rev.status || "draft",
+          strengths: rev.strengths || "",
+          improvements: rev.improvements || "",
+          goals: rev.goals || "",
+          createdAt: rev.created_at || "",
+        }));
         return { data: results, count: d?.count ?? results.length };
       }),
     createReview: (data: Omit<PerformanceReview, "id" | "createdAt">) =>
@@ -262,7 +349,16 @@ export const hrApi = {
     getRequests: (params?: AttendanceParams) =>
       apiClient.get("/hr/overtimes/", { params }).then((r) => {
         const d = r.data;
-        const results = d?.results ?? d?.data ?? (Array.isArray(d) ? d : []);
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((o: any) => ({
+          id: String(o.id),
+          employeeId: String(o.employee || ""),
+          employeeName: o.employee_name || "",
+          date: o.date || "",
+          hours: Number(o.hours) || 0,
+          reason: o.reason || "",
+          status: o.status || "pending",
+          approvedBy: o.approved_by_name || "",
+        }));
         return { data: results, count: d?.count ?? results.length };
       }),
     createRequest: (data: { employeeId: string; date: string; hours: number; reason: string }) =>
@@ -275,7 +371,15 @@ export const hrApi = {
     getAll: () =>
       apiClient.get("/hr/shifts/").then((r) => {
         const d = r.data;
-        return { data: d?.results ?? d?.data ?? (Array.isArray(d) ? d : []) };
+        const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((s: any) => ({
+          id: String(s.id),
+          name: s.name || "",
+          startTime: s.start_time || s.start || "",
+          endTime: s.end_time || s.end || "",
+          breakMinutes: Number(s.break_minutes) || 0,
+          description: s.description || "",
+        }));
+        return { data: results };
       }),
     create: (data: Omit<Shift, "id">) =>
       apiClient.post("/hr/shifts/", data),

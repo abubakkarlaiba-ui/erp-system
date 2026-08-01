@@ -93,7 +93,16 @@ export default function PurchaseOrdersPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<POFormData> }) => purchaseApi.orders.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<POFormData> }) => {
+      const payload: Record<string, any> = {};
+      if (data.supplierId !== undefined) payload.supplier = data.supplierId;
+      if (data.reference !== undefined) payload.reference = data.reference;
+      if (data.orderDate !== undefined) payload.date = data.orderDate;
+      if (data.expectedDelivery !== undefined) payload.expected_delivery_date = data.expectedDelivery || null;
+      if (data.notes !== undefined) payload.notes = data.notes || null;
+      if (data.discount !== undefined) payload.discount_amount = data.discount;
+      return purchaseApi.orders.update(id, payload as any);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['purchase-orders'] }); toast.success('Purchase order updated'); setDialogOpen(false); setEditingPO(null); form.reset(); },
     onError: () => toast.error('Failed to update purchase order'),
   });
@@ -122,7 +131,7 @@ export default function PurchaseOrdersPage() {
       supplierId: po.supplierId ?? po.supplier ?? '',
       reference: po.reference ?? '',
       orderDate: po.orderDate ?? po.date ?? '',
-      expectedDelivery: po.expectedDelivery ?? po.required_date ?? '',
+      expectedDelivery: po.expectedDelivery ?? po.expected_delivery_date ?? po.required_date ?? '',
       notes: po.notes ?? '',
       items: po.items?.length ? po.items.map((i: any) => ({ description: i.description, quantity: i.quantity, unitPrice: i.unit_price ?? i.unitPrice, tax: i.tax_rate ?? i.tax ?? 0 })) : [{ description: '', quantity: 1, unitPrice: 0, tax: 0 }],
       discount: po.discount ?? 0,
@@ -191,7 +200,7 @@ export default function PurchaseOrdersPage() {
                 <tr key={o.id} className="border-b last:border-0 hover:bg-gray-50">
                   <td className="p-4 font-medium">{o.order_number ?? o.reference ?? String(o.id).slice(0, 8)}</td>
                   <td className="p-4">{o.supplier_name ?? o.supplierName ?? '-'}</td>
-                  <td className="p-4 text-gray-500">{formatDate(o.date ?? o.created_at ?? o.createdAt)}</td>
+                  <td className="p-4 text-gray-500">{formatDate(o.date || o.created_at || o.createdAt)}</td>
                   <td className="p-4 text-right">{formatCurrency(o.total ?? 0)}</td>
                   <td className="p-4">{statusBadge(o.status)}</td>
                   <td className="p-4 text-right">

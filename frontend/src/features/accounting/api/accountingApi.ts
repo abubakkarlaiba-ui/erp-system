@@ -263,7 +263,7 @@ export const accountingApi = {
       name: accountData.name,
       code: accountData.code,
       account_type: accountData.type,
-      parent: accountData.parentId ? Number(accountData.parentId) : null,
+      parent: accountData.parentId ? accountData.parentId : null,
       is_active: accountData.isActive,
     });
     return { data: mapAccount(data) };
@@ -295,7 +295,7 @@ export const accountingApi = {
       reference: entryData.reference,
       description: entryData.description,
       lines: entryData.lines.map((l) => ({
-        account: Number(l.accountId),
+        account: l.accountId,
         debit: l.debit,
         credit: l.credit,
         description: l.description,
@@ -327,7 +327,7 @@ export const accountingApi = {
   createInvoice: async (invoiceData: any) => {
     const { data } = await api.post<any>("/accounting/invoices/", {
       invoice_type: invoiceData.type || "sales",
-      customer: invoiceData.customerId ? Number(invoiceData.customerId) : null,
+      customer: invoiceData.customerId ? invoiceData.customerId : null,
       date: invoiceData.date,
       due_date: invoiceData.dueDate,
       subtotal: invoiceData.subtotal,
@@ -366,7 +366,7 @@ export const accountingApi = {
 
   createPayment: async (paymentData: any) => {
     const { data } = await api.post<any>("/accounting/payments/", {
-      invoice: paymentData.invoiceId ? Number(paymentData.invoiceId) : null,
+      invoice: paymentData.invoiceId ? paymentData.invoiceId : null,
       amount: paymentData.amount,
       payment_method: paymentData.method,
       payment_type: paymentData.type,

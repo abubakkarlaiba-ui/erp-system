@@ -115,7 +115,7 @@ export default function PerformancePage() {
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold text-sm">
-                  {review.employeeName.split(" ").map((n) => n[0]).join("")}
+                  {(review.employeeName || "").split(" ").map((n) => n[0]).join("")}
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900">{review.employeeName}</h4>
@@ -124,8 +124,8 @@ export default function PerformancePage() {
               </div>
               <div className="flex items-center gap-4">
                 <StarRating rating={review.overallRating} />
-                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[review.status]}`}>
-                  {review.status.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[review.status] || ""}`}>
+                  {(review.status || "draft").replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </span>
                 {expandedReview === review.id ? (
                   <ChevronUp className="w-5 h-5 text-gray-400" />
@@ -171,7 +171,7 @@ export default function PerformancePage() {
                     </div>
 
                     <div className="flex justify-end">
-                      <span className="text-xs text-gray-400">Created {format(parseISO(review.createdAt), "MMM dd, yyyy 'at' hh:mm a")}</span>
+                      <span className="text-xs text-gray-400">Created {review.createdAt ? (() => { try { return format(parseISO(review.createdAt), "MMM dd, yyyy 'at' hh:mm a"); } catch { return review.createdAt; } })() : "-"}</span>
                     </div>
                   </div>
                 </motion.div>

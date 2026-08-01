@@ -200,7 +200,7 @@ export default function QuotationsPage() {
                   <td className="p-4 font-medium">{q.order_number ?? q.reference ?? String(q.id).slice(0, 8)}</td>
                   <td className="p-4">{q.customer_name ?? q.customerName ?? '-'}</td>
                   <td className="p-4 text-gray-500">{formatDate(q.date ?? q.created_at ?? q.createdAt)}</td>
-                  <td className="p-4 text-gray-500">{q.valid_until ?? q.validUntil ? formatDate(q.valid_until ?? q.validUntil) : '-'}</td>
+                  <td className="p-4 text-gray-500">{(q.valid_until ?? q.validUntil) ? formatDate(q.valid_until ?? q.validUntil) : '-'}</td>
                   <td className="p-4 text-right">{formatCurrency(q.total ?? 0)}</td>
                   <td className="p-4">{statusBadge(q.status)}</td>
                   <td className="p-4 text-right">
@@ -309,7 +309,7 @@ export default function QuotationsPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-lg rounded-xl border bg-white shadow-2xl p-6 mx-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Quotation {viewingQuotation.order_number ?? viewingQuotation.reference ?? viewingQuotation.id?.slice(0, 8)}</h2>
+                <h2 className="text-lg font-semibold">Quotation {viewingQuotation.order_number ?? viewingQuotation.reference ?? String(viewingQuotation.id ?? '').slice(0, 8)}</h2>
                 <button onClick={() => setViewDialogOpen(false)} className="rounded-md p-1.5 hover:bg-gray-100"><X className="h-4 w-4" /></button>
               </div>
               <div className="space-y-3 text-sm">

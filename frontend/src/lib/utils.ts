@@ -18,14 +18,28 @@ export function formatCurrency(
 }
 
 export function formatDate(
-  date: string | Date,
+  date: string | Date | null | undefined,
   dateFormat: string = "MMM dd, yyyy"
 ): string {
-  return format(new Date(date), dateFormat)
+  if (!date) return '-';
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '-';
+    return format(d, dateFormat);
+  } catch {
+    return '-';
+  }
 }
 
-export function formatDateTime(date: string | Date): string {
-  return format(new Date(date), "MMM dd, yyyy hh:mm a")
+export function formatDateTime(date: string | Date | null | undefined): string {
+  if (!date) return '-';
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '-';
+    return format(d, "MMM dd, yyyy hh:mm a");
+  } catch {
+    return '-';
+  }
 }
 
 export function slugify(text: string): string {

@@ -66,10 +66,19 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = self.request.user
-        if user.company:
-            serializer.save(company=user.company)
-        else:
-            serializer.save()
+        company = user.company if user.company else None
+        if not serializer.validated_data.get("employee_id"):
+            prefix = "EMP"
+            last = Employee.objects.filter(company=company).order_by("-created_at").first() if company else None
+            if last and last.employee_id and last.employee_id.startswith(prefix):
+                try:
+                    num = int(last.employee_id.split("-")[-1]) + 1
+                except (ValueError, IndexError):
+                    num = Employee.objects.filter(company=company).count() + 1
+            else:
+                num = Employee.objects.filter(company=company).count() + 1 if company else Employee.objects.count() + 1
+            serializer.validated_data["employee_id"] = f"{prefix}-{num:04d}"
+        serializer.save(company=company)
 
     @action(detail=True, methods=["get"])
     def documents(self, request, pk=None):

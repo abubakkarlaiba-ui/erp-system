@@ -125,11 +125,12 @@ class LeaveRequestViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         from apps.employees.models import Employee
-        employee = Employee.objects.filter(user=self.request.user, company=self.request.user.company).first()
+        employee = Employee.objects.filter(user=self.request.user).first()
+        company = self.request.user.company or (employee.company if employee else None)
         if employee:
-            serializer.save(employee=employee, company=self.request.user.company)
+            serializer.save(employee=employee, company=company)
         else:
-            serializer.save(company=self.request.user.company)
+            serializer.save(company=company)
 
     @action(detail=True, methods=["put"])
     def approve(self, request, pk=None):
@@ -153,7 +154,7 @@ class LeaveRequestViewSet(CompanyFilteredViewSetMixin, viewsets.ModelViewSet):
         from datetime import date
         from django.db.models import Sum
         year = date.today().year
-        leave_types = LeaveType.objects.filter(company=request.user.company, is_active=True)
+        leave_types = LeaveType.objects.filter(company=request.user.company)
         balances = []
         for lt in leave_types:
             used = LeaveRequest.objects.filter(

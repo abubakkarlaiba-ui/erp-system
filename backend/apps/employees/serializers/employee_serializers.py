@@ -196,7 +196,7 @@ class EmployeeDetailSerializer(serializers.ModelSerializer):
             "company", "created_at", "updated_at",
         ]
         read_only_fields = [
-            "id", "company", "created_at", "updated_at",
+            "id", "employee_id", "company", "created_at", "updated_at",
         ]
 
     def get_manager_name(self, obj):

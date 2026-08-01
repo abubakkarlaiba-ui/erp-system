@@ -71,22 +71,27 @@ export default function PayrollPage() {
     avgSalary: payslips.length > 0 ? payslips.reduce((a, b) => a + b.netPay, 0) / payslips.length : 0,
   };
 
+  const fmtDate = (d?: string) => {
+    if (!d) return "-";
+    try { return format(parseISO(d), "MMM dd, yyyy"); } catch { return d; }
+  };
+
   const periodColumns = [
     { header: "Period", accessorKey: "name" as const },
-    { header: "Start Date", accessorKey: "startDate" as const, cell: (r: PayrollPeriod) => format(parseISO(r.startDate), "MMM dd, yyyy") },
-    { header: "End Date", accessorKey: "endDate" as const, cell: (r: PayrollPeriod) => format(parseISO(r.endDate), "MMM dd, yyyy") },
+    { header: "Start Date", accessorKey: "startDate" as const, cell: (r: PayrollPeriod) => fmtDate(r.startDate) },
+    { header: "End Date", accessorKey: "endDate" as const, cell: (r: PayrollPeriod) => fmtDate(r.endDate) },
     { header: "Employees", accessorKey: "totalEmployees" as const },
     {
       header: "Total Amount",
       accessorKey: "totalAmount" as const,
-      cell: (r: PayrollPeriod) => <span className="font-semibold text-gray-900">${r.totalAmount.toLocaleString()}</span>,
+      cell: (r: PayrollPeriod) => <span className="font-semibold text-gray-900">${(r.totalAmount ?? 0).toLocaleString()}</span>,
     },
     {
       header: "Status",
       accessorKey: "status" as const,
       cell: (r: PayrollPeriod) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${periodStatusColors[r.status]}`}>
-          {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${periodStatusColors[r.status] || ""}`}>
+          {(r.status || "draft").charAt(0).toUpperCase() + (r.status || "draft").slice(1)}
         </span>
       ),
     },
@@ -95,19 +100,19 @@ export default function PayrollPage() {
   const payslipColumns = [
     { header: "Employee", accessorKey: "employeeName" as const },
     { header: "Period", accessorKey: "periodName" as const },
-    { header: "Gross Pay", accessorKey: "grossPay" as const, cell: (r: Payslip) => `$${r.grossPay.toLocaleString()}` },
-    { header: "Deductions", accessorKey: "deductions" as const, cell: (r: Payslip) => <span className="text-red-600">-${r.deductions.toLocaleString()}</span> },
+    { header: "Gross Pay", accessorKey: "grossPay" as const, cell: (r: Payslip) => `$${(r.grossPay ?? 0).toLocaleString()}` },
+    { header: "Deductions", accessorKey: "deductions" as const, cell: (r: Payslip) => <span className="text-red-600">-${(r.deductions ?? 0).toLocaleString()}</span> },
     {
       header: "Net Pay",
       accessorKey: "netPay" as const,
-      cell: (r: Payslip) => <span className="font-semibold text-emerald-700">${r.netPay.toLocaleString()}</span>,
+      cell: (r: Payslip) => <span className="font-semibold text-emerald-700">${(r.netPay ?? 0).toLocaleString()}</span>,
     },
     {
       header: "Status",
       accessorKey: "status" as const,
       cell: (r: Payslip) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${payslipStatusColors[r.status]}`}>
-          {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${payslipStatusColors[r.status] || ""}`}>
+          {(r.status || "draft").charAt(0).toUpperCase() + (r.status || "draft").slice(1)}
         </span>
       ),
     },

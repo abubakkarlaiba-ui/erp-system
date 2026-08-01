@@ -93,7 +93,7 @@ export default function SuppliersPage() {
 
   const suppliers = suppliersData?.data?.results ?? [];
   const total = suppliersData?.data?.count ?? 0;
-  const activeCount = suppliers.filter((s: any) => s.status === 'active').length;
+  const activeCount = suppliers.filter((s: any) => s.is_active ?? s.isActive ?? false).length;
   const pendingBills = suppliers.filter((s: any) => (s.balance ?? 0) > 0).length;
   const totalPurchases = suppliers.reduce((sum: number, s: any) => sum + (s.balance ?? 0), 0);
 
@@ -113,7 +113,7 @@ export default function SuppliersPage() {
       address: supplier.address ?? '',
       balance: supplier.balance ?? 0,
       paymentTerms: supplier.paymentTerms ?? supplier.payment_terms ?? '',
-      status: supplier.status,
+      status: (supplier.is_active ?? supplier.isActive) ? 'active' : 'inactive',
     });
     setDialogOpen(true);
   };
@@ -172,7 +172,7 @@ export default function SuppliersPage() {
                   <td className="p-4"><span className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-gray-500" />{s.phone}</span></td>
                   <td className="p-4 text-right">{formatCurrency(s.balance ?? 0)}</td>
                   <td className="p-4">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${s.status === 'active' ? 'bg-emerald-100 text-emerald-700' : s.status === 'inactive' ? 'bg-gray-100 text-black' : 'bg-amber-100 text-amber-700'}`}>{s.status}</span>
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${(s.is_active ?? s.isActive) ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-black'}`}>{(s.is_active ?? s.isActive) ? 'Active' : 'Inactive'}</span>
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-1">

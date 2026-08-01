@@ -11,7 +11,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   CreditCard,
-  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -20,9 +19,8 @@ import StatsCard from "@/components/shared/StatsCard";
 import {
   accountingApi,
   BankAccount,
-  BankTransaction,
 } from "@/features/accounting/api/accountingApi";
-import { cn, formatCurrency, formatDate } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -56,21 +54,10 @@ export default function BankAccountsPage() {
   const [selectedAccount, setSelectedAccount] = useState<BankAccount | null>(
     null
   );
-  const [reconcileDialog, setReconcileDialog] = useState(false);
-  const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(
-    new Set()
-  );
 
   const { data: bankAccounts, isLoading } = useQuery({
     queryKey: ["bank-accounts"],
     queryFn: accountingApi.getBankAccounts,
-  });
-
-  const { data: transactionsData, isLoading: txLoading } = useQuery({
-    queryKey: ["bank-transactions", selectedAccount?.id],
-    queryFn: () =>
-      accountingApi.getBankTransactions(selectedAccount!.id, { perPage: 100 }),
-    enabled: !!selectedAccount,
   });
 
   const createMutation = useMutation({
@@ -84,17 +71,6 @@ export default function BankAccountsPage() {
     onError: () => toast.error("Failed to add bank account"),
   });
 
-  const reconcileMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { transactionIds: string[] } }) =>
-      accountingApi.reconcileBank(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bank-transactions"] });
-      toast.success("Reconciliation complete");
-      setReconcileDialog(false);
-      setSelectedTransactions(new Set());
-    },
-  });
-
   const {
     register,
     handleSubmit,
@@ -105,20 +81,10 @@ export default function BankAccountsPage() {
   });
 
   const accounts = bankAccounts?.data ?? [];
-  const transactions = transactionsData?.data ?? [];
   const totalBalance = accounts.reduce((s, a) => s + a.balance, 0);
 
   const onSubmit = (data: BankAccountFormData) => {
     createMutation.mutate(data as any);
-  };
-
-  const toggleTransactionSelection = (id: string) => {
-    setSelectedTransactions((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
   };
 
   return (
@@ -185,61 +151,12 @@ export default function BankAccountsPage() {
             <Badge variant="secondary">
               {formatCurrency(selectedAccount.balance)}
             </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setReconcileDialog(true)}
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Reconcile
-            </Button>
           </div>
 
           <div className="border rounded-lg">
-            <div className="grid grid-cols-[120px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2.5 bg-gray-100/30 text-sm font-medium">
-              <span>Date</span>
-              <span>Description</span>
-              <span className="text-right">Debit</span>
-              <span className="text-right">Credit</span>
-              <span className="text-right">Balance</span>
-              <span className="text-center">Reconciled</span>
+            <div className="px-4 py-8 text-center text-gray-500">
+              Transaction history will be available once bank feeds are configured.
             </div>
-            {transactions.map((tx) => (
-              <div
-                key={tx.id}
-                className={cn(
-                  "grid grid-cols-[120px_1fr_100px_100px_100px_100px] gap-2 px-4 py-2.5 border-t text-sm cursor-pointer hover:bg-gray-50",
-                  selectedTransactions.has(tx.id) && "bg-blue-50"
-                )}
-                onClick={() => toggleTransactionSelection(tx.id)}
-              >
-                <span className="text-gray-500">
-                  {formatDate(tx.date)}
-                </span>
-                <span>{tx.description}</span>
-                <span className="text-right font-mono">
-                  {tx.debit > 0 ? formatCurrency(tx.debit) : "-"}
-                </span>
-                <span className="text-right font-mono">
-                  {tx.credit > 0 ? formatCurrency(tx.credit) : "-"}
-                </span>
-                <span className="text-right font-mono">
-                  {formatCurrency(tx.balance)}
-                </span>
-                <span className="text-center">
-                  {tx.reconciled ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-600 mx-auto" />
-                  ) : (
-                    <span className="text-gray-500">-</span>
-                  )}
-                </span>
-              </div>
-            ))}
-            {transactions.length === 0 && !txLoading && (
-              <div className="px-4 py-8 text-center text-gray-500">
-                No transactions
-              </div>
-            )}
           </div>
         </motion.div>
       ) : (
@@ -314,61 +231,6 @@ export default function BankAccountsPage() {
               <Button type="submit">Add Account</Button>
             </DialogFooter>
           </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={reconcileDialog} onOpenChange={setReconcileDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Reconcile Transactions</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500">
-              Select unreconciled transactions to reconcile. Selected:{" "}
-              {selectedTransactions.size}
-            </p>
-            <div className="max-h-64 overflow-y-auto border rounded-lg">
-              {transactions
-                .filter((tx) => !tx.reconciled)
-                .map((tx) => (
-                  <div
-                    key={tx.id}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2 border-b cursor-pointer hover:bg-gray-50",
-                      selectedTransactions.has(tx.id) && "bg-blue-50"
-                    )}
-                    onClick={() => toggleTransactionSelection(tx.id)}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedTransactions.has(tx.id)}
-                      onChange={() => toggleTransactionSelection(tx.id)}
-                      className="h-4 w-4"
-                    />
-                    <span className="flex-1 text-sm">{tx.description}</span>
-                    <span className="font-mono text-sm">
-                      {formatCurrency(tx.debit || tx.credit)}
-                    </span>
-                  </div>
-                ))}
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setReconcileDialog(false)}>
-                Cancel
-              </Button>
-              <Button
-                disabled={selectedTransactions.size === 0}
-                onClick={() =>
-                  reconcileMutation.mutate({
-                    id: selectedAccount!.id,
-                    data: { transactionIds: Array.from(selectedTransactions) },
-                  })
-                }
-              >
-                Reconcile Selected
-              </Button>
-            </DialogFooter>
-          </div>
         </DialogContent>
       </Dialog>
     </div>

@@ -182,8 +182,8 @@ function toCreateProductPayload(data: Partial<Product>) {
   if (data.name !== undefined) payload.name = data.name;
   if (data.sku !== undefined) payload.sku = data.sku;
   if (data.description !== undefined) payload.description = data.description;
-  if (data.categoryId !== undefined) payload.category = data.categoryId ? Number(data.categoryId) : null;
-  if (data.brandId !== undefined) payload.brand = data.brandId ? Number(data.brandId) : null;
+  if (data.categoryId !== undefined) payload.category = data.categoryId || null;
+  if (data.brandId !== undefined) payload.brand = data.brandId || null;
   if (data.unitPrice !== undefined) payload.selling_price = data.unitPrice;
   if (data.costPrice !== undefined) payload.cost_price = data.costPrice;
   if (data.minStock !== undefined) payload.minimum_stock = data.minStock;
@@ -230,7 +230,7 @@ export const inventoryApi = {
     const { data } = await api.post<any>("/inventory/categories/", {
       name: categoryData.name,
       description: categoryData.description,
-      parent: categoryData.parentId ? Number(categoryData.parentId) : null,
+      parent: categoryData.parentId ? categoryData.parentId : null,
       is_active: categoryData.isActive,
     });
     return { data: mapCategory(data) };
@@ -240,7 +240,7 @@ export const inventoryApi = {
     const payload: any = {};
     if (categoryData.name !== undefined) payload.name = categoryData.name;
     if (categoryData.description !== undefined) payload.description = categoryData.description;
-    if (categoryData.parentId !== undefined) payload.parent = categoryData.parentId ? Number(categoryData.parentId) : null;
+    if (categoryData.parentId !== undefined) payload.parent = categoryData.parentId ? categoryData.parentId : null;
     if (categoryData.isActive !== undefined) payload.is_active = categoryData.isActive;
     const { data } = await api.put<any>(`/inventory/categories/${id}/`, payload);
     return { data: mapCategory(data) };
@@ -310,10 +310,10 @@ export const inventoryApi = {
 
   createStockTransfer: async (transferData: { productId: string; fromWarehouseId: string; toWarehouseId: string; quantity: number; notes: string }) => {
     const { data } = await api.post<any>("/inventory/stock-movements/", {
-      product: Number(transferData.productId),
+      product: transferData.productId,
       movement_type: "transfer",
-      from_warehouse: Number(transferData.fromWarehouseId),
-      to_warehouse: Number(transferData.toWarehouseId),
+      from_warehouse: transferData.fromWarehouseId,
+      to_warehouse: transferData.toWarehouseId,
       quantity: transferData.quantity,
       notes: transferData.notes,
     });
@@ -328,10 +328,10 @@ export const inventoryApi = {
 
   createAdjustment: async (adjustmentData: { warehouseId: string; reason: string; items: { productId: string; quantityAfter: number }[] }) => {
     const { data } = await api.post<any>("/inventory/adjustments/", {
-      warehouse: Number(adjustmentData.warehouseId),
+      warehouse: adjustmentData.warehouseId,
       reason: adjustmentData.reason,
       items: adjustmentData.items.map((item) => ({
-        product: Number(item.productId),
+        product: item.productId,
         quantity_after: item.quantityAfter,
       })),
     });

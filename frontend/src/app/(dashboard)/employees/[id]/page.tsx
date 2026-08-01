@@ -668,7 +668,7 @@ export default function EmployeeDetailPage({
                   className="h-24 w-24 rounded-full object-cover"
                 />
               ) : (
-                `${employee.firstName[0]}${employee.lastName[0]}`
+                `${(employee.firstName || "")[0] || ""}${(employee.lastName || "")[0] || ""}`
               )}
             </div>
             <h2 className="mt-4 text-lg font-semibold">

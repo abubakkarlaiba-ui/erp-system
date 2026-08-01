@@ -154,14 +154,14 @@ export default function StockMovementsPage() {
     {
       accessorKey: "date",
       header: "Date",
-      cell: ({ row }) => formatDate(row.original.date),
+      cell: ({ row }) => row.original.date ? formatDate(row.original.date) : '-',
     },
     { accessorKey: "productName", header: "Product" },
     {
       accessorKey: "type",
       header: "Type",
       cell: ({ row }) => {
-        const cfg = typeConfig[row.original.type];
+        const cfg = typeConfig[row.original.type] ?? { label: row.original.type || 'Unknown', color: "bg-gray-100 text-gray-800", icon: Package };
         const Icon = cfg.icon;
         return (
           <Badge variant="secondary" className={cn(cfg.color)}>

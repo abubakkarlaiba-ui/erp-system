@@ -57,6 +57,30 @@ export default function EmployeesPage() {
   const [branchFilter, setBranchFilter] = useState<string>("all");
 
   const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<EmployeeFormData>({
+    resolver: zodResolver(employeeSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      companyId: "",
+      branchId: "",
+      departmentId: "",
+      designationId: "",
+      joiningDate: "",
+      employmentType: "full_time",
+      salary: 0,
+      status: "active",
+    },
+  });
+
+  const {
     data: employeesData,
     isLoading,
     error,
@@ -70,24 +94,24 @@ export default function EmployeesPage() {
     queryFn: () => companyApi.getCompanies(),
   });
 
-  const companyId = companiesData?.results?.[0]?.id;
+  const selectedCompanyId = watch("companyId");
 
   const { data: branchesData } = useQuery({
-    queryKey: ["branches", companyId],
-    queryFn: () => companyApi.getBranches(companyId!),
-    enabled: !!companyId,
+    queryKey: ["branches", selectedCompanyId],
+    queryFn: () => companyApi.getBranches(selectedCompanyId),
+    enabled: !!selectedCompanyId,
   });
 
   const { data: departmentsData } = useQuery({
-    queryKey: ["departments", companyId],
-    queryFn: () => companyApi.getDepartments(companyId!),
-    enabled: !!companyId,
+    queryKey: ["departments", selectedCompanyId],
+    queryFn: () => companyApi.getDepartments(selectedCompanyId),
+    enabled: !!selectedCompanyId,
   });
 
   const { data: designationsData } = useQuery({
-    queryKey: ["designations", companyId],
-    queryFn: () => companyApi.getDesignations(companyId!),
-    enabled: !!companyId,
+    queryKey: ["designations", selectedCompanyId],
+    queryFn: () => companyApi.getDesignations(selectedCompanyId),
+    enabled: !!selectedCompanyId,
   });
 
   const createMutation = useMutation({
@@ -130,39 +154,17 @@ export default function EmployeesPage() {
     },
   });
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<EmployeeFormData>({
-    resolver: zodResolver(employeeSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      companyId: "",
-      branchId: "",
-      departmentId: "",
-      designationId: "",
-      joiningDate: "",
-      employmentType: "full_time",
-      salary: 0,
-      status: "active",
-    },
-  });
-
   const onSubmit = (data: EmployeeFormData) => {
     const payload: any = {
+      employee_id: editingEmployee?.employeeId || `EMP-${Date.now().toString(36).toUpperCase().slice(-4)}`,
       first_name: data.firstName,
       last_name: data.lastName,
       email: data.email,
       phone: data.phone,
-      company: data.companyId ? Number(data.companyId) : undefined,
-      branch: data.branchId ? Number(data.branchId) : undefined,
-      department: data.departmentId ? Number(data.departmentId) : undefined,
-      designation: data.designationId ? Number(data.designationId) : undefined,
+      company: data.companyId || undefined,
+      branch: data.branchId || undefined,
+      department: data.departmentId || undefined,
+      designation: data.designationId || undefined,
       joining_date: data.joiningDate,
       employment_type: data.employmentType,
       salary: data.salary,

@@ -170,9 +170,9 @@ export default function GoodsReceiptPage() {
               {receipts.map((r: any) => (
                 <tr key={r.id} className="border-b last:border-0 hover:bg-gray-50">
                   <td className="p-4 font-medium">{r.reference ?? r.order_number ?? String(r.id).slice(0, 8)}</td>
-                  <td className="p-4">{r.purchase_order_reference ?? r.purchaseOrderReference ?? r.purchase_order?.slice(0, 8) ?? '-'}</td>
+                  <td className="p-4">{r.purchase_order_reference ?? r.purchaseOrderReference ?? String(r.purchase_order ?? '').slice(0, 8) ?? '-'}</td>
                   <td className="p-4">{r.warehouse_name ?? r.warehouseName ?? '-'}</td>
-                  <td className="p-4 text-gray-500">{formatDate(r.received_date ?? r.receivedDate ?? r.created_at ?? r.createdAt)}</td>
+                  <td className="p-4 text-gray-500">{formatDate(r.received_date ?? r.receivedDate ?? r.date ?? r.created_at ?? r.createdAt)}</td>
                   <td className="p-4">{statusBadge(r.status)}</td>
                   <td className="p-4 text-right">
                     <button onClick={() => openView(r)} className="rounded-md p-1.5 hover:bg-gray-100"><Eye className="h-4 w-4" /></button>
@@ -292,7 +292,7 @@ export default function GoodsReceiptPage() {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between"><span className="text-gray-500">Purchase Order</span><span>{viewingReceipt.purchase_order_reference ?? viewingReceipt.purchaseOrderReference ?? '-'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Warehouse</span><span>{viewingReceipt.warehouse_name ?? viewingReceipt.warehouseName ?? '-'}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Date</span><span>{formatDate(viewingReceipt.received_date ?? viewingReceipt.receivedDate ?? viewingReceipt.created_at)}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Date</span><span>{formatDate(viewingReceipt.received_date || viewingReceipt.receivedDate || viewingReceipt.date || viewingReceipt.created_at)}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Status</span>{statusBadge(viewingReceipt.status)}</div>
               </div>
               <div className="flex justify-end mt-6">

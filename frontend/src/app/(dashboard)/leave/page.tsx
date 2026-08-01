@@ -81,23 +81,28 @@ export default function LeavePage() {
 
   const stats = {
     pending: myRequests.filter((r) => r.status === "pending").length,
-    approved: myRequests.filter((r) => r.status === "approved" && r.startDate.startsWith(format(new Date(), "yyyy-MM"))).length,
+    approved: myRequests.filter((r) => r.status === "approved" && r.startDate && r.startDate.startsWith(format(new Date(), "yyyy-MM"))).length,
     rejected: myRequests.filter((r) => r.status === "rejected").length,
     remaining: balanceData?.data?.balances?.reduce((a: number, b: any) => a + b.remaining, 0) ?? balanceData?.balances?.reduce((a: number, b: any) => a + b.remaining, 0) ?? 0,
   };
 
+  const fmtDate = (d?: string) => {
+    if (!d) return "-";
+    try { return format(parseISO(d), "MMM dd, yyyy"); } catch { return d; }
+  };
+
   const myColumns = [
     { header: "Leave Type", accessorKey: "leaveType" as const },
-    { header: "Start Date", accessorKey: "startDate" as const, cell: (r: LeaveRequest) => format(parseISO(r.startDate), "MMM dd, yyyy") },
-    { header: "End Date", accessorKey: "endDate" as const, cell: (r: LeaveRequest) => format(parseISO(r.endDate), "MMM dd, yyyy") },
+    { header: "Start Date", accessorKey: "startDate" as const, cell: (r: LeaveRequest) => fmtDate(r.startDate) },
+    { header: "End Date", accessorKey: "endDate" as const, cell: (r: LeaveRequest) => fmtDate(r.endDate) },
     { header: "Days", accessorKey: "days" as const },
-    { header: "Reason", accessorKey: "reason" as const, cell: (r: LeaveRequest) => <span className="truncate max-w-[200px] block">{r.reason}</span> },
+    { header: "Reason", accessorKey: "reason" as const, cell: (r: LeaveRequest) => <span className="truncate max-w-[200px] block">{r.reason || ""}</span> },
     {
       header: "Status",
       accessorKey: "status" as const,
       cell: (r: LeaveRequest) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColors[r.status]}`}>
-          {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+        <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColors[r.status] || ""}`}>
+          {(r.status || "pending").charAt(0).toUpperCase() + (r.status || "pending").slice(1)}
         </span>
       ),
     },
@@ -106,15 +111,15 @@ export default function LeavePage() {
   const allColumns = [
     { header: "Employee", accessorKey: "employeeName" as const },
     { header: "Leave Type", accessorKey: "leaveType" as const },
-    { header: "Start Date", accessorKey: "startDate" as const, cell: (r: LeaveRequest) => format(parseISO(r.startDate), "MMM dd, yyyy") },
-    { header: "End Date", accessorKey: "endDate" as const, cell: (r: LeaveRequest) => format(parseISO(r.endDate), "MMM dd, yyyy") },
+    { header: "Start Date", accessorKey: "startDate" as const, cell: (r: LeaveRequest) => fmtDate(r.startDate) },
+    { header: "End Date", accessorKey: "endDate" as const, cell: (r: LeaveRequest) => fmtDate(r.endDate) },
     { header: "Days", accessorKey: "days" as const },
     {
       header: "Status",
       accessorKey: "status" as const,
       cell: (r: LeaveRequest) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColors[r.status]}`}>
-          {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+        <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColors[r.status] || ""}`}>
+          {(r.status || "pending").charAt(0).toUpperCase() + (r.status || "pending").slice(1)}
         </span>
       ),
     },
@@ -250,9 +255,13 @@ export default function LeavePage() {
                 {calDays.map((day, i) => {
                   const dayStr = format(day, "yyyy-MM-dd");
                   const leavesOnDay = calendarApproved.filter((r) => {
-                    const start = parseISO(r.startDate);
-                    const end = parseISO(r.endDate);
-                    return isWithinInterval(day, { start, end });
+                    try {
+                      const start = parseISO(r.startDate);
+                      const end = parseISO(r.endDate);
+                      return isWithinInterval(day, { start, end });
+                    } catch {
+                      return false;
+                    }
                   });
                   return (
                     <motion.div
