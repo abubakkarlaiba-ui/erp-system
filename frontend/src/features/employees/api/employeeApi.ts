@@ -32,6 +32,14 @@ function mapEmployee(e: any): Employee {
     company: e.company,
     createdAt: e.created_at,
     updatedAt: e.updated_at,
+    employee_id: e.employee_id,
+    department_name: e.department_name || "",
+    designation_name: e.designation_name || "",
+    branch_name: e.branch_name || "",
+    joining_date: e.joining_date || "",
+    first_name: e.first_name,
+    last_name: e.last_name,
+    is_active: e.status === "active",
   } as Employee;
 }
 
