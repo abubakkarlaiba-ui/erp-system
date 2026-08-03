@@ -8,6 +8,18 @@ import { Clock, CalendarDays, Users, TrendingUp, CheckCircle, XCircle, Timer, Fi
 import { toast } from "sonner";
 import PageHeader from "@/components/layout/PageHeader";
 import DataTable from "@/components/layout/DataTable";
+
+function utcTimeToLocal(timeStr: string | null | undefined): string {
+  if (!timeStr) return "";
+  try {
+    const today = new Date();
+    const datePart = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, "0")}-${String(today.getUTCDate()).padStart(2, "0")}`;
+    const dt = new Date(`${datePart}T${timeStr.split(".")[0]}Z`);
+    return format(dt, "hh:mm a");
+  } catch {
+    return timeStr.substring(0, 5);
+  }
+}
 import StatsCard from "@/components/shared/StatsCard";
 import { hrApi, AttendanceRecord } from "@/features/hr/api/hrApi";
 
@@ -132,15 +144,13 @@ export default function AttendancePage() {
       const row = info.row?.original || info;
       const val = row.checkIn;
       if (!val) return "—";
-      if (/^\d{2}:\d{2}/.test(val)) return val.substring(0, 5);
-      try { return format(parseISO(val), "hh:mm a"); } catch { return val; }
+      return utcTimeToLocal(val);
     }},
     { header: "Check Out", accessorKey: "checkOut" as const, cell: (info: any) => {
       const row = info.row?.original || info;
       const val = row.checkOut;
       if (!val) return "—";
-      if (/^\d{2}:\d{2}/.test(val)) return val.substring(0, 5);
-      try { return format(parseISO(val), "hh:mm a"); } catch { return val; }
+      return utcTimeToLocal(val);
     }},
     { header: "Hours", accessorKey: "hoursWorked" as const, cell: (info: any) => {
       const row = info.row?.original || info;
@@ -218,13 +228,13 @@ export default function AttendancePage() {
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-indigo-600" />
               <span className="text-sm text-black">Clocked In:</span>
-              <span className="font-semibold text-indigo-700">{/^\d{2}:\d{2}/.test(todayRecord.checkIn) ? todayRecord.checkIn.substring(0, 5) : (() => { try { return format(parseISO(todayRecord.checkIn), "hh:mm a"); } catch { return todayRecord.checkIn || "-"; } })()}</span>
+              <span className="font-semibold text-indigo-700">{utcTimeToLocal(todayRecord.checkIn) || "-"}</span>
             </div>
             {todayRecord.checkOut && (
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-red-600" />
                 <span className="text-sm text-black">Clocked Out:</span>
-                <span className="font-semibold text-red-700">{/^\d{2}:\d{2}/.test(todayRecord.checkOut) ? todayRecord.checkOut.substring(0, 5) : (() => { try { return format(parseISO(todayRecord.checkOut), "hh:mm a"); } catch { return todayRecord.checkOut || "-"; } })()}</span>
+                <span className="font-semibold text-red-700">{utcTimeToLocal(todayRecord.checkOut) || "-"}</span>
               </div>
             )}
             <div className="flex items-center gap-2">
