@@ -228,6 +228,8 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        if user.is_superuser or (hasattr(user, "role") and user.role in ("super_admin", "admin")):
+            return Company.objects.all()
         if hasattr(user, "company") and user.company:
             return Company.objects.filter(pk=user.company_id)
         return Company.objects.none()
