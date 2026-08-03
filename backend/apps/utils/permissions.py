@@ -49,11 +49,13 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
 class IsCompanyOwnerOrEmployee(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user and request.user.is_authenticated and request.user.is_superuser:
+            return True
         return (
             request.user
             and request.user.is_authenticated
             and hasattr(request.user, "role")
-            and request.user.role in ("company_owner", "employee", "super_admin")
+            and request.user.role in ("company_owner", "employee", "super_admin", "admin")
         )
 
 
