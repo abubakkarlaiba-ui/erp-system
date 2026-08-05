@@ -159,6 +159,14 @@ export const companyApi = {
     return data;
   },
 
+  createFiscalYear: async (companyId: string, fiscalYearData: { name: string; start_date: string; end_date: string; is_current: boolean }) => {
+    const { data } = await api.post<ApiResponse<FiscalYear>>(
+      `/companies/companies/${companyId}/fiscal-years/`,
+      fiscalYearData
+    );
+    return data;
+  },
+
   getHolidays: async (companyId: string) => {
     const { data } = await api.get<PaginatedResponse<Holiday>>(
       `/companies/companies/${companyId}/holidays/`

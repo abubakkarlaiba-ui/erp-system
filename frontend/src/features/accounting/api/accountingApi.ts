@@ -96,11 +96,15 @@ export interface BankAccount {
 
 export interface Budget {
   id: string;
-  name: string;
+  accountId: string;
+  accountName: string;
+  fiscalYearId: string;
+  budgetAmount: number;
+  actualAmount: number;
+  variance: number;
+  utilizationPercentage: number;
   period: string;
-  amount: number;
-  spent: number;
-  status: string;
+  notes: string;
 }
 
 export interface FixedAsset {
@@ -227,11 +231,15 @@ function mapBankAccount(raw: any): BankAccount {
 function mapBudget(raw: any): Budget {
   return {
     id: String(raw.id),
-    name: raw.name || "",
-    period: raw.period || "",
-    amount: Number(raw.amount) || 0,
-    spent: Number(raw.spent) || 0,
-    status: raw.status || "active",
+    accountId: String(raw.account || ""),
+    accountName: raw.account_name || "",
+    fiscalYearId: String(raw.fiscal_year || ""),
+    budgetAmount: Number(raw.budget_amount) || 0,
+    actualAmount: Number(raw.actual_amount) || 0,
+    variance: Number(raw.variance) || 0,
+    utilizationPercentage: Number(raw.utilization_percentage) || 0,
+    period: raw.period || "monthly",
+    notes: raw.notes || "",
   };
 }
 
@@ -401,14 +409,19 @@ export const accountingApi = {
     return { data: extractResults(data).map(mapBudget) };
   },
 
-  createBudget: async (budgetData: Omit<Budget, "id" | "spent">) => {
+  createBudget: async (budgetData: { accountId: string; fiscalYearId: string; budgetAmount: number; period: string; notes?: string }) => {
     const { data } = await api.post<any>("/accounting/budgets/", {
-      name: budgetData.name,
+      account: budgetData.accountId,
+      fiscal_year: budgetData.fiscalYearId,
+      budget_amount: budgetData.budgetAmount,
       period: budgetData.period,
-      amount: budgetData.amount,
-      status: budgetData.status,
+      notes: budgetData.notes || "",
     });
     return { data: mapBudget(data) };
+  },
+
+  deleteBudget: async (id: string) => {
+    await api.delete(`/accounting/budgets/${id}/`);
   },
 
   getFixedAssets: async (params?: Record<string, unknown>) => {
