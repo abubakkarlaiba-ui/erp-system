@@ -112,7 +112,7 @@ class BranchSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -135,7 +135,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class DesignationSerializer(serializers.ModelSerializer):
@@ -155,7 +155,7 @@ class DesignationSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "company", "created_at", "updated_at"]
 
 
 class FiscalYearSerializer(serializers.ModelSerializer):
