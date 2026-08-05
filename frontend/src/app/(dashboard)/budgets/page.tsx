@@ -30,7 +30,7 @@ const itemVariants = {
 export default function BudgetsPage() {
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
-  const companyId = (user?.company as any)?.id;
+  const companyId = user?.company && typeof user.company === 'object' ? (user.company as any).id : user?.company;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState("");
   const [selectedFiscalYear, setSelectedFiscalYear] = useState("");
