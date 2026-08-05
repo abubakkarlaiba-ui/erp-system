@@ -109,6 +109,8 @@ export default function GoodsReceiptPage() {
   const completedCount = receipts.filter((r: any) => r.status === 'completed').length;
   const partialCount = receipts.filter((r: any) => r.status === 'partial').length;
 
+  const filteredReceipts = statusFilter === "all" ? receipts : receipts.filter((r: any) => r.status === statusFilter);
+
   const openCreate = () => {
     form.reset({
       purchaseOrderId: '',
@@ -167,7 +169,7 @@ export default function GoodsReceiptPage() {
               </tr>
             </thead>
             <tbody>
-              {receipts.map((r: any) => (
+              {filteredReceipts.map((r: any) => (
                 <tr key={r.id} className="border-b last:border-0 hover:bg-gray-50">
                   <td className="p-4 font-medium">{r.reference ?? r.order_number ?? String(r.id).slice(0, 8)}</td>
                   <td className="p-4">{r.purchase_order_reference ?? r.purchaseOrderReference ?? String(r.purchase_order ?? '').slice(0, 8) ?? '-'}</td>
@@ -179,7 +181,7 @@ export default function GoodsReceiptPage() {
                   </td>
                 </tr>
               ))}
-              {receipts.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-gray-500">No receipts found</td></tr>}
+              {filteredReceipts.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-gray-500">No receipts found</td></tr>}
             </tbody>
           </table>
         </div>

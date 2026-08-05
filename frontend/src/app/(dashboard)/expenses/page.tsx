@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -51,6 +51,7 @@ const expenseSchema = z.object({
   amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
   date: z.string().min(1, "Date is required"),
   description: z.string().min(1, "Description is required"),
+  payment_method: z.enum(["cash", "bank_transfer", "check", "card"]).default("cash"),
 });
 
 type ExpenseFormData = z.infer<typeof expenseSchema>;
@@ -65,6 +66,8 @@ export default function ExpensesPage() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: expensesData, isLoading } = useQuery({
     queryKey: ["expenses"],
@@ -79,7 +82,7 @@ export default function ExpensesPage() {
       setDialogOpen(false);
       reset();
     },
-    onError: () => toast.error("Failed to submit expense"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || e?.response?.data?.detail || "Failed to submit expense"),
   });
 
   const approveMutation = useMutation({
@@ -103,6 +106,7 @@ export default function ExpensesPage() {
       amount: 0,
       date: new Date().toISOString().split("T")[0],
       description: "",
+      payment_method: "cash",
     },
   });
 
@@ -119,7 +123,16 @@ export default function ExpensesPage() {
     .reduce((s, e) => s + e.amount, 0);
 
   const onSubmit = (data: ExpenseFormData) => {
-    createMutation.mutate(data as any);
+    const formData = new FormData();
+    formData.append("category", data.category);
+    formData.append("amount", String(data.amount));
+    formData.append("date", data.date);
+    formData.append("description", data.description);
+    formData.append("payment_method", data.payment_method);
+    if (receiptFile) {
+      formData.append("receipt", receiptFile);
+    }
+    createMutation.mutate(formData);
   };
 
   const columns: ColumnDef<Expense>[] = [
@@ -259,16 +272,57 @@ export default function ExpensesPage() {
               </div>
             </div>
             <div className="space-y-2">
+              <Label>Payment Method</Label>
+              <Select
+                value={watch("payment_method")}
+                onValueChange={(v) => setValue("payment_method", v as any)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                  <SelectItem value="check">Check</SelectItem>
+                  <SelectItem value="card">Card</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <Label>Description</Label>
               <Textarea {...register("description")} placeholder="Expense description..." />
             </div>
             <div className="space-y-2">
               <Label>Receipt (optional)</Label>
-              <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors">
-                <Upload className="h-8 w-8 mx-auto mb-2 text-gray-500" />
-                <p className="text-sm text-gray-500">
-                  Click to upload receipt
-                </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.pdf"
+                className="hidden"
+                onChange={(e) => setReceiptFile(e.target.files?.[0] ?? null)}
+              />
+              <div
+                className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {receiptFile ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Check className="h-5 w-5 text-green-600" />
+                    <span className="text-sm text-gray-700">{receiptFile.name}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setReceiptFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                      className="p-1 hover:bg-gray-200 rounded"
+                    >
+                      <X className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="h-8 w-8 mx-auto mb-2 text-gray-500" />
+                    <p className="text-sm text-gray-500">Click to upload receipt</p>
+                  </>
+                )}
               </div>
             </div>
             <DialogFooter>

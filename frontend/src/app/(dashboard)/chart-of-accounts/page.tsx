@@ -186,7 +186,7 @@ export default function ChartOfAccountsPage() {
       setDialogOpen(false);
       reset();
     },
-    onError: () => toast.error("Failed to create account"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || e?.response?.data?.detail || "Failed to create account"),
   });
 
   const updateMutation = useMutation({
@@ -199,7 +199,7 @@ export default function ChartOfAccountsPage() {
       setEditingAccount(null);
       reset();
     },
-    onError: () => toast.error("Failed to update account"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || e?.response?.data?.detail || "Failed to update account"),
   });
 
   const deleteMutation = useMutation({
@@ -222,7 +222,7 @@ export default function ChartOfAccountsPage() {
 
   const openCreate = () => {
     setEditingAccount(null);
-    reset({ code: "", name: "", type: "asset", parentId: null, isActive: true });
+    reset({ code: suggestCode("asset"), name: "", type: "asset", parentId: null, isActive: true });
     setDialogOpen(true);
   };
 
@@ -252,6 +252,24 @@ export default function ChartOfAccountsPage() {
     if (Array.isArray(a.children)) acc.push(...a.children);
     return acc;
   }, []);
+
+  const existingCodes = new Set(flatAccounts.map((a) => a.code));
+
+  const suggestCode = (type: string) => {
+    const ranges: Record<string, [number, number]> = {
+      asset: [1000, 1999],
+      liability: [2000, 2999],
+      equity: [3000, 3999],
+      revenue: [4000, 4999],
+      expense: [5000, 5999],
+    };
+    const [start, end] = ranges[type] || [1000, 1999];
+    for (let code = start; code <= end; code++) {
+      const codeStr = String(code);
+      if (!existingCodes.has(codeStr)) return codeStr;
+    }
+    return String(start);
+  };
 
   const filtered = accounts.filter((a) => {
     if (typeFilter !== "all" && a.type !== typeFilter) return false;
@@ -377,7 +395,10 @@ export default function ChartOfAccountsPage() {
               <Label>Type</Label>
               <Select
                 value={watch("type")}
-                onValueChange={(v) => setValue("type", v as any)}
+                onValueChange={(v) => {
+                  setValue("type", v as any);
+                  if (!editingAccount) setValue("code", suggestCode(v));
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />

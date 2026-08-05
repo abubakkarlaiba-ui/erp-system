@@ -115,21 +115,24 @@ export interface TrainingAssignment {
 
 export interface PerformanceReview {
   id: string;
-  employeeId: string;
-  employeeName: string;
-  reviewPeriod: string;
-  reviewerName: string;
-  overallRating: number;
-  categories: Array<{
-    name: string;
-    rating: number;
-    comments: string;
-  }>;
-  status: "draft" | "in-progress" | "completed";
+  employee: string;
+  employee_name: string;
+  reviewer: string;
+  reviewer_name: string;
+  review_period_start: string;
+  review_period_end: string;
+  overall_rating: number;
+  technical_skills: number | null;
+  communication: number | null;
+  teamwork: number | null;
+  leadership: number | null;
+  goals_met: number | null;
+  status: "draft" | "submitted" | "acknowledged";
   strengths: string;
   improvements: string;
-  goals: string;
-  createdAt: string;
+  comments: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface OvertimeRequest {
@@ -312,8 +315,17 @@ export const hrApi = {
         }));
         return { data: results };
       }),
-    create: (data: Omit<Training, "id" | "currentParticipants" | "progress">) =>
-      apiClient.post("/hr/trainings/", data),
+    create: (data: { title: string; trainer: string; description: string; startDate: string; endDate: string; maxParticipants: number; location: string; category: string }) =>
+      apiClient.post("/hr/trainings/", {
+        title: data.title,
+        trainer: data.trainer,
+        description: data.description,
+        start_date: data.startDate,
+        end_date: data.endDate,
+        max_participants: data.maxParticipants,
+        location: data.location,
+        category: data.category,
+      }),
     getAssignments: (id: string) =>
       apiClient.get(`/hr/training-assignments/?training=${id}`).then((r) => {
         const d = r.data;
@@ -327,22 +339,43 @@ export const hrApi = {
         const d = r.data;
         const results = (d?.results ?? d?.data ?? (Array.isArray(d) ? d : [])).map((rev: any) => ({
           id: String(rev.id),
-          employeeId: String(rev.employee || ""),
-          employeeName: rev.employee_name || "",
-          reviewPeriod: rev.review_period || "",
-          reviewerName: rev.reviewer_name || rev.reviewer || "",
-          overallRating: Number(rev.overall_rating) || 0,
-          categories: rev.categories || [],
+          employee: String(rev.employee || ""),
+          employee_name: rev.employee_name || "",
+          reviewer: String(rev.reviewer || ""),
+          reviewer_name: rev.reviewer_name || "",
+          review_period_start: rev.review_period_start || "",
+          review_period_end: rev.review_period_end || "",
+          overall_rating: Number(rev.overall_rating) || 0,
+          technical_skills: rev.technical_skills ?? null,
+          communication: rev.communication ?? null,
+          teamwork: rev.teamwork ?? null,
+          leadership: rev.leadership ?? null,
+          goals_met: rev.goals_met ?? null,
           status: rev.status || "draft",
           strengths: rev.strengths || "",
           improvements: rev.improvements || "",
-          goals: rev.goals || "",
-          createdAt: rev.created_at || "",
+          comments: rev.comments || "",
+          created_at: rev.created_at || "",
+          updated_at: rev.updated_at || "",
         }));
         return { data: results, count: d?.count ?? results.length };
       }),
-    createReview: (data: Omit<PerformanceReview, "id" | "createdAt">) =>
-      apiClient.post("/hr/performance-reviews/", data),
+    createReview: (data: {
+      employee: string;
+      reviewer: string;
+      review_period_start: string;
+      review_period_end: string;
+      overall_rating: number;
+      technical_skills?: number | null;
+      communication?: number | null;
+      teamwork?: number | null;
+      leadership?: number | null;
+      goals_met?: number | null;
+      strengths?: string;
+      improvements?: string;
+      comments?: string;
+      status?: string;
+    }) => apiClient.post("/hr/performance-reviews/", data),
   },
 
   overtime: {

@@ -199,6 +199,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             "id",
             "company",
             "payment_number",
+            "created_by",
             "created_at",
             "updated_at",
         ]
@@ -237,6 +238,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
             "id",
             "company",
             "expense_number",
+            "created_by",
             "created_at",
             "updated_at",
         ]

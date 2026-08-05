@@ -33,6 +33,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Card,
   CardContent,
   CardHeader,
@@ -44,6 +51,7 @@ const bankAccountSchema = z.object({
   accountNumber: z.string().min(1, "Account number is required"),
   bankName: z.string().min(1, "Bank name is required"),
   currency: z.string().min(3, "Currency is required"),
+  accountType: z.enum(["savings", "current", "loan"]).default("current"),
 });
 
 type BankAccountFormData = z.infer<typeof bankAccountSchema>;
@@ -68,16 +76,18 @@ export default function BankAccountsPage() {
       setDialogOpen(false);
       reset();
     },
-    onError: () => toast.error("Failed to add bank account"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || e?.response?.data?.detail || "Failed to add bank account"),
   });
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
   } = useForm<BankAccountFormData>({
     resolver: zodResolver(bankAccountSchema),
-    defaultValues: { name: "", accountNumber: "", bankName: "", currency: "USD" },
+    defaultValues: { name: "", accountNumber: "", bankName: "", currency: "USD", accountType: "current" },
   });
 
   const accounts = bankAccounts?.data ?? [];
@@ -223,6 +233,22 @@ export default function BankAccountsPage() {
             <div className="space-y-2">
               <Label>Currency</Label>
               <Input {...register("currency")} placeholder="USD" defaultValue="USD" />
+            </div>
+            <div className="space-y-2">
+              <Label>Account Type</Label>
+              <Select
+                value={watch("accountType")}
+                onValueChange={(v) => setValue("accountType", v as any)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="current">Current</SelectItem>
+                  <SelectItem value="savings">Savings</SelectItem>
+                  <SelectItem value="loan">Loan</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>

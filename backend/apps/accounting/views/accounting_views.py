@@ -158,7 +158,13 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         company = user.company
         last = Expense.objects.filter(company=company).count()
         expense_number = f"EXP-{timezone.now().strftime('%Y%m')}-{str(last + 1).zfill(4)}"
-        serializer.save(created_by=user, company=company, expense_number=expense_number)
+        extra = {}
+        if not serializer.validated_data.get("account"):
+            from apps.accounting.models import Account
+            expense_account = Account.objects.filter(company=company, account_type="expense").first()
+            if expense_account:
+                extra["account"] = expense_account
+        serializer.save(created_by=user, company=company, expense_number=expense_number, **extra)
 
 
 class BankAccountViewSet(viewsets.ModelViewSet):

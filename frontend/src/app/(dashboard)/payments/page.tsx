@@ -50,6 +50,7 @@ const paymentSchema = z.object({
   method: z.enum(["cash", "bank_transfer", "check", "card"]),
   type: z.enum(["incoming", "outgoing"]),
   reference: z.string().min(1, "Reference is required"),
+  date: z.string().min(1, "Date is required"),
   notes: z.string().optional(),
 });
 
@@ -86,7 +87,7 @@ export default function PaymentsPage() {
       setDialogOpen(false);
       reset();
     },
-    onError: () => toast.error("Failed to record payment"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || e?.response?.data?.detail || "Failed to record payment"),
   });
 
   const {
@@ -103,6 +104,7 @@ export default function PaymentsPage() {
       method: "cash",
       type: "incoming",
       reference: "",
+      date: new Date().toISOString().split("T")[0],
       notes: "",
     },
   });
@@ -284,6 +286,10 @@ export default function PaymentsPage() {
                 <Label>Reference</Label>
                 <Input {...register("reference")} placeholder="Reference number" />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Date</Label>
+              <Input type="date" {...register("date")} />
             </div>
             <div className="space-y-2">
               <Label>Notes</Label>

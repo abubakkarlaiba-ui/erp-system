@@ -9,11 +9,13 @@ import { toast } from "sonner";
 import PageHeader from "@/components/layout/PageHeader";
 import StatsCard from "@/components/shared/StatsCard";
 import { hrApi, PerformanceReview } from "@/features/hr/api/hrApi";
+import { employeeApi } from "@/features/employees/api/employeeApi";
+import { useAuthStore } from "@/stores/authStore";
 
 const statusColors: Record<string, string> = {
   draft: "bg-gray-100 text-gray-700",
-  "in-progress": "bg-amber-100 text-amber-700",
-  completed: "bg-emerald-100 text-emerald-700",
+  submitted: "bg-amber-100 text-amber-700",
+  acknowledged: "bg-emerald-100 text-emerald-700",
 };
 
 function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
@@ -32,23 +34,22 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
 
 export default function PerformancePage() {
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
   const [expandedReview, setExpandedReview] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [createForm, setCreateForm] = useState({
-    employeeId: "",
-    employeeName: "",
-    reviewPeriod: "",
-    reviewerName: "",
-    overallRating: 3,
-    categories: [
-      { name: "Communication", rating: 3, comments: "" },
-      { name: "Teamwork", rating: 3, comments: "" },
-      { name: "Problem Solving", rating: 3, comments: "" },
-      { name: "Initiative", rating: 3, comments: "" },
-    ],
+    employee: "",
+    review_period_start: "",
+    review_period_end: "",
+    overall_rating: 3,
+    technical_skills: 3,
+    communication: 3,
+    teamwork: 3,
+    leadership: 3,
+    goals_met: 3,
     strengths: "",
     improvements: "",
-    goals: "",
+    comments: "",
   });
 
   const { data: reviewsData, isLoading } = useQuery({
@@ -56,23 +57,52 @@ export default function PerformancePage() {
     queryFn: () => hrApi.performance.getReviews(),
   });
 
+  const { data: employeesData } = useQuery({
+    queryKey: ["employees"],
+    queryFn: () => employeeApi.getEmployees(),
+  });
+
   const createMutation = useMutation({
-    mutationFn: () => hrApi.performance.createReview(createForm as any),
+    mutationFn: () =>
+      hrApi.performance.createReview({
+        ...createForm,
+        employee: createForm.employee,
+        reviewer: user?.id || "",
+        status: "draft",
+      }),
     onSuccess: () => {
       toast.success("Performance review created");
       setShowCreateDialog(false);
       queryClient.invalidateQueries({ queryKey: ["performanceReviews"] });
+      setCreateForm({
+        employee: "",
+        review_period_start: "",
+        review_period_end: "",
+        overall_rating: 3,
+        technical_skills: 3,
+        communication: 3,
+        teamwork: 3,
+        leadership: 3,
+        goals_met: 3,
+        strengths: "",
+        improvements: "",
+        comments: "",
+      });
     },
-    onError: () => toast.error("Failed to create review"),
+    onError: (e: any) => {
+      const msg = e?.response?.data?.error?.message || e?.response?.data?.detail || "Failed to create review";
+      toast.error(msg);
+    },
   });
 
   const reviews = reviewsData?.data ?? [];
+  const employees = employeesData?.data ?? [];
 
   const stats = {
-    completed: reviews.filter((r) => r.status === "completed").length,
-    avgRating: reviews.length > 0 ? (reviews.reduce((a, b) => a + b.overallRating, 0) / reviews.length).toFixed(1) : "0.0",
-    pending: reviews.filter((r) => r.status === "draft" || r.status === "in-progress").length,
-    topPerformers: reviews.filter((r) => r.overallRating >= 4.5).length,
+    completed: reviews.filter((r: PerformanceReview) => r.status === "acknowledged").length,
+    avgRating: reviews.length > 0 ? (reviews.reduce((a: number, b: PerformanceReview) => a + b.overall_rating, 0) / reviews.length).toFixed(1) : "0.0",
+    pending: reviews.filter((r: PerformanceReview) => r.status === "draft" || r.status === "submitted").length,
+    topPerformers: reviews.filter((r: PerformanceReview) => r.overall_rating >= 4).length,
   };
 
   return (
@@ -101,7 +131,7 @@ export default function PerformancePage() {
       </div>
 
       <div className="space-y-3">
-        {reviews.map((review, i) => (
+        {reviews.map((review: PerformanceReview, i: number) => (
           <motion.div
             key={review.id}
             initial={{ opacity: 0, y: 20 }}
@@ -115,17 +145,22 @@ export default function PerformancePage() {
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold text-sm">
-                  {(review.employeeName || "").split(" ").map((n) => n[0]).join("")}
+                  {(review.employee_name || "").split(" ").map((n: string) => n[0]).join("")}
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">{review.employeeName}</h4>
-                  <p className="text-sm text-gray-500">{review.reviewPeriod} • by {review.reviewerName}</p>
+                  <h4 className="font-medium text-gray-900">{review.employee_name}</h4>
+                  <p className="text-sm text-gray-500">
+                    {review.review_period_start && review.review_period_end
+                      ? `${format(parseISO(review.review_period_start), "MMM yyyy")} - ${format(parseISO(review.review_period_end), "MMM yyyy")}`
+                      : "-"}{" "}
+                    {review.reviewer_name ? `by ${review.reviewer_name}` : ""}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <StarRating rating={review.overallRating} />
+                <StarRating rating={review.overall_rating} />
                 <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[review.status] || ""}`}>
-                  {(review.status || "draft").replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                  {(review.status || "draft").replace(/\b\w/g, (c: string) => c.toUpperCase())}
                 </span>
                 {expandedReview === review.id ? (
                   <ChevronUp className="w-5 h-5 text-gray-400" />
@@ -145,12 +180,17 @@ export default function PerformancePage() {
                   className="overflow-hidden"
                 >
                   <div className="px-5 pb-5 border-t border-gray-100 pt-4 space-y-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {review.categories.map((cat) => (
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      {[
+                        { name: "Technical Skills", value: review.technical_skills },
+                        { name: "Communication", value: review.communication },
+                        { name: "Teamwork", value: review.teamwork },
+                        { name: "Leadership", value: review.leadership },
+                        { name: "Goals Met", value: review.goals_met },
+                      ].filter((c) => c.value != null).map((cat) => (
                         <div key={cat.name} className="bg-gray-50 rounded-lg p-3">
                           <p className="text-xs font-medium text-gray-500 mb-1">{cat.name}</p>
-                          <StarRating rating={cat.rating} size={14} />
-                          <p className="text-xs text-gray-600 mt-2">{cat.comments}</p>
+                          <StarRating rating={cat.value!} size={14} />
                         </div>
                       ))}
                     </div>
@@ -158,20 +198,31 @@ export default function PerformancePage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="bg-emerald-50 rounded-lg p-4">
                         <h5 className="text-xs font-medium text-emerald-700 uppercase mb-2">Strengths</h5>
-                        <p className="text-sm text-gray-700">{review.strengths}</p>
+                        <p className="text-sm text-gray-700">{review.strengths || "-"}</p>
                       </div>
                       <div className="bg-amber-50 rounded-lg p-4">
                         <h5 className="text-xs font-medium text-amber-700 uppercase mb-2">Areas for Improvement</h5>
-                        <p className="text-sm text-gray-700">{review.improvements}</p>
+                        <p className="text-sm text-gray-700">{review.improvements || "-"}</p>
                       </div>
                       <div className="bg-blue-50 rounded-lg p-4">
-                        <h5 className="text-xs font-medium text-blue-700 uppercase mb-2">Goals</h5>
-                        <p className="text-sm text-gray-700">{review.goals}</p>
+                        <h5 className="text-xs font-medium text-blue-700 uppercase mb-2">Comments</h5>
+                        <p className="text-sm text-gray-700">{review.comments || "-"}</p>
                       </div>
                     </div>
 
                     <div className="flex justify-end">
-                      <span className="text-xs text-gray-400">Created {review.createdAt ? (() => { try { return format(parseISO(review.createdAt), "MMM dd, yyyy 'at' hh:mm a"); } catch { return review.createdAt; } })() : "-"}</span>
+                      <span className="text-xs text-gray-400">
+                        Created{" "}
+                        {review.created_at
+                          ? (() => {
+                              try {
+                                return format(parseISO(review.created_at), "MMM dd, yyyy 'at' hh:mm a");
+                              } catch {
+                                return review.created_at;
+                              }
+                            })()
+                          : "-"}
+                      </span>
                     </div>
                   </div>
                 </motion.div>
@@ -208,27 +259,48 @@ export default function PerformancePage() {
                 </button>
               </div>
               <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Employee *</label>
+                  <select
+                    value={createForm.employee}
+                    onChange={(e) => setCreateForm({ ...createForm, employee: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">Select employee</option>
+                    {employees.map((emp: any) => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.first_name || emp.employee_name || emp.name || emp.email} {emp.last_name || ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Employee Name</label>
-                    <input type="text" value={createForm.employeeName} onChange={(e) => setCreateForm({ ...createForm, employeeName: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Employee name" />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Period Start *</label>
+                    <input
+                      type="date"
+                      value={createForm.review_period_start}
+                      onChange={(e) => setCreateForm({ ...createForm, review_period_start: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Review Period</label>
-                    <input type="text" value={createForm.reviewPeriod} onChange={(e) => setCreateForm({ ...createForm, reviewPeriod: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="e.g., Q2 2026" />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Period End *</label>
+                    <input
+                      type="date"
+                      value={createForm.review_period_end}
+                      onChange={(e) => setCreateForm({ ...createForm, review_period_end: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                    />
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Reviewer</label>
-                  <input type="text" value={createForm.reviewerName} onChange={(e) => setCreateForm({ ...createForm, reviewerName: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Reviewer name" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Overall Rating</label>
                   <div className="flex gap-1 mt-1">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <button key={s} onClick={() => setCreateForm({ ...createForm, overallRating: s })}>
+                      <button key={s} onClick={() => setCreateForm({ ...createForm, overall_rating: s })}>
                         <Star className={`w-8 h-8 cursor-pointer transition-colors ${
-                          s <= createForm.overallRating ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"
+                          s <= createForm.overall_rating ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"
                         }`} />
                       </button>
                     ))}
@@ -236,35 +308,26 @@ export default function PerformancePage() {
                 </div>
                 <div className="space-y-3">
                   <p className="text-sm font-medium text-gray-700">Category Ratings</p>
-                  {createForm.categories.map((cat, ci) => (
-                    <div key={cat.name} className="bg-gray-50 rounded-lg p-3">
+                  {[
+                    { key: "technical_skills" as const, label: "Technical Skills" },
+                    { key: "communication" as const, label: "Communication" },
+                    { key: "teamwork" as const, label: "Teamwork" },
+                    { key: "leadership" as const, label: "Leadership" },
+                    { key: "goals_met" as const, label: "Goals Met" },
+                  ].map((cat) => (
+                    <div key={cat.key} className="bg-gray-50 rounded-lg p-3">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm text-gray-700">{cat.name}</span>
+                        <span className="text-sm text-gray-700">{cat.label}</span>
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map((s) => (
-                            <button key={s} onClick={() => {
-                              const newCats = [...createForm.categories];
-                              newCats[ci].rating = s;
-                              setCreateForm({ ...createForm, categories: newCats });
-                            }}>
+                            <button key={s} onClick={() => setCreateForm({ ...createForm, [cat.key]: s })}>
                               <Star className={`w-4 h-4 cursor-pointer ${
-                                s <= cat.rating ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"
+                                s <= createForm[cat.key] ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"
                               }`} />
                             </button>
                           ))}
                         </div>
                       </div>
-                      <input
-                        type="text"
-                        value={cat.comments}
-                        onChange={(e) => {
-                          const newCats = [...createForm.categories];
-                          newCats[ci].comments = e.target.value;
-                          setCreateForm({ ...createForm, categories: newCats });
-                        }}
-                        className="w-full px-2 py-1 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-indigo-500"
-                        placeholder="Comments..."
-                      />
                     </div>
                   ))}
                 </div>
@@ -277,15 +340,15 @@ export default function PerformancePage() {
                   <textarea value={createForm.improvements} onChange={(e) => setCreateForm({ ...createForm, improvements: e.target.value })} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 resize-none" placeholder="Areas for improvement..." />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Goals</label>
-                  <textarea value={createForm.goals} onChange={(e) => setCreateForm({ ...createForm, goals: e.target.value })} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 resize-none" placeholder="Future goals..." />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Comments</label>
+                  <textarea value={createForm.comments} onChange={(e) => setCreateForm({ ...createForm, comments: e.target.value })} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 resize-none" placeholder="Additional comments..." />
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button onClick={() => setShowCreateDialog(false)} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">Cancel</button>
                 <button
                   onClick={() => createMutation.mutate()}
-                  disabled={createMutation.isPending || !createForm.employeeName || !createForm.reviewPeriod || !createForm.reviewerName}
+                  disabled={createMutation.isPending || !createForm.employee || !createForm.review_period_start || !createForm.review_period_end}
                   className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />

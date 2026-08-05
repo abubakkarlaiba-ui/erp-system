@@ -51,7 +51,7 @@ export default function TrainingPage() {
       setCreateForm({ title: "", trainer: "", description: "", startDate: "", endDate: "", maxParticipants: 0, location: "", category: "" });
       queryClient.invalidateQueries({ queryKey: ["trainings"] });
     },
-    onError: () => toast.error("Failed to create training"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || e?.response?.data?.detail || "Failed to create training"),
   });
 
   const trainingList = trainings?.data ?? [];

@@ -1,3 +1,4 @@
+from django.conf import settings as django_settings
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.text import slugify
@@ -31,6 +32,13 @@ class Company(UUIDModel):
     )
     settings = models.JSONField(default=dict, blank=True)
     is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(
+        django_settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_companies",
+    )
 
     class Meta:
         verbose_name_plural = "companies"

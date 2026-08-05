@@ -13,6 +13,7 @@ from apps.companies.models import (
 class CompanySerializer(serializers.ModelSerializer):
     branches_count = serializers.SerializerMethodField()
     employees_count = serializers.SerializerMethodField()
+    created_by_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Company
@@ -36,12 +37,14 @@ class CompanySerializer(serializers.ModelSerializer):
             "fiscal_year_start",
             "settings",
             "is_active",
+            "created_by",
+            "created_by_name",
             "branches_count",
             "employees_count",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "slug", "created_at", "updated_at"]
+        read_only_fields = ["id", "slug", "created_by", "created_at", "updated_at"]
 
     def get_branches_count(self, obj):
         try:
@@ -55,6 +58,11 @@ class CompanySerializer(serializers.ModelSerializer):
             return Employee.objects.filter(company=obj).count()
         except Exception:
             return 0
+
+    def get_created_by_name(self, obj):
+        if obj.created_by:
+            return f"{obj.created_by.first_name} {obj.created_by.last_name}".strip() or obj.created_by.email
+        return None
 
 
 class CompanyCreateUpdateSerializer(serializers.ModelSerializer):

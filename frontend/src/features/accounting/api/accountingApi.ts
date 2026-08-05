@@ -368,7 +368,9 @@ export const accountingApi = {
   },
 
   createExpense: async (expenseData: any) => {
-    const { data } = await api.post<any>("/accounting/expenses/", expenseData);
+    const { data } = await api.post<any>("/accounting/expenses/", expenseData, {
+      headers: expenseData instanceof FormData ? { "Content-Type": "multipart/form-data" } : {},
+    });
     return { data: mapExpense(data) };
   },
 
@@ -388,6 +390,7 @@ export const accountingApi = {
       account_number: bankData.accountNumber,
       bank_name: bankData.bankName,
       currency: bankData.currency,
+      account_type: (bankData as any).accountType || "current",
       is_active: bankData.isActive,
     });
     return { data: mapBankAccount(data) };

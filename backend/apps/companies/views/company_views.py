@@ -228,9 +228,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if hasattr(user, "company") and user.company:
-            return Company.objects.filter(pk=user.company_id)
-        return Company.objects.none()
+        return Company.objects.filter(created_by=user)
 
     def get_serializer_class(self):
         if self.action in ("create", "update", "partial_update"):
@@ -238,10 +236,15 @@ class CompanyViewSet(viewsets.ModelViewSet):
         return CompanySerializer
 
     def perform_create(self, serializer):
-        company = serializer.save()
+        name = serializer.validated_data.get("name", "")
+        if Company.objects.filter(name__iexact=name).exists():
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({"name": "A company with this name already exists."})
+        company = serializer.save(created_by=self.request.user)
         user = self.request.user
-        user.company = company
-        user.save(update_fields=["company"])
+        if not user.company:
+            user.company = company
+            user.save(update_fields=["company"])
 
 
 @extend_schema_view(

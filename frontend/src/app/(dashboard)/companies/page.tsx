@@ -72,8 +72,9 @@ export default function CompaniesPage() {
       setIsDialogOpen(false);
       reset();
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to create company");
+    onError: (error: any) => {
+      const msg = error?.response?.data?.error?.message || error?.response?.data?.detail || error?.message || "Failed to create company";
+      toast.error(msg);
     },
   });
 
