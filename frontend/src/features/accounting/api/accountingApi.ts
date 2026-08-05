@@ -110,12 +110,17 @@ export interface Budget {
 export interface FixedAsset {
   id: string;
   name: string;
+  assetCode: string;
   category: string;
   purchaseDate: string;
-  purchasePrice: number;
-  currentValue: number;
+  purchaseValue: number;
   depreciationMethod: string;
+  usefulLifeYears: number;
+  accumulatedDepreciation: number;
+  currentValue: number;
+  depreciationRate: number;
   status: string;
+  location: string;
 }
 
 function mapAccount(raw: any): Account {
@@ -247,12 +252,17 @@ function mapFixedAsset(raw: any): FixedAsset {
   return {
     id: String(raw.id),
     name: raw.name || "",
+    assetCode: raw.asset_code || "",
     category: raw.category || "",
     purchaseDate: raw.purchase_date || "",
-    purchasePrice: Number(raw.purchase_price) || 0,
+    purchaseValue: Number(raw.purchase_value) || 0,
+    depreciationMethod: raw.depreciation_method || "straight_line",
+    usefulLifeYears: Number(raw.useful_life_years) || 5,
+    accumulatedDepreciation: Number(raw.accumulated_depreciation) || 0,
     currentValue: Number(raw.current_value) || 0,
-    depreciationMethod: raw.depreciation_method || "",
+    depreciationRate: Number(raw.depreciation_rate) || 0,
     status: raw.status || "active",
+    location: raw.location || "",
   };
 }
 
@@ -429,15 +439,23 @@ export const accountingApi = {
     return { data: extractResults(data).map(mapFixedAsset) };
   },
 
-  createFixedAsset: async (assetData: Omit<FixedAsset, "id" | "currentValue">) => {
+  createFixedAsset: async (assetData: any) => {
     const { data } = await api.post<any>("/accounting/fixed-assets/", {
       name: assetData.name,
+      asset_code: assetData.assetCode,
       category: assetData.category,
       purchase_date: assetData.purchaseDate,
-      purchase_price: assetData.purchasePrice,
+      purchase_value: assetData.purchaseValue,
       depreciation_method: assetData.depreciationMethod,
-      status: assetData.status,
+      useful_life_years: assetData.usefulLifeYears,
+      current_value: assetData.currentValue,
+      status: assetData.status || "active",
+      location: assetData.location || "",
     });
     return { data: mapFixedAsset(data) };
+  },
+
+  deleteFixedAsset: async (id: string) => {
+    await api.delete(`/accounting/fixed-assets/${id}/`);
   },
 };

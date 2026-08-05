@@ -2,31 +2,18 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Plus, Pencil, Trash2, Monitor, DollarSign, Calendar, TrendingDown } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Plus, Trash2, Monitor, DollarSign, TrendingDown, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import PageHeader from "@/components/layout/PageHeader";
 import StatsCard from "@/components/shared/StatsCard";
-import { cn, formatCurrency, formatDate } from "@/lib/utils";
+import { accountingApi, type FixedAsset } from "@/features/accounting/api/accountingApi";
+import { cn, formatCurrency } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-const assetSchema = z.object({
-  name: z.string().min(1, "Asset name is required"),
-  category: z.string().min(1, "Category is required"),
-  purchaseDate: z.string().min(1, "Purchase date is required"),
-  purchasePrice: z.number().min(0, "Price must be positive"),
-  currentValue: z.number().min(0, "Value must be positive"),
-  status: z.enum(["active", "maintenance", "retired"]),
-  location: z.string().optional(),
-});
-
-type AssetFormData = z.infer<typeof assetSchema>;
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -38,47 +25,110 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-const sampleAssets = [
-  { id: "1", name: "MacBook Pro 16\"", category: "Laptops", purchaseDate: "2024-01-15", purchasePrice: 2500, currentValue: 2000, status: "active", location: "Office A" },
-  { id: "2", name: "Dell UltraSharp 27\" Monitor", category: "Monitors", purchaseDate: "2024-03-10", purchasePrice: 600, currentValue: 480, status: "active", location: "Office A" },
-  { id: "3", name: "Standing Desk Pro", category: "Furniture", purchaseDate: "2023-09-01", purchasePrice: 800, currentValue: 600, status: "active", location: "Office B" },
-  { id: "4", name: "HP LaserJet Printer", category: "Printers", purchaseDate: "2023-06-15", purchasePrice: 450, currentValue: 270, status: "maintenance", location: "Admin" },
-  { id: "5", name: "Conference Room Projector", category: "AV Equipment", purchaseDate: "2024-02-20", purchasePrice: 1200, currentValue: 960, status: "active", location: "Conference Room" },
-  { id: "6", name: "Server Rack", category: "IT Infrastructure", purchaseDate: "2023-01-10", purchasePrice: 5000, currentValue: 3000, status: "active", location: "Server Room" },
-];
-
 const STATUS_BADGE: Record<string, string> = {
-  active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  maintenance: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  retired: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  active: "bg-emerald-100 text-emerald-700",
+  maintenance: "bg-amber-100 text-amber-700",
+  disposed: "bg-red-100 text-red-700",
 };
 
-export default function FixedAssetsPage() {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingAsset, setEditingAsset] = useState<any>(null);
+const DEPRECIATION_METHODS = [
+  { value: "straight_line", label: "Straight Line" },
+  { value: "declining_balance", label: "Declining Balance" },
+  { value: "units_of_production", label: "Units of Production" },
+];
 
-  const form = useForm<AssetFormData>({
-    resolver: zodResolver(assetSchema),
-    defaultValues: { name: "", category: "", purchaseDate: "", purchasePrice: 0, currentValue: 0, status: "active", location: "" },
+export default function FixedAssetsPage() {
+  const queryClient = useQueryClient();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [assetCode, setAssetCode] = useState("");
+  const [category, setCategory] = useState("");
+  const [purchaseDate, setPurchaseDate] = useState("");
+  const [purchaseValue, setPurchaseValue] = useState("");
+  const [currentValue, setCurrentValue] = useState("");
+  const [depreciationMethod, setDepreciationMethod] = useState("straight_line");
+  const [usefulLifeYears, setUsefulLifeYears] = useState("5");
+  const [status, setStatus] = useState("active");
+  const [location, setLocation] = useState("");
+
+  const { data: assets = [], isLoading } = useQuery({
+    queryKey: ["fixedAssets"],
+    queryFn: async () => {
+      const res = await accountingApi.getFixedAssets();
+      return res.data;
+    },
   });
 
-  const totalValue = sampleAssets.reduce((s, a) => s + a.currentValue, 0);
-  const totalDepreciation = sampleAssets.reduce((s, a) => s + (a.purchasePrice - a.currentValue), 0);
+  const createMutation = useMutation({
+    mutationFn: () =>
+      accountingApi.createFixedAsset({
+        name,
+        assetCode,
+        category,
+        purchaseDate,
+        purchaseValue: Number(purchaseValue),
+        currentValue: Number(currentValue || purchaseValue),
+        depreciationMethod,
+        usefulLifeYears: Number(usefulLifeYears),
+        status,
+        location,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fixedAssets"] });
+      toast.success("Asset added successfully");
+      resetForm();
+      setDialogOpen(false);
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.error?.message || err?.response?.data?.message || err?.message || "Failed to add asset";
+      toast.error(msg);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => accountingApi.deleteFixedAsset(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fixedAssets"] });
+      toast.success("Asset deleted");
+      setDeleteId(null);
+    },
+    onError: () => toast.error("Failed to delete asset"),
+  });
+
+  const resetForm = () => {
+    setName("");
+    setAssetCode("");
+    setCategory("");
+    setPurchaseDate("");
+    setPurchaseValue("");
+    setCurrentValue("");
+    setDepreciationMethod("straight_line");
+    setUsefulLifeYears("5");
+    setStatus("active");
+    setLocation("");
+  };
+
+  const totalValue = assets.reduce((s, a) => s + a.currentValue, 0);
+  const totalDepreciation = assets.reduce((s, a) => s + a.accumulatedDepreciation, 0);
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
       <motion.div variants={itemVariants} className="flex items-center justify-between">
         <PageHeader title="Fixed Assets" />
-        <button onClick={() => { setEditingAsset(null); form.reset(); setDialogOpen(true); }} className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90">
+        <button
+          onClick={() => { resetForm(); setDialogOpen(true); }}
+          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+        >
           <Plus className="h-4 w-4" /> Add Asset
         </button>
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatsCard title="Total Assets" value={String(sampleAssets.length)} icon={<Monitor className="h-5 w-5" />} color="indigo" />
-        <StatsCard title="Total Value" value={`$${totalValue.toLocaleString()}`} icon={<DollarSign className="h-5 w-5" />} color="emerald" />
-        <StatsCard title="Depreciation" value={`$${totalDepreciation.toLocaleString()}`} icon={<TrendingDown className="h-5 w-5" />} color="amber" />
-        <StatsCard title="In Maintenance" value={String(sampleAssets.filter((a) => a.status === "maintenance").length)} icon={<Calendar className="h-5 w-5" />} color="rose" />
+        <StatsCard title="Total Assets" value={String(assets.length)} icon={<Monitor className="h-5 w-5" />} color="indigo" />
+        <StatsCard title="Total Value" value={formatCurrency(totalValue)} icon={<DollarSign className="h-5 w-5" />} color="emerald" />
+        <StatsCard title="Depreciation" value={formatCurrency(totalDepreciation)} icon={<TrendingDown className="h-5 w-5" />} color="amber" />
+        <StatsCard title="In Maintenance" value={String(assets.filter((a) => a.status === "maintenance").length)} icon={<AlertTriangle className="h-5 w-5" />} color="rose" />
       </motion.div>
 
       <motion.div variants={itemVariants} className="rounded-xl border bg-white">
@@ -89,7 +139,7 @@ export default function FixedAssetsPage() {
                 <th className="p-4 font-medium">Asset</th>
                 <th className="p-4 font-medium">Category</th>
                 <th className="p-4 font-medium">Purchase Date</th>
-                <th className="p-4 font-medium text-right">Purchase Price</th>
+                <th className="p-4 font-medium text-right">Purchase Value</th>
                 <th className="p-4 font-medium text-right">Current Value</th>
                 <th className="p-4 font-medium">Status</th>
                 <th className="p-4 font-medium">Location</th>
@@ -97,42 +147,139 @@ export default function FixedAssetsPage() {
               </tr>
             </thead>
             <tbody>
-              {sampleAssets.map((asset) => (
-                <tr key={asset.id} className="border-b last:border-0 hover:bg-gray-50">
-                  <td className="p-4 font-medium">{asset.name}</td>
-                  <td className="p-4 text-gray-500">{asset.category}</td>
-                  <td className="p-4 text-gray-500">{asset.purchaseDate}</td>
-                  <td className="p-4 text-right">{formatCurrency(asset.purchasePrice)}</td>
-                  <td className="p-4 text-right">{formatCurrency(asset.currentValue)}</td>
-                  <td className="p-4"><span className={cn("inline-flex rounded-full px-2 py-1 text-xs font-medium", STATUS_BADGE[asset.status])}>{asset.status}</span></td>
-                  <td className="p-4 text-gray-500">{asset.location}</td>
-                  <td className="p-4 text-right">
-                    <button onClick={() => { setEditingAsset(asset); form.reset(asset); setDialogOpen(true); }} className="rounded p-1 hover:bg-gray-100"><Pencil className="h-3.5 w-3.5" /></button>
-                  </td>
-                </tr>
-              ))}
+              {isLoading ? (
+                <tr><td colSpan={8} className="p-4 text-center text-muted-foreground">Loading assets...</td></tr>
+              ) : assets.length === 0 ? (
+                <tr><td colSpan={8} className="p-4 text-center text-muted-foreground">No assets found. Add your first asset.</td></tr>
+              ) : (
+                assets.map((asset) => (
+                  <tr key={asset.id} className="border-b last:border-0 hover:bg-gray-50">
+                    <td className="p-4">
+                      <div className="font-medium">{asset.name}</div>
+                      <div className="text-xs text-gray-400">{asset.assetCode}</div>
+                    </td>
+                    <td className="p-4 text-gray-500">{asset.category}</td>
+                    <td className="p-4 text-gray-500">{asset.purchaseDate}</td>
+                    <td className="p-4 text-right">{formatCurrency(asset.purchaseValue)}</td>
+                    <td className="p-4 text-right">{formatCurrency(asset.currentValue)}</td>
+                    <td className="p-4">
+                      <span className={cn("inline-flex rounded-full px-2 py-1 text-xs font-medium", STATUS_BADGE[asset.status] || "")}>
+                        {asset.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-gray-500">{asset.location || "-"}</td>
+                    <td className="p-4 text-right">
+                      <button
+                        onClick={() => setDeleteId(asset.id)}
+                        className="rounded p-1 text-red-500 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
       </motion.div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add Asset</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Name</Label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" placeholder="e.g. MacBook Pro" />
+              </div>
+              <div>
+                <Label>Asset Code</Label>
+                <Input value={assetCode} onChange={(e) => setAssetCode(e.target.value)} className="mt-1" placeholder="e.g. LAP-001" />
+              </div>
+            </div>
+            <div>
+              <Label>Category</Label>
+              <Input value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1" placeholder="e.g. Laptops" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Purchase Date</Label>
+                <Input type="date" value={purchaseDate} onChange={(e) => setPurchaseDate(e.target.value)} className="mt-1" />
+              </div>
+              <div>
+                <Label>Status</Label>
+                <Select value={status} onValueChange={setStatus}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    <SelectItem value="disposed">Disposed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Purchase Value</Label>
+                <Input type="number" value={purchaseValue} onChange={(e) => setPurchaseValue(e.target.value)} className="mt-1" placeholder="0.00" />
+              </div>
+              <div>
+                <Label>Current Value</Label>
+                <Input type="number" value={currentValue} onChange={(e) => setCurrentValue(e.target.value)} className="mt-1" placeholder="Same as purchase value if not set" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Depreciation Method</Label>
+                <Select value={depreciationMethod} onValueChange={setDepreciationMethod}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {DEPRECIATION_METHODS.map((m) => (
+                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Useful Life (Years)</Label>
+                <Input type="number" value={usefulLifeYears} onChange={(e) => setUsefulLifeYears(e.target.value)} className="mt-1" min="1" />
+              </div>
+            </div>
+            <div>
+              <Label>Location</Label>
+              <Input value={location} onChange={(e) => setLocation(e.target.value)} className="mt-1" placeholder="e.g. Office A" />
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={() => createMutation.mutate()}
+                disabled={!name || !assetCode || !category || !purchaseDate || !purchaseValue || createMutation.isPending}
+              >
+                {createMutation.isPending ? "Adding..." : "Add Asset"}
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>{editingAsset ? "Edit Asset" : "Add Asset"}</DialogTitle></DialogHeader>
-          <form onSubmit={form.handleSubmit((d) => { toast.success(editingAsset ? "Asset updated" : "Asset added"); setDialogOpen(false); })} className="space-y-4">
-            <div><Label>Name</Label><Input {...form.register("name")} className="mt-1" /></div>
-            <div><Label>Category</Label><Input {...form.register("category")} className="mt-1" /></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>Purchase Date</Label><Input type="date" {...form.register("purchaseDate")} className="mt-1" /></div>
-              <div><Label>Status</Label><Select defaultValue="active" onValueChange={(v) => form.setValue("status", v as any)}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="maintenance">Maintenance</SelectItem><SelectItem value="retired">Retired</SelectItem></SelectContent></Select></div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>Purchase Price</Label><Input type="number" {...form.register("purchasePrice", { valueAsNumber: true })} className="mt-1" /></div>
-              <div><Label>Current Value</Label><Input type="number" {...form.register("currentValue", { valueAsNumber: true })} className="mt-1" /></div>
-            </div>
-            <div><Label>Location</Label><Input {...form.register("location")} className="mt-1" /></div>
-            <DialogFooter><Button type="submit">{editingAsset ? "Update" : "Add"}</Button></DialogFooter>
-          </form>
+          <DialogHeader>
+            <DialogTitle>Delete Asset</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">Are you sure you want to delete this asset?</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
+            <Button
+              variant="destructive"
+              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </motion.div>
