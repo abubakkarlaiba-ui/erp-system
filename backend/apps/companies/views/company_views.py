@@ -246,6 +246,30 @@ class CompanyViewSet(viewsets.ModelViewSet):
             user.company = company
             user.save(update_fields=["company"])
 
+        Branch.objects.create(
+            company=company, name="Main Office", code="MO", is_active=True
+        )
+
+        departments = [
+            ("Engineering", "ENG"),
+            ("Marketing", "MKT"),
+            ("HR", "HR"),
+            ("Finance", "FIN"),
+        ]
+        dept_objs = []
+        for dname, dcode in departments:
+            dept_objs.append(Department(company=company, name=dname, code=dcode, is_active=True))
+        Department.objects.bulk_create(dept_objs)
+
+        designations = [
+            ("Software Engineer", "SE"),
+            ("Marketing Manager", "MM"),
+            ("HR Manager", "HM"),
+            ("Financial Analyst", "FA"),
+        ]
+        for dgname, dgcode in designations:
+            Designation.objects.create(company=company, name=dgname, code=dgcode, is_active=True)
+
 
 @extend_schema_view(
     list=branch_list_schema,
