@@ -1,4 +1,3 @@
-from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -10,10 +9,12 @@ from apps.utils.permissions import IsSuperAdmin
 @api_view(["GET"])
 @permission_classes([IsAuthenticated, IsSuperAdmin])
 def admin_stats(request):
-    from apps.authentication.models import User
+    from django.contrib.auth import get_user_model
+    from django.db.models import Count
+    User = get_user_model()
     from apps.companies.models import Company
 
-    data = {
+    return Response({
         "total_users": User.objects.count(),
         "active_users": User.objects.filter(is_active=True).count(),
         "total_companies": Company.objects.count(),
@@ -26,8 +27,7 @@ def admin_stats(request):
             .annotate(count=Count("id"))
             .order_by("-count")
         ),
-    }
-    return Response(data)
+    })
 
 
 class AdminUserViewSet(viewsets.ModelViewSet):
