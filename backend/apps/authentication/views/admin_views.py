@@ -5,13 +5,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.utils.permissions import IsSuperAdmin
-from apps.authentication.models import User
-from apps.companies.models import Company
 
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated, IsSuperAdmin])
 def admin_stats(request):
+    from apps.authentication.models import User
+    from apps.companies.models import Company
+
     data = {
         "total_users": User.objects.count(),
         "active_users": User.objects.filter(is_active=True).count(),
@@ -36,6 +37,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     filterset_fields = ["role", "company", "is_active", "is_verified", "is_superuser"]
 
     def get_queryset(self):
+        from apps.authentication.models import User
         return User.objects.select_related("company").all()
 
     def get_serializer_class(self):
@@ -57,6 +59,7 @@ class AdminCompanyViewSet(viewsets.ModelViewSet):
     ordering_fields = ["name", "created_at"]
 
     def get_queryset(self):
+        from apps.companies.models import Company
         return Company.objects.all()
 
     def get_serializer_class(self):
