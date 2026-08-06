@@ -109,9 +109,9 @@ const navSections: NavItem[] = [
     href: "/reports",
   },
   {
-    label: "Admin Panel",
+    label: "Admin Dashboard",
     icon: Shield,
-    href: "/admin",
+    href: "/admin-dashboard",
   },
   {
     label: "Settings",
@@ -222,7 +222,7 @@ export function Sidebar() {
   const isSuperAdmin = user?.is_superuser
 
   const visibleSections = navSections.filter((s) => {
-    if (s.label === "Admin Panel" && !isSuperAdmin) return false
+    if (s.label === "Admin Dashboard" && !isSuperAdmin) return false
     return true
   })
 
