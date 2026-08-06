@@ -15,12 +15,14 @@ import {
   ShoppingCart,
   Settings,
   BarChart3,
+  Shield,
   ChevronDown,
   ChevronLeft,
   X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useUIStore } from "@/stores/uiStore"
+import { useAuthStore } from "@/stores/authStore"
 
 interface NavItem {
   label: string
@@ -105,6 +107,11 @@ const navSections: NavItem[] = [
     label: "Reports",
     icon: BarChart3,
     href: "/reports",
+  },
+  {
+    label: "Admin Panel",
+    icon: Shield,
+    href: "/admin",
   },
   {
     label: "Settings",
@@ -211,6 +218,13 @@ function SidebarItem({
 export function Sidebar() {
   const pathname = usePathname()
   const { sidebarOpen, sidebarCollapsed, setSidebarOpen, toggleSidebarCollapsed } = useUIStore()
+  const user = useAuthStore((s) => s.user)
+  const isSuperAdmin = user?.is_superuser
+
+  const visibleSections = navSections.filter((s) => {
+    if (s.label === "Admin Panel" && !isSuperAdmin) return false
+    return true
+  })
 
   const sidebarContent = (
     <div
@@ -242,7 +256,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-        {navSections.map((section) => {
+        {visibleSections.map((section) => {
           const sectionActive = section.href
             ? pathname === section.href
             : section.items?.some((i) => pathname === i.href)
