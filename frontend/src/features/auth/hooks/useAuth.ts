@@ -13,8 +13,18 @@ export function useAuth() {
     password: string;
     password_confirm: string;
   }) => {
-    const response = await api.post("/auth/register/", data);
-    return response.data;
+    try {
+      const response = await api.post("/auth/register/", data);
+      return response.data;
+    } catch (error: any) {
+      const msg =
+        error?.response?.data?.error?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "Registration failed. Please try again.";
+      throw new Error(typeof msg === "string" ? msg : "Registration failed.");
+    }
   };
 
   return {

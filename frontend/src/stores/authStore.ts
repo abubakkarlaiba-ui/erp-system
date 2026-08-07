@@ -39,7 +39,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         try {
           const { api } = await import("@/lib/api");
           const response = await api.post("/auth/login/", { email, password });
-          const { access, refresh, user } = response.data;
+          const { access, refresh, user, requires_2fa } = response.data;
+
+          if (requires_2fa) {
+            set({ isLoading: false });
+            throw new Error("2FA_REQUIRED");
+          }
+
           if (typeof window !== "undefined") {
             localStorage.setItem("access_token", access);
             if (refresh) localStorage.setItem("refresh_token", refresh);
@@ -51,9 +57,17 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             isAuthenticated: true,
             isLoading: false,
           });
-        } catch (error) {
+        } catch (error: any) {
           set({ isLoading: false });
-          throw error;
+          const msg =
+            error?.response?.data?.error?.message ||
+            error?.response?.data?.error ||
+            error?.response?.data?.message ||
+            error?.response?.data?.detail ||
+            error?.message ||
+            "Invalid credentials. Please try again.";
+          const err = new Error(typeof msg === "string" ? msg : "Invalid credentials. Please try again.");
+          throw err;
         }
       },
 

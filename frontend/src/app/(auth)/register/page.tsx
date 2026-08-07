@@ -38,12 +38,14 @@ export default function RegisterPage() {
         description: "Your account has been created. Please sign in.",
       });
       router.push("/login");
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Registration failed. Please try again.";
-      toast.error("Registration failed", { description: message });
+    } catch (error: any) {
+      const msg =
+        error?.response?.data?.error?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "Registration failed. Please try again.";
+      toast.error("Registration failed", { description: typeof msg === "string" ? msg : "Registration failed. Please try again." });
     }
   };
 

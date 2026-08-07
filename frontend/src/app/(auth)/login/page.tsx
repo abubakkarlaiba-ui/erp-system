@@ -31,11 +31,12 @@ export default function LoginPage() {
         description: "You have been logged in successfully.",
       });
       router.push("/dashboard");
-    } catch (error: unknown) {
+    } catch (error: any) {
       const message =
-        error instanceof Error
+        error?.message ||
+        (error instanceof Error
           ? error.message
-          : "Invalid credentials. Please try again.";
+          : "Invalid credentials. Please try again.");
       toast.error("Login failed", { description: message });
     }
   };
